@@ -196,10 +196,12 @@ Move_Wpg_Config(){
     cp -r "config-overrides/wpg" "$wpg_path"
 }
 Move_Fonts(){
-    fonts_path="${HOME}/.local/share/fonts"
+    local fonts_path="${HOME}/.local/share/fonts"
     echo "Moving Fonts to: -> $fonts_path"
+    mkdir -p "$fonts_path"
     cp -rn "fonts" "$fonts_path"
 }
+
 Change_Shell(){
     echo "----------------------------"
     echo "Changing Shell is Required: "
@@ -215,7 +217,7 @@ Move_zshenv(){
 Make_some_dir(){
     mkdir -p "$Current_dir/p-shell/Theme/assets"
     mkdir -p "$Current_dir/p-shell/Theme/clipcat"
-    mkdir -p "$HOME/.config/wpg/templates"
+    mkdir -p "${HOME}/.config/wpg/templates/"
 }
 Install_clipcat(){
     local clipcat_dir="$Current_dir/p-shell/Theme/clipcat"

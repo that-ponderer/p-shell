@@ -209,7 +209,8 @@ Change_Shell(){
 Move_zshenv(){
     echo    "-------------------------------------"
     read -p "Install zshenv and Make Backup: [y/n]" choice
-    [[ "$choice" =~ ^[yY\s]$  ]] && cp "zshenv" "${HOME}/.zshenv"
+    [[ "$choice" =~ ^[yY]$  ]] && cp "zshenv" "${HOME}/.zshenv"
+    [[ "$choice" == "" ]] && cp "zshenv" "${HOME}/.zshenv"
 }
 Make_some_dir(){
     mkdir -p "$Current_dir/p-shell/Theme/assets"

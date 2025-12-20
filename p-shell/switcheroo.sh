@@ -91,7 +91,7 @@ if [[ -n "$THEME" ]] ; then
      swaybg -i ${ThemePath}/Theme/assets/blured_wall.png >/dev/null 2>&1 &
      
      sleep 1.5
-     dunstify -I ${ThemePath}/icon.png "$THEME"
+     dunstify -I ${ThemePath}/icons/icon.png "$THEME"
 
      ${ThemePath}/Theme/gowall/gowall.sh >/dev/null 2>&1
 

@@ -10,7 +10,7 @@ if [[ "$@" = "d" ]] ; then
     -encoder cpu \
     -ac aac \
     -o "$videopath"
-    dunstify -I "${HOME}/Icons/monitor.png"  "New Recording!" 
+    dunstify -I "${ThemePath}/Icons/monitor.png"  "New Recording!" 
 
 elif [[ "$@" = "o" ]] ; then
     gpu-screen-recorder \
@@ -21,7 +21,7 @@ elif [[ "$@" = "o" ]] ; then
     -encoder cpu \
     -ac aac \
     -o "$videopath"
-    dunstify -I "${HOME}/Icons/monitor.png"  "New Recording!" 
+    dunstify -I "${ThemePath}/icons/monitor.png"  "New Recording!" 
 else 
     exit 1
 fi

@@ -1,0 +1,30 @@
+foreground         {7}
+background         {0}
+background_opacity 1.0
+cursor             {7}
+
+active_tab_foreground     {0}
+active_tab_background     {7}
+inactive_tab_foreground   {7}
+inactive_tab_background   {0}
+
+active_border_color   {7}
+inactive_border_color {0}
+bell_border_color     {1}
+
+color0       {0}
+color8       {8}
+color1       {1}
+color9       {9}
+color2       {2}
+color10      {10}
+color3       {3}
+color11      {11}
+color4       {4}
+color12      {12}
+color5       {5}
+color13      {13}
+color6       {6}
+color14      {14}
+color7       {7}
+color15      {15}

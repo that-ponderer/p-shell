@@ -1,0 +1,240 @@
+@define-color foreground {7};
+@define-color background {0};
+@define-color cursor {7};
+
+@define-color color0 {0};
+@define-color color1 {1};
+@define-color color2 {2};
+@define-color color3 {3};
+@define-color color4 {4};
+@define-color color5 {5};
+@define-color color6 {6};
+@define-color color7 {7};
+@define-color color8 {8};
+@define-color color9 {9};
+@define-color color10 {10};
+@define-color color11 {11};
+@define-color color12 {12};
+@define-color color13 {13};
+@define-color color14 {14};
+@define-color color15 {15};
+
+@define-color text @color0;
+
+* {
+    font-family: DepartureMono Nerd Font Propo, sans-serif;
+    font-size: 14px;
+    font-weight:bold;
+    padding: 0px;
+}
+window#waybar {
+    background-color: transparent; 
+    opacity: 1;
+    padding: 0px;
+}
+.modules-right,
+.modules-left,
+.modules-center {
+    border: 2px solid alpha(@color7 ,0.7); 
+    background: alpha( @color0,0.8); 
+    border-radius:8px;
+    padding : 0px 8px;
+}
+.modules-right{
+    margin-right:8px;       
+}
+.modules-center{
+    margin: 0px 10px 0px 10px;
+ }
+.modules-left{
+    margin-left: 8px;
+    padding: 0px 15px 0px 8px;
+}
+
+#workspaces button.hidden {
+    border-bottom: none;
+}
+#workspaces button.empty {
+    border-bottom: none;
+}
+#workspaces button.urgent {
+    background-color: @color1;
+}
+#workspaces button:hover {
+    border:2px solid @color7;
+    padding:0px 6px;
+    transition:0.1s ease;
+    border-radius:4px;
+    background:transparent;
+}
+
+#workspaces button {
+    margin:7px 2px;
+    padding: 0 2px;
+    color:@color7;
+    border-radius :0px;
+    border-bottom: 2px solid @color7;
+}
+#workspaces button.active{
+    color :@color0;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius:4px;
+    background-color: @color6;
+    background-image: linear-gradient(
+        to bottom,
+        alpha(@color7, 0.5),
+        alpha(@color7, 0.01)
+    );  
+   
+}
+#window{
+    color:@color7;
+}
+
+#custom-tray-icon{
+    font-size: 18px;
+    border-radius: 4px;
+    margin: 8px 0px ;
+    padding: 0px 8px;
+    background-color: @color0;
+    border:2px solid @color7;
+    color:@color6;
+    transition:0.1s ease;
+}
+#custom-tray-icon:hover{
+    background-color: @color1;
+}
+#tray,#bluetooth{
+    margin: 8px 0px 8px 4px ;
+    padding: 0px 6px;
+    background-color:@color0;
+    border:2px solid @color7;
+    border-radius:4px;
+    color:@color6;
+    transition:0.1s ease;
+}
+#tray:hover,#bluetooth:hover{
+    background-color: @color2;
+}
+#bluetooth{
+    font-size: 18px;
+    margin: 8px 4px 8px 4px ;
+}
+#battery:hover,
+#cpu:hover,
+#temperature:hover,
+#memory:hover,
+#disk:hover,
+#backlight:hover,
+#battery:hover,
+#pulseaudio:hover,
+#power-profiles-daemon:hover,
+#network:hover,
+#cava:hover,
+#clock:hover  {
+    color: @color0;
+    border: 2px solid @color7;
+    margin:8px 10px;
+    transition:0.1s ease;
+}
+#cava,
+#clock,
+#cpu,
+#temperature,
+#memory,
+#disk,
+#backlight,
+#battery,
+#network,
+#pulseaudio
+ {
+    color: @text;
+    margin: 7px 2px ;
+    padding: 0px 10px;
+    border-radius: 4px;
+    transition:0.1s ease;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+#cava{
+    background-color:@color5;
+}
+#clock{
+    background-color:@color1;
+    background-image: linear-gradient(
+        to bottom,
+        alpha(@color7, 0.5),
+        alpha(@color7, 0.1)
+    );  
+}
+#cpu{
+    background-color: @color7;
+    background-image: linear-gradient(
+        to bottom,
+        alpha(@color7, 0.5),
+        alpha(@color7, 0.01)
+    );  
+}
+#temperature{
+    background-color: @color6;
+    background-image: linear-gradient(
+        to bottom,
+        alpha(@color7, 0.5),
+        alpha(@color7, 0.01)
+    );  
+}
+#memory{
+    background-color: @color5;
+    background-image: linear-gradient(
+        to bottom,
+        alpha(@color7, 0.5),
+        alpha(@color7, 0.01)
+    );  
+}
+#disk{
+    background-color: @color4;
+    background-image: linear-gradient(
+        to bottom,
+        alpha(@color7, 0.5),
+        alpha(@color7, 0.01)
+    );  
+}
+#backlight{
+    background-color: @color3;
+    background-image: linear-gradient(
+        to bottom,
+        alpha(@color7, 0.5),
+        alpha(@color7, 0.01)
+    );  
+}
+#battery{
+    background-color: @color2;
+    background-image: linear-gradient(
+        to bottom,
+        alpha(@color7, 0.5),
+        alpha(@color7, 0.01)
+    );  
+}
+#network{
+    background-color: @color1;
+    background-image: linear-gradient(
+        to bottom,
+        alpha(@color7, 0.5),
+        alpha(@color7, 0.01)
+    );  
+}
+#pulseaudio{
+    background-color: @color6;
+    background-image: linear-gradient(
+        to bottom,
+        alpha(@color7, 0.5),
+        alpha(@color7, 0.01)
+    );  
+
+  }
+
+  #custom-screenrec{
+    font-size: 20px;
+    color:@color1;
+    margin: 0px 4px 0px 4px;
+  }
+

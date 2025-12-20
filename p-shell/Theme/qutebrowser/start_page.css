@@ -1,0 +1,89 @@
+body{
+    background-color:var(--bg) ;
+    font-family: JetBrainsMono Nerd Font Propo;
+    overflow: hidden;
+}
+.splash {
+   font-size: 16px; 
+   color: var(--col4);
+   text-align: center;
+   position: absolute;
+   width: 100%;
+   margin-top: calc(50vh - 80px);
+}
+.splash p {
+    color: var(--fg);
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    position: relative;
+    top: -40px;
+}
+
+.mycube {
+    transform-style: preserve-3d;
+    width: 200px;
+    height: 200px;
+    position: relative;
+    margin: auto;
+    transform: rotateY(30deg) rotateX(30deg);
+    animation: spin 2s linear infinite;
+}
+
+.face {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border: none;
+}
+
+.front {
+    transform: translateZ(100px);
+    background-color: var(--col1) ;
+}
+
+.top {
+    transform: rotateX(90deg) translateZ(100px);
+    background-color: var(--col2);
+}
+
+.right {
+    transform: rotateY(90deg) translateZ(100px);
+    background-color: var(--col3);
+}
+
+.left {
+    transform: rotateY(-90deg) translateZ(100px);
+    background-color: var(--col4);
+}
+
+.bottom {
+    transform: rotateX(-90deg) translateZ(100px);
+    background-color: var(--col5);
+}
+
+.back {
+    transform: rotateY(-180deg) translateZ(100px);
+    background-color: var(--col6);
+}
+
+.outbox {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    margin: 200px auto;
+    top: -355px;
+    right: -115px;
+}
+
+.lowerbox {
+    transform: scale(0.1);
+    transition: transform 0.3s ease-in;
+}
+
+@keyframes spin {
+    from { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+    to   { transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg); }
+}
+
+

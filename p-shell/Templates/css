@@ -1,0 +1,23 @@
+:root {
+    --background: {0};
+    --foreground: {7};
+    --cursor: {15};
+
+
+    --color0: {0};
+    --color1: {1};
+    --color2: {2};
+    --color3: {3};
+    --color4: {4};
+    --color5: {5};
+    --color6: {6};
+    --color7: {7};
+    --color8: {8};
+    --color9: {9};
+    --color10: {10};
+    --color11: {11};
+    --color12: {12};
+    --color13: {13};
+    --color14: {14};
+    --color15: {15};
+}

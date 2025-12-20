@@ -1,0 +1,27 @@
+#!/usr/bin/bash
+
+InsideCol={5}ff
+InsideClearCol={2}ff
+InsideVerifyCol={4}ff
+InsideWrongCol={1}ff
+
+RingCol={5}ff
+RingClearCol={2}ff
+RingVerifyCol={4}ff
+RingWrongCol={1}ff
+
+KeyHighLightCol={3}ff
+BackSpaceHighLightSegCol={1}ff
+
+swaylock -i ${ThemePath}/Theme/assets/blured_wall.png \
+        --font "JetBrainsMono Nerd Font Propo" --indicator-radius 70 \
+        --inside-color $InsideCol \
+        --inside-clear-color $InsideClearCol \
+        --inside-ver-color $InsideVerifyCol \
+        --inside-wrong-color $InsideWrongCol \
+        --ring-color $RingCol \
+        --ring-clear-color $RingClearCol \
+        --ring-ver-color $RingVerifyCol \
+        --ring-wrong-color $RingWrongCol \
+        --bs-hl-color $BackSpaceHighLightSegCol \
+        --key-hl-color $KeyHighLightCol

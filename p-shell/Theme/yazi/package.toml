@@ -1,0 +1,22 @@
+[[plugin.deps]]
+use = "boydaihungst/mediainfo"
+rev = "2093ab7"
+hash = "16a10359fc2a3cd8cc8bcfbe00f744d3"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:mount"
+rev = "9a52857"
+hash = "4fccaaf10c36dc2466e2438a386ff017"
+
+[[plugin.deps]]
+use = "boydaihungst/gvfs"
+rev = "6db0c60"
+hash = "4351334ef72ea0fb3bbafc6eec8738cf"
+
+[[plugin.deps]]
+use = "yazi-rs/plugins:full-border"
+rev = "9a52857"
+hash = "3996fc74044bc44144b323686f887e1"
+
+[flavor]
+deps = []

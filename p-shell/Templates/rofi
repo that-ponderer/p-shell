@@ -1,0 +1,67 @@
+* {
+    border-color: {4};
+    text-selected: {0};
+    text-idle: {zsh};
+    text-unselected: {7};
+    highlighter: {2};
+    bg-color: @text-selected;
+    color:@text-unselected;
+    background-color:@bg-color;
+    }
+
+window {
+    width: 730px;
+    background-color: @bg-color;
+    border-radius: 8px;
+    padding: 4px;
+    }
+mainbox {
+    background-color: @bg-color;
+    margin: 5px;
+    border-radius: 4px;
+    spacing: 8px;
+    }
+inputbar{
+    text-color: @text-idle; 
+    background-color: @bg-color;
+    children: [textbox-seach-icon,entry];
+    border: 0px solid 0px solid 2px solid 0px solid;
+    border-color: @border-color;
+    }
+textbox-seach-icon{
+    text-color: @text-idle; 
+    expand: false;
+    content: " ";
+    margin: 6px 2px 6px 8px;
+    background-color: @bg-color;
+    }
+entry { 
+    text-color: @text-unselected; 
+    padding: 5px 0px 0px 0px;
+    background-color: @bg-color;
+    }
+listview {
+    background-color: @bg-color;
+    border: 2px solid;
+    border-color: @border-color;
+    border-radius: 4px;
+    padding: 6px 10px;
+    lines: 8;
+    }
+element {
+    border-radius: 4px;
+    padding: 4px 0px 3px 10px;
+    border: 0;
+    text-color: @text-unselected;
+    background-color:inherit;
+}
+element selected {
+    background-color: @highlighter;
+    text-color: @text-selected;
+    }
+element-text {
+    background-color: #00000000; // This line is super imp , 
+                                 // it hides the weird text background
+    text-color:      inherit;
+}    
+

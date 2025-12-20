@@ -1,0 +1,64 @@
+lock() {
+    "${ThemePath}/Theme/niri/swaylock.sh" "$@"
+}
+
+kitty() {
+    command kitty -c "${ThemePath}/Theme/kitty/kitty.conf" "$@"
+}
+
+wofi-drun() {
+    GTK_THEME=Adwaita wofi --show drun \
+        -s "${ThemePath}/Theme/wofi.css" \
+        -W 500 -H 292 \
+        -p Appplications \
+        --allow-images --define image_size=20 --no-action \
+        "$@"
+}
+
+bluetooth() {
+    kitty -T bluetuith -c "${ThemePath}/Theme/kitty/kitty.conf" bluetuith "$@"
+}
+
+qute() {
+    qutebrowser -B "${ThemePath}/Theme/qutebrowser/" -C "${ThemePath}/Theme/qutebrowser/config.py" "$@"
+}
+
+bar() {
+    "${ThemePath}/Theme/niri/waybar.sh" "$@"
+}
+
+switch() {
+    "${ThemePath}/Theme/niri/switcher.sh" "$@"
+}
+
+clipboard() {
+    clipcat-menu -c "${ThemePath}/Theme/clipcat/clipcat-menu.toml" --rofi-menu-length 8 "$@"
+}
+
+emoji() {
+    "${ThemePath}/Theme/niri/emoji.sh" "$@"
+}
+
+screenshot() {
+    "${ThemePath}/Theme/niri/screenshot.sh" d "$@"
+}
+
+screenshot_dynamic() {
+    "${ThemePath}/Theme/niri/screenshot.sh" o "$@"
+}
+
+colorpicker() {
+    hyprpicker -a "$@"
+}
+
+screen_record_dynamic() {
+    "${ThemePath}/Theme/niri/screen_record.sh" o "$@"
+}
+
+screen_record() {
+    "${ThemePath}/Theme/niri/screen_record.sh" d "$@"
+}
+
+screen_record_stop() {
+    pkill -SIGINT -f gpu-screen-recorder "$@"
+}

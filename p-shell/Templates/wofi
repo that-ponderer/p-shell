@@ -1,0 +1,98 @@
+@define-color foreground {7};
+@define-color background {0};
+@define-color cursor {7};
+
+@define-color color0 {0};
+@define-color color1 {1};
+@define-color color2 {2};
+@define-color color3 {3};
+@define-color color4 {4};
+@define-color color5 {5};
+@define-color color6 {6};
+@define-color color7 {7};
+@define-color color8 {8};
+@define-color color9 {9};
+@define-color color10 {10};
+@define-color color11 {11};
+@define-color color12 {12};
+@define-color color13 {13};
+@define-color color14 {14};
+@define-color color15 {15};
+
+*{
+    font: JetBrainsMono Nerd Font;
+    font-size: 16px;
+    border-radius: 4px;
+    box-shadow:none;
+    border:none;
+    outline:none;
+}
+window {
+background-color: transparent;
+}
+
+#input {
+color:@color7;
+background-color:@color0;
+margin: 5px;
+border-bottom: 2px solid @color4;
+border-radius:0px;
+}
+#input:focus,
+#input *:focus-visible
+{
+    border-bottom: 2px solid @color4;
+    background-image: none;
+    border-radius: 0px;
+}
+
+
+#inner-box {
+margin: 5px;
+background-color: @color0;
+}
+
+#outer-box {
+margin: 5px;
+background-color: @color0;
+border-radius:8px;
+padding: 4px;
+}
+
+#scroll {
+margin: 5px;
+border: 2px solid @color4;
+}
+
+#text {
+background-color: transparent;
+}
+#entry {
+background-color: @color0;
+}
+#entry #text{
+color:@color7;
+}
+#entry:selected {
+border: 1px solid @color7;
+background-color: shade(@color2,0.95);
+background-image: linear-gradient(
+        to bottom,
+        alpha(@color7, 0.8),
+        alpha(@color7, 0.01)
+    );  
+}
+#entry:selected #text {
+color:@color0;
+}
+#img {
+margin: 0px 10px 0px 10px ;
+border: none;
+background-color: transparent;
+}
+#expander-box{
+color: @color7;
+}
+#expander-box:selected {
+color: @color0;
+}

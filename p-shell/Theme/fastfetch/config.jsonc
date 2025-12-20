@@ -1,0 +1,154 @@
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+  "logo": {
+    "source": "${ThemePath}/Theme/fastfetch/pngs/anime/*",
+    //"width": 6,
+    "width": 26,
+    "height":12,
+    "padding": {
+      "top": 4,
+      "left": 0,
+      "right":2
+    },
+    "color": {
+      "1": "red",
+      "2": "green",
+      "3": "yellow",
+      "4": "blue",
+      "5": "magenta",
+      "6":"cyan",
+      "7": "white"
+    }
+  },
+  "display": {
+    "separator": "  ",
+    "color": { 
+        "title": "red"
+        }
+  },
+  "modules": [
+    // Title
+    {
+      "type": "title",
+      "format": "{#1}╭───────────── {#}{user-name-colored}"
+    },
+    // System Information
+    {
+      "type": "custom",
+      "format": "{#1}│ {#}{#33}System Information{#}"
+    },
+    {
+      "type": "os",
+      "key": "  󰍹 OS",
+      "keyColor":"cyan"
+    },
+    {
+      "type": "kernel",
+      "key": "  󰒋 Kernel",
+      "keyColor":"magenta"
+    },
+    {
+      "type": "uptime",
+      "key": "  󰅐 Uptime",
+      "keyColor":"cyan"
+    },
+    {
+      "type": "packages",
+      "key": "  󰏖 Packages",
+      "format": "{all}",
+      "keyColor":"magenta"
+    },
+    {
+      "type": "custom",
+      "format": "{#1}│",
+      "keyColor":"cyan"
+    },
+    // Desktop Environment
+    {
+      "type": "custom",
+      "format": "{#1}│ {#}{#33}Desktop Environment{#}"
+    },
+    {
+      "type": "wm",
+      "key": "  󱂬 WM",
+      "keyColor":"magenta",
+      "format": "{2} {#32}({3}){#}"
+    },
+    {
+      "type": "display",
+      "key": "  󰹑 Resolution",
+      "keyColor":"cyan"
+    },
+    {
+      "type": "shell",
+      "key": "  󰞷 Shell",
+      "keyColor":"magenta"
+    },
+    {
+      "type": "terminalfont",
+      "key": "  󰛖 Font",
+      "keyColor":"cyan",
+      "format": "{1}"
+    },
+    {
+      "type": "custom",
+      "format": "{#1}│"
+    },
+    // Hardware Information
+    {
+      "type": "custom",
+      "format": "{#1}│ {#}{#33}Hardware Information{#}"
+    },
+    {
+      "type": "cpu",
+      "key": "  󰻠 CPU",
+      "keyColor":"cyan",
+      "format": "{1} {#32}({4}){#} {7}"
+    },
+    {
+      "type": "gpu",
+      "key": "  󰢮 GPU",
+      "keyColor":"magenta",
+      "format": "{1} {2} {#33}[{6}]{#}"
+    },
+    {
+      "type": "memory",
+      "key": "  󰍛 Memory",
+      "keyColor":"cyan",
+      "percent": {
+            "type": 3, 
+            "green": 30,  
+            "yellow": 70 
+        },
+        "format": "{4} {1}/{2} {#32}({3}){#}"
+    },
+    {
+      "type": "disk",
+      "key": "  󰋊 Disk (/)",
+      "folders": "/",
+      "keyColor":"magenta",
+      "percent": {
+            "type": 3, 
+            "green": 30,  
+            "yellow": 70 
+        },
+        "format": "{13} {1}/{2} {#33}({3}){#}"
+    },
+    {
+      "type": "custom",
+      "format": "{#1}│"
+    },
+    // Colors
+    {
+      "type": "colors",
+      "key": "{#separator}│",
+      "symbol":"square"
+      
+    },
+    // Footer
+    {
+      "type": "custom",
+      "format": "{#1}╰───────────────────────────────╯"
+    }
+  ]
+}

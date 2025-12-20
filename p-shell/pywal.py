@@ -1,5 +1,6 @@
 import os
 import subprocess
+import re
 
 def pywalcolgen(HOME:str,ThemePath:str) -> tuple[dict,str]:
     PYWAL_COLORS_PATH = ""
@@ -12,7 +13,7 @@ def pywalcolgen(HOME:str,ThemePath:str) -> tuple[dict,str]:
     PYWAL_COLORS_PATH = os.path.join(HOME, ".cache/wal/colors")
     # grab the wallpaper from the output of swww query
     try:
-        SWW_WALLPAPER = (
+        Str = (
             subprocess.run(
                 ["swww query"],
                 shell=True,
@@ -20,11 +21,9 @@ def pywalcolgen(HOME:str,ThemePath:str) -> tuple[dict,str]:
                 stdout=subprocess.PIPE,
                 stderr=subprocess.DEVNULL,
             )
-            .stdout.lstrip(
-                ": eDP-1: 1920x1080, scale: 1, currently displaying: image: "
-            )
-            .rstrip("\n")
+            .stdout.rstrip("\n")
         )
+        SWW_WALLPAPER = re.search(r"image:\s*(/.+)$", Str).group(1)
     except:
         raise Exception("Can not query swww")
     WALLPAPER = SWW_WALLPAPER

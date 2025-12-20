@@ -21,7 +21,7 @@ elif [[ "$@" = "o" ]] ; then
     -encoder cpu \
     -ac aac \
     -o "$videopath"
-    dunstify -I "${ThemePath}/icons/monitor.png"  "New Recording!" 
+    dunstify -I "${ThemePath}/Theme/icons/monitor.png"  "New Recording!" 
 else 
     exit 1
 fi

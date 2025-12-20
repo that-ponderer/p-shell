@@ -178,13 +178,36 @@ Move_Waypaper_Config(){
         cp -r "$waypaper_path" "$waypaper_path_bak"
         rm -rf "$waypaper_path"
     fi
-    cp -r "waypaper" "$waypaper_path"
+    cp -r "config-overrides/waypaper" "$waypaper_path"
 }
 
+Move_Wpg_Config(){
+    local wpg_path="${HOME}/.config/wpg"
+    local wpg_path_bak="${HOME}/.config/wpg_bak"
+    if [[ -d "$wpg_path" ]] ; then
+        echo "Waypaper Config Exists: -> $wpg_path" 
+        echo "Making Backup: -> $wpg_path_bak"
+        rm -rf "$wpg_path_bak"
+        cp -r "$wpg_path" "$wpg_path_bak"
+        rm -rf "$wpg_path"
+    fi
+    cp -r "config-overrides/wpg" "$wpg_path"
+}
 Move_Fonts(){
     fonts_path="${HOME}/.local/share/fonts"
     echo "Moving Fonts to: -> $fonts_path"
     cp -rn "fonts" "$fonts_path"
+}
+Change_Shell(){
+    echo "----------------------------"
+    echo "Changing Shell is Required: "
+    chsh -s /usr/bin/zsh
+}
+
+Move_zshenv(){
+    echo    "-------------------------------------"
+    read -p "Install zshenv and Make Backup: [y/n]" choice
+    [[ "$choice" =~ ^[yY\s]$  ]] && cp "zshenv" "${HOME}/.zshenv"
 }
 install_aur_helper
 for i in "${Hard_Deps[@]}" ; do
@@ -196,5 +219,6 @@ install_wpgtk
 install_omp
 Move_files
 Move_Waypaper_Config
+Move_Wpg_Config
 Move_Fonts
 rm -rf "$Cache"

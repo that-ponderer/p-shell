@@ -97,8 +97,24 @@ def apply_theme(scheme: str):
     # apply the gtk theme
     GTK_THEME = DATABASE[scheme]["gtk-theme"]
     subprocess.run(
-        ["gsettings", "set", "org.gnome.desktop.interface", "gtk-theme", GTK_THEME],
-        capture_output=True,
+        [
+            "gsettings", 
+            "set", 
+            "org.gnome.desktop.interface", 
+            "gtk-theme", 
+            GTK_THEME
+         ],
+         capture_output=True,
+    )
+    subprocess.run(
+        [
+            "gsettings", 
+            "set", 
+            "org.gnome.desktop.interface", 
+            "font-name", 
+            "JetBrainsMono Nerd Font Propo 12" 
+         ],
+         capture_output=True,
     )
 
 if parse_arguments().t:

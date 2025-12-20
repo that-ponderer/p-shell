@@ -213,9 +213,10 @@ Move_zshenv(){
 }
 Make_some_dir(){
     mkdir -p "$Current_dir/p-shell/Theme/assets"
+    mkdir -p "$Current_dir/p-shell/Theme/clipcat"
 }
 Install_clipcat(){
-    local clipcat_dir="$HOME/Theme/p-shell/Theme/clipcat"
+    local clipcat_dir="$Current_dir/p-shell/Theme/clipcat"
     clipcatd default-config      > "$clipcat_dir/clipcatd.toml"
     clipcatctl default-config    > "$clipcat_dir/clipcatctl.toml"
     clipcat-menu default-config  > "$clipcat_dir/clipcat-menu.toml"
@@ -229,11 +230,11 @@ Install_Paks Total_Deps
 install_wpgtk
 install_omp
 Make_some_dir
+Install_clipcat
 Move_files
 Move_Waypaper_Config
 Move_Wpg_Config
 Move_Fonts
 Change_Shell
 Move_zshenv
-Install_clipcat
 rm -rf "$Cache"

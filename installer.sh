@@ -59,9 +59,10 @@ Opt_Deps=(
 export Cache="$HOME/.cache/p-shell"
 [[ -d "${Cache}" ]] && \
 echo "Cache Exists: Removing -> ${Cache}" && \
-rm -rf "$Cache" || exit 1
+rm -rf "$Cache"
 mkdir -p "${Cache}"
 export Aur_Helper=""
+export Current_dir="$(pwd)"
 
 install_omp(){
     echo "Installing oh-my-posh..."
@@ -93,7 +94,7 @@ install_aur_helper(){
             git clone https://aur.archlinux.org/yay.git "${Cache}/yay" || \
             { echo "Installation Failed..." ; exit 1 ; }
             cd "${Cache}/yay" || exit 1
-            makepkg -si
+            makepkg -si --noconfirm
             break
         fi
         if [[ "${choice}" == "1" ]] ; then
@@ -103,11 +104,12 @@ install_aur_helper(){
             git clone https://aur.archlinux.org/paru.git "${Cache}/paru" || \
             {  echo "Installation Failed..." ; exit 1 ; }
             cd "${Cache}/paru" || exit 1
-            makepkg -si 
+            makepkg -si --noconfirm
             break
         fi
         echo "You Have to Choose A Number.."
     done
+    cd "${Current_dir}"
 }
 
 Total_Deps=()
@@ -195,3 +197,4 @@ install_omp
 Move_files
 Move_Waypaper_Config
 Move_Fonts
+rm -rf "$Cache"

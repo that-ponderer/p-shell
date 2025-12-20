@@ -29,7 +29,12 @@ output "eDP-1" {
     transform "normal"
 
 }
+output "Virtual-1" {
+    mode "1920x1080@60"
+    scale 1
+    transform "normal"
 
+}
 
 layout {
     gaps 10

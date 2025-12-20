@@ -11,13 +11,11 @@ Hard_Deps=(
     "bash"
     "waypaper"
     "dunst"
-    "ttf-jetbrains-mono-nerd"
-    "ttf-nerd-fonts-symbols"
-    "otf-departure-mono"
     "catppuccin-gtk-theme-mocha"
     "gruvbox-dark-gtk"
     "nordic-theme"
     "polkit-gnome"
+    "unzip"
         )
 Opt_Deps=(
     "cava"
@@ -61,7 +59,7 @@ Opt_Deps=(
 export Cache="$HOME/.cache/p-shell"
 [[ -d "${Cache}" ]] && \
 echo "Cache Exists: Removing -> ${Cache}" && \
-[[ -n "$HOME" && "$Cache" == "$HOME/.cache/"* ]] || exit 1
+rm -rf "$Cache" || exit 1
 mkdir -p "${Cache}"
 export Aur_Helper=""
 
@@ -168,6 +166,24 @@ Move_files() {
     cp -r "p-shell" "$theme_path" || return 1
 }
 
+Move_Waypaper_Config(){
+    local waypaper_path="${HOME}/.config/waypaper"
+    local waypaper_path_bak="${HOME}/.config/waypaper_bak"
+    if [[ -d "$waypaper_path" ]] ; then
+        echo "Waypaper Config Exists: -> $waypaper_path" 
+        echo "Making Backup: -> $waypaper_path_bak"
+        rm -rf "$waypaper_path_bak"
+        cp -r "$waypaper_path" "$waypaper_path_bak"
+        rm -rf "$waypaper_path"
+    fi
+    cp -r "waypaper" "$waypaper_path"
+}
+
+Move_Fonts(){
+    fonts_path="${HOME}/.local/share/fonts"
+    echo "Moving Fonts to: -> $fonts_path"
+    cp -rn "fonts" "$fonts_path"
+}
 install_aur_helper
 for i in "${Hard_Deps[@]}" ; do
     Total_Deps+=("${i}")
@@ -177,3 +193,5 @@ Install_Paks Total_Deps
 install_wpgtk
 install_omp
 Move_files
+Move_Waypaper_Config
+Move_Fonts

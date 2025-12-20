@@ -2,13 +2,13 @@
 
 anime_logos=(
     [1]="${ThemePath}/Theme/gowall/fastfetch-anime"
-    [2]="${ThemePath}/Theme/fastfetch/logos/anime"
+    [2]="${ThemePath}/Theme/fastfetch/pngs/anime"
     [3]="${ThemePath}/Theme/gowall/colors.json"
     )
 
 anime_logos_jojo=(
     [1]="${ThemePath}/Theme/gowall/fastfetch-anime-jojo"
-    [2]="${ThemePath}/Theme/fastfetch/logos/anime"
+    [2]="${ThemePath}/Theme/fastfetch/pngs/anime"
     [3]="${ThemePath}/Theme/gowall/colors.json"
     )
 

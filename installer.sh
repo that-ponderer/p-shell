@@ -228,13 +228,13 @@ for i in "${Hard_Deps[@]}" ; do
 done
 remove_unwanted_opt_deps
 Install_Paks Total_Deps
-install_wpgtk
 install_omp
 Make_some_dir
 Install_clipcat
 Move_files
 Move_Waypaper_Config
 Move_Wpg_Config
+install_wpgtk
 Move_Fonts
 Change_Shell
 Move_zshenv

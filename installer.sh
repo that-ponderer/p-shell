@@ -73,7 +73,7 @@ install_omp(){
 }
 install_wpgtk(){
     echo "Installing wpgtk Templates.."
-    /usr/bin/wpg-install.sh -gG || \
+    /usr/bin/wpg-install.sh -G || \
     echo "Could not Install wpgtk Templates. Skipping..."
 }
 install_aur_helper(){
@@ -215,6 +215,7 @@ Move_zshenv(){
 Make_some_dir(){
     mkdir -p "$Current_dir/p-shell/Theme/assets"
     mkdir -p "$Current_dir/p-shell/Theme/clipcat"
+    mkdir -p "$HOME/.config/wpg/templates"
 }
 Install_clipcat(){
     local clipcat_dir="$Current_dir/p-shell/Theme/clipcat"

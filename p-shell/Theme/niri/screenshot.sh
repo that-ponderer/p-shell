@@ -1,5 +1,6 @@
 #!/usr/bin/zsh
 
+mkdir -p "$(xdg-user-dir PICTURES)/Screenshots"
 shotpath="$(xdg-user-dir PICTURES)/Screenshots/\
 $(date +'%Y-%m-%d_%H-%M-%S')_grim.png" 
 

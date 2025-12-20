@@ -11,8 +11,10 @@ Hard_Deps=(
     "bash"
     "waypaper"
     "dunst"
+    "libnotify"
     "catppuccin-gtk-theme-mocha"
     "gruvbox-dark-gtk"
+    "bibata-cursor-theme"
     "nordic-theme"
     "polkit-gnome"
     "unzip"
@@ -209,6 +211,15 @@ Move_zshenv(){
     read -p "Install zshenv and Make Backup: [y/n]" choice
     [[ "$choice" =~ ^[yY\s]$  ]] && cp "zshenv" "${HOME}/.zshenv"
 }
+Make_some_dir(){
+    mkdir -p "$Current_dir/p-shell/Theme/assets"
+}
+Install_clipcat(){
+    local clipcat_dir="$HOME/Theme/p-shell/Theme/clipcat"
+    clipcatd default-config      > "$clipcat_dir/clipcatd.toml"
+    clipcatctl default-config    > "$clipcat_dir/clipcatctl.toml"
+    clipcat-menu default-config  > "$clipcat_dir/clipcat-menu.toml"
+}
 install_aur_helper
 for i in "${Hard_Deps[@]}" ; do
     Total_Deps+=("${i}")
@@ -217,8 +228,12 @@ remove_unwanted_opt_deps
 Install_Paks Total_Deps
 install_wpgtk
 install_omp
+Make_some_dir
 Move_files
 Move_Waypaper_Config
 Move_Wpg_Config
 Move_Fonts
+Change_Shell
+Move_zshenv
+Install_clipcat
 rm -rf "$Cache"

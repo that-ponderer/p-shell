@@ -13,7 +13,6 @@
         "qutebrowser":["qutebrowser/colors.py","hex",true],
         "start_page_cols":["qutebrowser/start_page_cols.css","hex",true],
         "wofi":["wofi.css","hex",true],
-        "clipcat-menu":["clipcat/clipcat-menu.toml","hex",true],
         "mpd":["mpd/mpd.conf","hex",true],
         "gowall":["gowall/colors.json","hex",true],
         "niri":["niri/config.kdl","hex",true]}

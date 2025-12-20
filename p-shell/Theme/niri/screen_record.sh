@@ -1,6 +1,7 @@
 #!/bin/zsh
 
-videopath="$(xdg-user-dir VIDEOS)/Screenrecodings/\
+mkdir -p "$(xdg-user-dir VIDEOS)/Screenrecordings"
+videopath="$(xdg-user-dir VIDEOS)/Screenrecordings/\
 $(date +'%Y-%m-%d_%H-%M-%S')_grim.mp4"
 if [[ "$@" = "d" ]] ; then
     gpu-screen-recorder \
@@ -10,7 +11,7 @@ if [[ "$@" = "d" ]] ; then
     -encoder cpu \
     -ac aac \
     -o "$videopath"
-    dunstify -I "${ThemePath}/Icons/monitor.png"  "New Recording!" 
+    dunstify -I "${ThemePath}/Theme/icons/monitor.png"  "New Recording!" 
 
 elif [[ "$@" = "o" ]] ; then
     gpu-screen-recorder \

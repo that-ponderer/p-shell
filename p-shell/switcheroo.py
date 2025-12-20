@@ -2,11 +2,11 @@
 
 import os
 import json
-from os.path import isfile
 import subprocess
 import argparse
 import methods
 import pywal
+import misc
 
 # PASRSER
 def parse_arguments() -> argparse.Namespace :
@@ -116,6 +116,11 @@ def apply_theme(scheme: str):
          ],
          capture_output=True,
     )
+    # Clipcat
+
+    misc.Parse_Clipcat_Toml(ThemePath)
+
+    
 
 if parse_arguments().t:
     DATABASE.update(pywal.pywalcolgen(HOME,ThemePath)[0])

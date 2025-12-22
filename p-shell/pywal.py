@@ -2,20 +2,16 @@ import os
 import subprocess
 import re
 
-def pywalcolgen(HOME:str,ThemePath:str) -> tuple[dict,str]:
-    PYWAL_COLORS_PATH = ""
+def pywalcolgen(HOME:str) -> tuple[dict,str]:
+    PYWAL_COLORS_PATH = os.path.join(HOME, ".cache/wal/colors")
     VS_CODE_THEME_PYWAL = "Wal Bordered"
-    WALLPAPER = ""
-    WALLNAME = ""
-    BLUR_WALL = ""
 
     # open that pywal color dump and grab the colors
-    PYWAL_COLORS_PATH = os.path.join(HOME, ".cache/wal/colors")
     # grab the wallpaper from the output of swww query
     try:
         Str = (
             subprocess.run(
-                ["swww query"],
+                "swww query",
                 shell=True,
                 text=True,
                 stdout=subprocess.PIPE,
@@ -26,37 +22,38 @@ def pywalcolgen(HOME:str,ThemePath:str) -> tuple[dict,str]:
         SWW_WALLPAPER = re.search(r"image:\s*(/.+)$", Str).group(1)
     except:
         raise Exception("Can not query swww")
+
     WALLPAPER = SWW_WALLPAPER
     WALLNAME = WALLPAPER.split("/")[-1]
     
     # Generate colrs based on that wallpaper
     try:
         subprocess.run(
-            [f"wal -n -s -i {SWW_WALLPAPER}"],
+            f"""\
+            wal -n -i {SWW_WALLPAPER}
+            """,
             shell=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
         )
     except:
-        raise IOError("pywall colors did not generate . :( Maybe you dont have pywal")
+        raise Exception("pywall colors did not generate...")
     try:
         subprocess.run(
-            [f"wpg -a {SWW_WALLPAPER} &&  wpg -s {WALLNAME} && wpg -d {WALLNAME}"],
+            f"""\
+            wpg -a {SWW_WALLPAPER} && \
+            wpg -s {WALLNAME} && \
+            wpg -d {WALLNAME}
+            """,
             shell=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
+            capture_output=False
         )
     except:
-        raise IOError("wpgtk colors did not generate . :( Maybe you dont have pywal")
+        raise IOError("wpgtk colors did not generate...")
 
-    # Generating a Blured Wallpaper
-    BLUR_WALL = os.path.join(ThemePath,"Theme/assets/blured_wall.png")
-
-    subprocess.run(
-        [f'magick  "{SWW_WALLPAPER}[0]" -resize 1920x1080 -blur 0x35 "{BLUR_WALL}"'],shell=True,capture_output=False
-    )
 
     GENERATED_COLORS = {}
+
     with open(PYWAL_COLORS_PATH, "r") as wal:
         count = 0
         for i in wal.readlines():

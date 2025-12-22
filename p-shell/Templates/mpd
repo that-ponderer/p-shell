@@ -1,6 +1,25 @@
-# An example configuration file for MPD.
-# Read the user manual for documentation: http://www.musicpd.org/doc/user/
+# This is a Template used by p-shell. Read below for official Documentation.
 
+music_directory    "$XDG_MUSIC_DIR"
+playlist_directory "{ThemePath}/Theme/mpd/playlists"
+db_file            "{ThemePath}/Theme/mpd/database"
+log_file           "{ThemePath}/Theme/mpd/log"
+pid_file           "{ThemePath}/Theme/mpd/pid"
+state_file         "{ThemePath}/Theme/mpd/state"
+sticker_file       "{ThemePath}/Theme/mpd/sticker.sql"
+
+auto_update	"yes"
+
+audio_output {
+   type   "fifo"
+   name   "my_fifo"
+   path   "/tmp/mpd.fifo"
+   format "44100:16:2"
+}
+audio_output {
+  type "pipewire"
+  name "PipeWire Sound Server"
+}
 
 # Files and directories #######################################################
 #
@@ -11,7 +30,6 @@
 # file:// protocol) or streaming files over an accepted protocol.
 #
 #music_directory		"$XDG_MUSIC_DIR"
-music_directory		"~/Music/Collection"
 #
 # This setting sets the MPD internal playlist directory. The purpose of this
 # directory is storage for playlists created by MPD. The server will use
@@ -19,7 +37,6 @@ music_directory		"~/Music/Collection"
 # format. This setting defaults to playlist saving being disabled.
 #
 #playlist_directory		"$XDG_CONFIG_HOME/mpd/playlists"
-playlist_directory		"{ThemePath}/Theme/mpd/playlists"
 #
 # This setting sets the location of the MPD database. This file is used to
 # load the database at server start up and store the database while the
@@ -28,7 +45,6 @@ playlist_directory		"{ThemePath}/Theme/mpd/playlists"
 # files over an accepted protocol.
 #
 #db_file			"$XDG_CACHE_HOME/mpd/database"
-db_file			"{ThemePath}/Theme/mpd/database"
 
 # These settings are the locations for the daemon log files for the daemon.
 #
@@ -39,7 +55,6 @@ db_file			"{ThemePath}/Theme/mpd/database"
 # defaults to the systemd journal, which is fine.
 #
 #log_file			"$XDG_CACHE_HOME/mpd/log"
-#log_file			"~/.mpd/log"
 
 # This setting sets the location of the file which stores the process ID
 # for use of mpd --kill and some init scripts. This setting is disabled by
@@ -128,7 +143,6 @@ db_file			"{ThemePath}/Theme/mpd/database"
 # This setting enables automatic update of MPD's database when files in
 # music_directory are changed.
 #
-auto_update	"yes"
 #
 # Limit the depth of the directories being watched, 0 means only watch
 # the music directory itself.  There is no limit by default.
@@ -222,12 +236,6 @@ auto_update	"yes"
 # autodetection for one sound card.
 #
 # An example of an ALSA output:
-audio_output {
-   type   "fifo"
-   name   "my_fifo"
-   path   "/tmp/mpd.fifo"
-   format "44100:16:2"
-}
 #audio_output {
 #	type		"alsa"
 #	name		"My ALSA Device"
@@ -380,10 +388,6 @@ audio_output {
 #	mixer_type      "none"			# optional
 #}
 #
-audio_output {
-  type "pipewire"
-  name "PipeWire Sound Server"
-}
 
 ###############################################################################
 

@@ -1,30 +1,38 @@
-"""A Family Friendly Theme Switer that supports pywall"""
+"""A friendly theme switcher that supports pywal"""
 
 import os
 import json
 import subprocess
 import argparse
+
 import methods
 import pywal
 import misc
 
-# PASRSER
-def parse_arguments() -> argparse.Namespace :
-    # Create the parser obj and give a name and description for the script
-    PARSER = argparse.ArgumentParser(
-    "The P-Shell Switcher", "Switching Home Made Themes"
+
+# -------------------- ARGUMENTS --------------------
+
+def parse_arguments() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        prog="p-shell-switcher",
+        description="Switch home-made themes"
     )
-    # Add the optional args
-    PARSER.add_argument(
-    "-t", type=str, metavar="", help="Choose a theme"
+
+    parser.add_argument(
+        "-t",
+        "--theme",
+        type=str,
+        help="Choose a theme"
     )
-    PARSER.add_argument(
-        "--themes", action="count", default=0,
-        help="Display the available themes`"
+
+    parser.add_argument(
+        "--themes",
+        action="store_true",
+        help="Display available themes"
     )
-    # Store the user input into a into a Namespace object
-    # which is just a dictionary wraped in a object and uses dot (.) notation
-    return PARSER.parse_args()
+
+    return parser.parse_args()
+
 
 HOME = ""
 ThemePath = ""
@@ -116,16 +124,17 @@ def apply_theme(scheme: str):
          ],
          capture_output=True,
     )
-    # Clipcat
 
-    misc.Parse_Clipcat_Toml(ThemePath)
 
     
 
 if parse_arguments().t:
-    DATABASE.update(pywal.pywalcolgen(HOME,ThemePath)[0])
-    WALLPAPER = pywal.pywalcolgen(HOME,ThemePath)[1]
+    pywal_dict,WALLPAPER = pywal.pywalcolgen(HOME)
+    DATABASE.update(pywal_dict)
     apply_theme(parse_arguments().t)
+    misc.Gen_Blur_Wall(ThemePath,WALLPAPER)
+    misc.Parse_Clipcat_Toml(ThemePath)
+
 if parse_arguments().themes:
     for i in DATABASE.keys():
         print(i)

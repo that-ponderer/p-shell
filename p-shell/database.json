@@ -62,5 +62,6 @@
             "15":"#e5e9f0",
             "zsh":"#4c566a"},
         "vs-code-theme":"Nord",
-        "gtk-theme":"Nordic" }
+        "gtk-theme":"Nordic" },
+        "WAL":{}
 }

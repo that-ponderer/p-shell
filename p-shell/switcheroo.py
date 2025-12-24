@@ -83,8 +83,8 @@ def apply_theme(scheme: str) -> None:
     for file_name, (destination, fmt, keep_hash) in DEST_FILES_CONF.items():
         color_dict = colors.copy()
 
-        if fmt in methods.TYPES:
-            color_dict = methods.hex_to_rgba_dict(color_dict, fmt)
+        if fmt in methods.COLOR_FORMATS:
+            color_dict = methods.hex_dict_to_rgb_dict(color_dict, fmt)
 
         if file_name in SPECIAL_CASES:
             color_dict["ThemePath"] = THEME_PATH
@@ -140,8 +140,8 @@ def main() -> None:
         DATABASE.update(pywal_data)
 
         apply_theme(args.theme)
-        misc.Gen_Blur_Wall(THEME_PATH, wallpaper)
-        misc.Parse_Clipcat_Toml(THEME_PATH)
+        misc.generate_blurred_wallpaper(THEME_PATH, wallpaper)
+        misc.parse_clipcat_toml(THEME_PATH)
 
 
 if __name__ == "__main__":

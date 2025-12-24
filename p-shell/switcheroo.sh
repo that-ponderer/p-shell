@@ -30,7 +30,7 @@ apply_wallpaper() {
     [[ -d "$wall_dir" ]] || die "Theme folder not found: $wall_dir"
 
     waypaper --backend swww --folder "$wall_dir" \
-        || die "Failed to apply wallpaper via waypaper"
+        || true
 }
 
 
@@ -99,6 +99,12 @@ if [[ -n "$THEME" ]]; then
 
 fi
 
+#---------------------------------------
+# For Wofi (Must Always Run)
+#---------------------------------------
+
+python "${THEME_PATH}/switcheroo.py" --themes \
+    || die "Theme application failed"
 
 # ----
 

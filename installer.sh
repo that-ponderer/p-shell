@@ -1,244 +1,214 @@
 #!/usr/bin/bash
 
-Hard_Deps=(
-    "python-pywal"
-    "imagemagick"
-    "wpgtk"
-    "swww"
-    "glib2"
-    "python"
-    "zsh"
-    "bash"
-    "waypaper"
-    "dunst"
-    "libnotify"
-    "catppuccin-gtk-theme-mocha"
-    "gruvbox-dark-gtk"
-    "bibata-cursor-theme"
-    "nordic-theme"
-    "polkit-gnome"
-    "unzip"
-        )
-Opt_Deps=(
-    "cava"
-    "clipcat"
-    "gowall"
-    "kitty"
-    "mpd"
-    "niri"
-    "xwayland-satellite"
-    "xdg-desktop-portal-gnome"
-    "xdg-desktop-portal-gtk"
-    "rmpc"
-    "qutebrowser"
-    "rofi"
-    "swaylock"
-    "waybar"
-    "wofi"
-    "yazi"
-    "mediainfo"
-    "fastfetch"
-    "networkmanager"
-    "gvfs-mtp"
-    "network-manager-applet"
-    "swaybg"
-    "swayidle"
-    "openssh"
-    "gpu-screen-recorder"
-    "rofimoji"
-    "grim"
-    "slurp"
-    "wl-clipboard"
-    "bat"
-    "chromium"
-    "bluetuith"
-    "fzf"
-    "zoxide"
-    "zsh-autosuggestions"
-    "zsh-syntax-highlighting"
-        )
+######################################
+# Globals & Config
+######################################
 
-export Cache="$HOME/.cache/p-shell"
-[[ -d "${Cache}" ]] && \
-echo "Cache Exists: Removing -> ${Cache}" && \
-rm -rf "$Cache"
-mkdir -p "${Cache}"
-export Aur_Helper=""
-export Current_dir="$(pwd)"
+HARD_DEPS=(
+    python-pywal imagemagick wpgtk swww glib2 python
+    zsh bash waypaper dunst libnotify
+    catppuccin-gtk-theme-mocha gruvbox-dark-gtk
+    bibata-cursor-theme nordic-theme polkit-gnome
+    unzip
+)
 
-install_omp(){
-    echo "Installing oh-my-posh..."
-    curl -fsSL https://ohmyposh.dev/install.sh | bash -s || \
-    echo "Could not Install oh-my-posh. Skipping..."
+OPT_DEPS=(
+    cava clipcat gowall kitty mpd niri xwayland-satellite
+    xdg-desktop-portal-gnome xdg-desktop-portal-gtk
+    rmpc qutebrowser rofi swaylock waybar wofi yazi
+    mediainfo fastfetch networkmanager gvfs-mtp
+    network-manager-applet swaybg swayidle openssh
+    gpu-screen-recorder rofimoji grim slurp wl-clipboard
+    bat chromium bluetuith fzf zoxide
+    zsh-autosuggestions zsh-syntax-highlighting
+)
+
+CACHE_DIR="$HOME/.cache/p-shell"
+CURRENT_DIR="$(pwd)"
+AUR_HELPER=""
+
+######################################
+# Helpers
+######################################
+
+log() {
+    echo "[installer] $*"
 }
-install_wpgtk(){
-    echo "Installing wpgtk Templates.."
-    mkdir -p "${HOME}/.config/wpg/templates/"
-    /usr/bin/wpg-install.sh -G || \
-    echo "Could not Install wpgtk Templates. Skipping..."
+
+fail() {
+    echo "[error] $*" >&2
+    return 1
 }
-install_aur_helper(){
-    local helpers=("yay" "paru")
-    for i in "${helpers[@]}" ; do
-        if command -v "${i}" &> /dev/null ; then
-            echo "found ${i}"
-            Aur_Helper="${i}"
-            break
+
+######################################
+# Cache Setup
+######################################
+
+setup_cache() {
+    if [[ -d "$CACHE_DIR" ]]; then
+        log "Removing old cache: $CACHE_DIR"
+        rm -rf "$CACHE_DIR" || return 1
+    fi
+    mkdir -p "$CACHE_DIR" || return 1
+}
+
+######################################
+# AUR Helper
+######################################
+
+detect_or_install_aur_helper() {
+    for helper in yay paru; do
+        if command -v "$helper" &>/dev/null; then
+            AUR_HELPER="$helper"
+            log "Using AUR helper: $AUR_HELPER"
+            return 0
         fi
     done
-    [[ -z ${Aur_Helper} ]] && echo "yay or paru Not Found..."
-    local choice
-    while [[ -z ${Aur_Helper} ]] ; do
-        read -p "Select One to Install: (0:yay 1:paru) : " choice
-        if [[ "${choice}" == "0" ]] ; then
-            Aur_Helper="yay"
-            echo Installing yay...
-            sudo pacman -S --needed git base-devel
-            git clone https://aur.archlinux.org/yay.git "${Cache}/yay" || \
-            { echo "Installation Failed..." ; exit 1 ; }
-            cd "${Cache}/yay" || exit 1
-            makepkg -si --noconfirm
-            break
-        fi
-        if [[ "${choice}" == "1" ]] ; then
-            Aur_Helper="paru"
-            echo Installing paru...
-            sudo pacman -S --needed git base-devel
-            git clone https://aur.archlinux.org/paru.git "${Cache}/paru" || \
-            {  echo "Installation Failed..." ; exit 1 ; }
-            cd "${Cache}/paru" || exit 1
-            makepkg -si --noconfirm
-            break
-        fi
-        echo "You Have to Choose A Number.."
+
+    log "No AUR helper found."
+    select choice in yay paru; do
+        [[ -z "$choice" ]] && continue
+        AUR_HELPER="$choice"
+        sudo pacman -S --needed git base-devel || return 1
+        git clone "https://aur.archlinux.org/$choice.git" "$CACHE_DIR/$choice" || return 1
+        cd "$CACHE_DIR/$choice" || return 1
+        makepkg -si --noconfirm || return 1
+        cd "$CURRENT_DIR" || return 1
+        break
     done
-    cd "${Current_dir}"
 }
 
-Total_Deps=()
+######################################
+# Dependencies
+######################################
 
-remove_unwanted_opt_deps(){
-    echo "----------------------"
-    echo "Optional Dependencies:"
-    echo "----------------------"
-    local counter=0
-    for i in "${Opt_Deps[@]}" ; do 
-        echo "[${counter}] ${i}" 
-        counter=$((counter + 1))
+select_optional_deps() {
+    log "Optional dependencies:"
+    for i in "${!OPT_DEPS[@]}"; do
+        echo "[$i] ${OPT_DEPS[i]}"
     done
-    echo    "----------------------------------------------------"
-    read -p "Enter Space Separated nums To Exclude Dependencies: " -a choice
-    echo    "----------------------------------------------------"
-    for i in "${!Opt_Deps[@]}" ; do 
-       local skip=false
-       for j in "${choice[@]}" ; do 
-           [[ "${i}" == "${j}" ]] && skip=true
-       done
-       ! $skip && Total_Deps+=(${Opt_Deps[i]})
-    done 
+
+    read -rp "Enter numbers to EXCLUDE (space-separated): " -a exclude
+
+    FINAL_DEPS=("${HARD_DEPS[@]}")
+    for i in "${!OPT_DEPS[@]}"; do
+        skip=false
+        for j in "${exclude[@]}"; do
+            [[ "$i" == "$j" ]] && skip=true
+        done
+        ! $skip && FINAL_DEPS+=("${OPT_DEPS[i]}")
+    done
 }
 
-Install_Paks(){
-    local -n final_paks=$1
-    $Aur_Helper -Suy --needed --noconfirm ${final_paks[@]} || \
-    {
-        echo "Aur Helper Failed...:("
-        echo "----------------------"
-        echo "exiting......"
-        sleep 3
-        exit 1
-     }
+install_packages() {
+    log "Installing packages..."
+    "$AUR_HELPER" -Suy --needed --noconfirm "${FINAL_DEPS[@]}" || fail "Package install failed"
 }
-Move_files() {
-    local theme_path="$HOME/Theme/p-shell"
-    local backup_path="$HOME/Theme/p-shell-bak"
 
-    if [[ -d "$theme_path" ]]; then
-        echo "P-Shell Dir Exists..."
-        echo "Making Backup -> $backup_path"
+######################################
+# Installers
+######################################
 
-        rm -rf "$backup_path" || return 1
-        cp -r "$theme_path" "$backup_path" || return 1
-        rm -rf "$theme_path" || return 1
+install_oh_my_posh() {
+    log "Installing oh-my-posh"
+    curl -fsSL https://ohmyposh.dev/install.sh | bash || log "Skipped oh-my-posh"
+}
+
+install_wpgtk_templates() {
+    log "Installing wpgtk templates"
+    mkdir -p "$HOME/.config/wpg/templates"
+    /usr/bin/wpg-install.sh -G || log "Skipped wpgtk templates"
+}
+
+######################################
+# File Operations
+######################################
+
+backup_and_copy() {
+    local src="$1"
+    local dest="$2"
+
+    if [[ -d "$dest" ]]; then
+        log "Backing up $dest → ${dest}_bak"
+        rm -rf "${dest}_bak"
+        cp -r "$dest" "${dest}_bak" || return 1
+        rm -rf "$dest"
     fi
 
-    if [[ ! -d "$HOME/Theme" ]]; then
-        mkdir -p "$HOME/Theme" || return 1
-    else
-        echo "$HOME/Theme Already Exists, Skipping Creation..."
-    fi
-
-    cp -r "p-shell" "$theme_path" || return 1
+    cp -r "$src" "$dest"
 }
 
-Move_Waypaper_Config(){
-    local waypaper_path="${HOME}/.config/waypaper"
-    local waypaper_path_bak="${HOME}/.config/waypaper_bak"
-    if [[ -d "$waypaper_path" ]] ; then
-        echo "Waypaper Config Exists: -> $waypaper_path" 
-        echo "Making Backup: -> $waypaper_path_bak"
-        rm -rf "$waypaper_path_bak"
-        cp -r "$waypaper_path" "$waypaper_path_bak"
-        rm -rf "$waypaper_path"
-    fi
-    cp -r "config-overrides/waypaper" "$waypaper_path"
+move_project_files() {
+    mkdir -p "$HOME/Theme"
+    backup_and_copy "p-shell" "$HOME/Theme/p-shell"
 }
 
-Move_Wpg_Config(){
-    local wpg_path="${HOME}/.config/wpg"
-    local wpg_path_bak="${HOME}/.config/wpg_bak"
-    if [[ -d "$wpg_path" ]] ; then
-        echo "Waypaper Config Exists: -> $wpg_path" 
-        echo "Making Backup: -> $wpg_path_bak"
-        rm -rf "$wpg_path_bak"
-        cp -r "$wpg_path" "$wpg_path_bak"
-        rm -rf "$wpg_path"
-    fi
-    cp -r "config-overrides/wpg" "$wpg_path"
-}
-Move_Fonts(){
-    local fonts_path="${HOME}/.local/share/fonts"
-    echo "Moving Fonts to: -> $fonts_path"
-    mkdir -p "$fonts_path"
-    cp -rn "fonts" "$fonts_path"
+move_waypaper_config() {
+    backup_and_copy "config-overrides/waypaper" "$HOME/.config/waypaper"
 }
 
-Change_Shell(){
-    echo "----------------------------"
-    echo "Changing Shell is Required: "
+move_wpg_config() {
+    backup_and_copy "config-overrides/wpg" "$HOME/.config/wpg"
+}
+
+move_fonts() {
+    log "Installing fonts"
+    mkdir -p "$HOME/.local/share/fonts"
+    cp -rn fonts "$HOME/.local/share/fonts"
+}
+
+######################################
+# Zsh
+######################################
+
+change_shell() {
+    log "Changing default shell to zsh"
     chsh -s /usr/bin/zsh
 }
 
-Move_zshenv(){
-    echo    "-------------------------------------"
-    read -p "Install zshenv and Make Backup: [y/n]" choice
-    [[ "$choice" =~ ^[yY]$  ]] && cp "zshenv" "${HOME}/.zshenv"
-    [[ "$choice" == "" ]] && cp "zshenv" "${HOME}/.zshenv"
+install_zshenv() {
+    read -rp "Install .zshenv? [Y/n] " choice
+    [[ "$choice" =~ ^[nN]$ ]] && return
+    cp zshenv "$HOME/.zshenv"
 }
-Make_some_dir(){
-    mkdir -p "$Current_dir/p-shell/Theme/assets"
-    mkdir -p "$Current_dir/p-shell/Theme/clipcat"
+
+######################################
+# App Setup
+######################################
+
+setup_dirs() {
+    mkdir -p p-shell/Theme/{assets,clipcat,mpd/playlists}
 }
-Install_clipcat(){
-    local clipcat_dir="$Current_dir/p-shell/Theme/clipcat"
-    clipcatd default-config      > "$clipcat_dir/clipcatd.toml"
-    clipcatctl default-config    > "$clipcat_dir/clipcatctl.toml"
-    clipcat-menu default-config  > "$clipcat_dir/clipcat-menu.toml"
+
+setup_clipcat() {
+    local dir="p-shell/Theme/clipcat"
+    clipcatd default-config     > "$dir/clipcatd.toml"
+    clipcatctl default-config   > "$dir/clipcatctl.toml"
+    clipcat-menu default-config > "$dir/clipcat-menu.toml"
 }
-install_aur_helper
-for i in "${Hard_Deps[@]}" ; do
-    Total_Deps+=("${i}")
-done
-remove_unwanted_opt_deps
-Install_Paks Total_Deps
-install_omp
-Make_some_dir
-Install_clipcat
-Move_files
-Move_Waypaper_Config
-Move_Wpg_Config
-install_wpgtk
-Move_Fonts
-Change_Shell
-Move_zshenv
-rm -rf "$Cache"
+
+######################################
+# Main
+######################################
+
+main() {
+    setup_cache || return 1
+    detect_or_install_aur_helper || return 1
+    select_optional_deps
+    install_packages
+    install_oh_my_posh
+    setup_dirs
+    setup_clipcat
+    move_project_files
+    move_waypaper_config
+    move_wpg_config
+    install_wpgtk_templates
+    move_fonts
+    change_shell
+    install_zshenv
+    rm -rf "$CACHE_DIR"
+    log "Installation complete."
+}
+
+main
+

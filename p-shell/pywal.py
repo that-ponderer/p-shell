@@ -1,73 +1,107 @@
 import os
-import subprocess
 import re
+import subprocess
+from typing import Tuple, Dict
 
-def pywalcolgen(HOME:str) -> tuple[dict,str]:
-    PYWAL_COLORS_PATH = os.path.join(HOME, ".cache/wal/colors")
-    VS_CODE_THEME_PYWAL = "Wal Bordered"
 
-    # open that pywal color dump and grab the colors
-    # grab the wallpaper from the output of swww query
+# -------------------- CONSTANTS --------------------
+
+VS_CODE_THEME_PYWAL = "Wal Bordered"
+GTK_THEME_PYWAL = "linea-nord-color"
+
+
+# -------------------- MAIN --------------------
+
+def pywalcolgen(home: str) -> Tuple[Dict, str]:
+    """
+    Generate pywal + wpgtk colors from the current swww wallpaper.
+
+    Returns:
+        (database_fragment, wallpaper_path)
+    """
+
+    wal_colors_path = os.path.join(home, ".cache", "wal", "colors")
+
+    wallpaper = _get_current_wallpaper()
+    wall_name = os.path.basename(wallpaper)
+
+    _generate_pywal_colors(wallpaper)
+    _generate_wpgtk_colors(wallpaper, wall_name)
+
+    colors = _read_wal_colors(wal_colors_path)
+
+    return (
+        {
+            "WAL": {
+                "colors": colors,
+                "vs-code-theme": VS_CODE_THEME_PYWAL,
+                "gtk-theme": GTK_THEME_PYWAL,
+            }
+        },
+        wallpaper,
+    )
+
+
+# -------------------- HELPERS --------------------
+
+def _get_current_wallpaper() -> str:
     try:
-        Str = (
-            subprocess.run(
-                "swww query",
-                shell=True,
-                text=True,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.DEVNULL,
-            )
-            .stdout.rstrip("\n")
-        )
-        SWW_WALLPAPER = re.search(r"image:\s*(/.+)$", Str).group(1)
-    except:
-        raise Exception("Can not query swww")
-
-    WALLPAPER = SWW_WALLPAPER
-    WALLNAME = WALLPAPER.split("/")[-1]
-    
-    # Generate colrs based on that wallpaper
-    try:
-        subprocess.run(
-            f"""\
-            wal -n -i {SWW_WALLPAPER}
-            """,
+        result = subprocess.run(
+            "swww query",
             shell=True,
+            text=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
-        )
-    except:
-        raise Exception("pywall colors did not generate...")
+        ).stdout
+
+        match = re.search(r"image:\s*(/.+)$", result)
+        if not match:
+            raise RuntimeError
+
+        return match.group(1)
+
+    except Exception as e:
+        raise RuntimeError("Could not query swww wallpaper") from e
+
+
+def _generate_pywal_colors(wallpaper: str) -> None:
     try:
         subprocess.run(
-            f"""\
-            wpg -a {SWW_WALLPAPER} && \
-            wpg -s {WALLNAME} && \
-            wpg -d {WALLNAME}
+            ["wal", "-n", "-i", wallpaper],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=True,
+        )
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError("pywal color generation failed") from e
+
+
+def _generate_wpgtk_colors(wallpaper: str, wall_name: str) -> None:
+    try:
+        subprocess.run(
+            f"""
+            wpg -a "{wallpaper}" &&
+            wpg -s "{wall_name}" &&
+            wpg -d "{wall_name}"
             """,
             shell=True,
-            capture_output=False
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=True,
         )
-    except:
-        raise IOError("wpgtk colors did not generate...")
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError("wpgtk color generation failed") from e
 
 
-    GENERATED_COLORS = {}
+def _read_wal_colors(path: str) -> Dict[str, str]:
+    colors: Dict[str, str] = {}
 
-    with open(PYWAL_COLORS_PATH, "r") as wal:
-        count = 0
-        for i in wal.readlines():
-            GENERATED_COLORS.update({str(count): i.rstrip("\n")})
-            count += 1
-    ZSH_PYCOLOR = GENERATED_COLORS["8"]
-    GENERATED_COLORS.update({"zsh": ZSH_PYCOLOR})
-    GENERATED_COLORS_DICT = {
-        "WAL": 
-            {"colors": GENERATED_COLORS, 
-            "vs-code-theme": VS_CODE_THEME_PYWAL, 
-            "gtk-theme": "linea-nord-color"}
-        } 
-    return (
-        GENERATED_COLORS_DICT,WALLPAPER
-       )
+    with open(path) as f:
+        for idx, line in enumerate(f):
+            colors[str(idx)] = line.strip()
+
+    # extra convenience color
+    colors["zsh"] = colors.get("8")
+
+    return colors
 

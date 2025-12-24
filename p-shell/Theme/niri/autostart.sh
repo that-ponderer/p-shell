@@ -14,5 +14,4 @@ swayidle -w before-sleep "${ThemePath}/Theme/niri/swaylock.sh" &
 waypaper --restore 
 swaybg -i "${ThemePath}/Theme/assets/blured_wall.png" &
 clipcatd -c "${ThemePath}/Theme/clipcat/clipcatd.toml" &
-eval "$(ssh-agent -s)"
 

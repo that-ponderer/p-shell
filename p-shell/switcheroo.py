@@ -32,111 +32,117 @@ def parse_arguments() -> argparse.Namespace:
     )
 
     return parser.parse_args()
-
-
-HOME = ""
-ThemePath = ""
-DEST_FILES_CONF = {} 
-DATABASE = {} 
-VS_CODE_PATH = ""
-WALLPAPER = ""
-SPECIAL_CASE = ["clipcat-menu","mpd"]
-
-# Reletive File System and VS code Paths
 try:
-    ThemePath = os.environ["ThemePath"]
+    THEME_PATH = os.environ["ThemePath"]
     HOME = os.environ["HOME"]
-except KeyError:
-    raise Exception("Env Vars not Found")
+except KeyError as e:
+    raise RuntimeError(f"Missing environment variable: {e}") from None
 
-WORKING_DIR = ThemePath
+WORKING_DIR = THEME_PATH
 TEMPLATES_DIR = os.path.join(WORKING_DIR, "Templates")
 GENERATED_THEME_DIR = os.path.join(WORKING_DIR, "Theme")
 
-with open(os.path.join(WORKING_DIR, "locations.json"), "r") as locations:
-    location_data = json.load(locations)
-    DEST_FILES_CONF = location_data["DEST_FILES_CONF"]
-with open(os.path.join(WORKING_DIR, "database.json"), "r") as database:
-    database_data = json.load(database)
-    DATABASE = database_data
+VS_CODE_PATH = os.path.join(
+    HOME, ".config/Code - OSS/User/settings.json"
+)
 
-VS_CODE_PATH = os.path.join(HOME, ".config/Code - OSS/User/settings.json")
+SPECIAL_CASES = {"clipcat-menu", "mpd"}
 
-def vs_code_apply_theme(vs_code_path:str,theme_name:str):
+
+# -------------------- LOAD DATA --------------------
+
+with open(os.path.join(WORKING_DIR, "locations.json")) as f:
+    DEST_FILES_CONF = json.load(f)["DEST_FILES_CONF"]
+
+with open(os.path.join(WORKING_DIR, "database.json")) as f:
+    DATABASE = json.load(f)
+
+
+# -------------------- HELPERS --------------------
+
+def apply_vscode_theme(vs_code_path: str, theme_name: str) -> None:
     if not os.path.isfile(vs_code_path):
-        print("vs code config not found: skiping...")
+        print("VS Code config not found — skipping")
         return
-    with open(vs_code_path, "r") as vs_code:
-        data = json.load(vs_code)
+
+    with open(vs_code_path) as f:
+        data = json.load(f)
+
     data["workbench.colorTheme"] = theme_name
-    with open(VS_CODE_PATH, "w") as vs_code:
-        json.dump(data, vs_code, indent=4)
 
-def apply_theme(scheme: str):
+    with open(vs_code_path, "w") as f:
+        json.dump(data, f, indent=4)
+
+
+def apply_theme(scheme: str) -> None:
     if scheme not in DATABASE:
-        raise ValueError(f"scheme options : {DATABASE.keys()}")
+        raise ValueError(f"Available schemes: {', '.join(DATABASE)}")
 
-    # Format the colors correctly and send them to the Themes folder
-    for file_name, (destination, color_format, keep_hash) in DEST_FILES_CONF.items():
-        colored_dict = DATABASE[scheme]["colors"].copy()
-        if color_format in methods.TYPES:
-            colored_dict = methods.hex_to_rgba_dict(colored_dict, color_format)
-        if file_name not in SPECIAL_CASE:
-            methods.switcher(
-                os.path.join(TEMPLATES_DIR, file_name),
-                os.path.join(GENERATED_THEME_DIR, destination),
-                colored_dict,
-                keep_hash,
-            )
-        # Handle special cases here
-        if file_name == SPECIAL_CASE[0] or file_name == SPECIAL_CASE[1]:
-            # note the cheeky ThemePath update
-            colored_dict.update({"ThemePath":ThemePath })
-            methods.switcher(
-                os.path.join(TEMPLATES_DIR, file_name),
-                os.path.join(GENERATED_THEME_DIR, destination),
-                colored_dict,
-                keep_hash,
-            )
-            del colored_dict["ThemePath"]
+    colors = DATABASE[scheme]["colors"]
 
-    # apply the vs code theme
-    vs_code_apply_theme(VS_CODE_PATH,DATABASE[scheme]["vs-code-theme"])
-    # apply the gtk theme
-    GTK_THEME = DATABASE[scheme]["gtk-theme"]
-    subprocess.run(
-        [
-            "gsettings", 
-            "set", 
-            "org.gnome.desktop.interface", 
-            "gtk-theme", 
-            GTK_THEME
-         ],
-         capture_output=True,
+    for file_name, (destination, fmt, keep_hash) in DEST_FILES_CONF.items():
+        color_dict = colors.copy()
+
+        if fmt in methods.TYPES:
+            color_dict = methods.hex_to_rgba_dict(color_dict, fmt)
+
+        if file_name in SPECIAL_CASES:
+            color_dict["ThemePath"] = THEME_PATH
+
+        methods.switcher(
+            os.path.join(TEMPLATES_DIR, file_name),
+            os.path.join(GENERATED_THEME_DIR, destination),
+            color_dict,
+            keep_hash,
+        )
+
+    # VS Code
+    apply_vscode_theme(
+        VS_CODE_PATH,
+        DATABASE[scheme]["vs-code-theme"]
     )
+
+    # GTK
     subprocess.run(
         [
-            "gsettings", 
-            "set", 
-            "org.gnome.desktop.interface", 
-            "font-name", 
-            "JetBrainsMono Nerd Font Propo 12" 
-         ],
-         capture_output=True,
+            "gsettings", "set",
+            "org.gnome.desktop.interface",
+            "gtk-theme",
+            DATABASE[scheme]["gtk-theme"],
+        ],
+        capture_output=True,
+    )
+
+    subprocess.run(
+        [
+            "gsettings", "set",
+            "org.gnome.desktop.interface",
+            "font-name",
+            "JetBrainsMono Nerd Font Propo 12",
+        ],
+        capture_output=True,
     )
 
 
-    
 
-if parse_arguments().t:
-    pywal_dict,WALLPAPER = pywal.pywalcolgen(HOME)
-    DATABASE.update(pywal_dict)
-    apply_theme(parse_arguments().t)
-    misc.Gen_Blur_Wall(ThemePath,WALLPAPER)
-    misc.Parse_Clipcat_Toml(ThemePath)
+# -------------------- MAIN --------------------
 
-if parse_arguments().themes:
-    for i in DATABASE.keys():
-        print(i)
+def main() -> None:
+    args = parse_arguments()
+
+    if args.themes:
+        for name in DATABASE:
+            print(name)
+        return
+
+    if args.theme:
+        pywal_data, wallpaper = pywal.pywalcolgen(HOME)
+        DATABASE.update(pywal_data)
+
+        apply_theme(args.theme)
+        misc.Gen_Blur_Wall(THEME_PATH, wallpaper)
+        misc.Parse_Clipcat_Toml(THEME_PATH)
 
 
+if __name__ == "__main__":
+    main()

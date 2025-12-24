@@ -1,33 +1,73 @@
-import toml 
-import subprocess
 import os
+import subprocess
+from typing import Final
+
+import toml
 
 
-def Parse_Clipcat_Toml(ThemePath:str):
-    Clipcat_menu_path=os.path.join(ThemePath,
-        "Theme/clipcat/clipcat-menu.toml"
+# -------------------- CONSTANTS --------------------
+
+BLURRED_WALL_FILENAME: Final = "blured_wall.png"
+
+
+# -------------------- CLIPCAT --------------------
+
+def parse_clipcat_toml(theme_path: str) -> None:
+    """
+    Update clipcat-menu.toml to point to the generated rofi config.
+    """
+
+    clipcat_menu_path = os.path.join(
+        theme_path,
+        "Theme",
+        "clipcat",
+        "clipcat-menu.toml",
     )
-    clipcat_menu_data = toml.load(Clipcat_menu_path)
-    clipcat_menu_data["rofi"]["extra_arguments"] = [
+
+    rofi_config_path = os.path.join(
+        theme_path,
+        "Theme",
+        "rofi",
+        "config.rasi",
+    )
+
+    data = toml.load(clipcat_menu_path)
+    data["rofi"]["extra_arguments"] = [
         "-config",
-        os.path.join(ThemePath, "Theme/rofi/config.rasi"),
+        rofi_config_path,
     ]
-    with open(Clipcat_menu_path,"w") as f:
-        toml.dump(clipcat_menu_data,f)
-        
-def Gen_Blur_Wall(ThemePath,SWW_WALLPAPER):
-    BLURED_WALL = os.path.join(ThemePath,
-        "Theme/assets/blured_wall.png"
-        )
+
+    with open(clipcat_menu_path, "w") as f:
+        toml.dump(data, f)
+
+
+# -------------------- WALLPAPER --------------------
+
+def generate_blurred_wallpaper(
+    theme_path: str,
+    wallpaper_path: str,
+    resolution: str = "1920x1080",
+    blur_strength: str = "0x35",
+) -> None:
+    """
+    Generate a blurred wallpaper using ImageMagick.
+    """
+
+    output_path = os.path.join(
+        theme_path,
+        "Theme",
+        "assets",
+        BLURRED_WALL_FILENAME,
+    )
 
     subprocess.run(
-        f"""\
-        magick  "{SWW_WALLPAPER}[0]"  \
-        -resize 1920x1080 \
-        -blur 0x35 \
-        "{BLURED_WALL}"
-        """,
-        shell=True,
-        capture_output=False
+        [
+            "magick",
+            f"{wallpaper_path}[0]",
+            "-resize", resolution,
+            "-blur", blur_strength,
+            output_path,
+        ],
+        check=True,
     )
 

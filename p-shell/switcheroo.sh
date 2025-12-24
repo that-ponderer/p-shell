@@ -1,102 +1,104 @@
-#!/usr/bin/bash
+#!/usr/bin/zsh
 
-# this is script solely made for wofi to give the user a clean interface
-# when choosing the theme . 
-# wofi runs this script first time without any args , 
-# and splits up and diplayes whatever got echoed that first time 
-# to choose one of those options . 
-# then it runs this script with that option . 
+# --------------------------------------------------
+# Wofi theme switcher frontend for p-shell
+# --------------------------------------------------
+
+THEME="$*"
+SCRIPT_NAME="$(basename "$0")"
+CURRENT_PID="$$"
+
+THEME_PATH="${ThemePath}"
+WALLPAPER_ROOT="${THEME_PATH}/Walls"
+
+LAST_SWWW_OUTPUT=""
 
 
-THEME="$@"
-LAST_OUTPUT=""
-NEW_OUTPUT=""
-Update_Keeper_Format="p-shell-update-"
-Update_Keeper=""
-Current_Update_Num=0
-Wallpaper_Path="${ThemePath}/Walls"
-SCRIPT_NAME=$(basename "$0")
-CURRENT_PID=$$
+# --------------------------------------------------
+# Helpers
+# --------------------------------------------------
 
-# Kill all other instances of this script
-for pid in $(pgrep -f "$SCRIPT_NAME"); do
-    if [ "$pid" -ne "$CURRENT_PID" ]; then
-        kill -9 "$pid" 2>/dev/null
-    fi
-done
-
-Apply_Wall() {
-    if [[ -d "$1" ]]; then
-        waypaper --backend swww --folder "$1"
-        Num=${Update_Keeper##*-}
-        Current_Update_Num=$((Num + 1))
-        rm "$Update_Keeper"
-        touch "${XDG_CACHE_HOME}/${Update_Keeper_Format}${Current_Update_Num}"
-    else
-        notify-send "Theme folder not found: $1"
-        exit
-    fi
-
+die() {
+    notify-send "Theme switcher error" "$1"
+    exit 1
 }
 
-if [[ -n "$THEME" ]] ; then
 
-    LAST_OUTPUT=$(swww query)
-    killall -INT wofi 2>/dev/null
-    
-    # Creating a Cheeky Counter to see how many times did it get applied.
-    for updater in ${XDG_CACHE_HOME}/${Update_Keeper_Format}* ; do
-       Update_Keeper="$updater"
-    done
-    if ! [[ -e "${Update_Keeper}" ]] ; then
-        New_Update_Keeper="${XDG_CACHE_HOME}/${Update_Keeper_Format}${Current_Update_Num}"
-        touch "${New_Update_Keeper}" 
-        Update_Keeper="${New_Update_Keeper}"
-    fi
-           
-    #open up waypaper according that theme , 
-    #note : the folder with wallpapers in it has to be named the same 
+apply_wallpaper() {
+    local wall_dir="$1"
 
-    if ! [[ "$THEME" = "WAL" ]] ; then 
+    [[ -d "$wall_dir" ]] || die "Theme folder not found: $wall_dir"
 
-        WALL_PATH="${Wallpaper_Path}/$THEME"
-        Apply_Wall "${WALL_PATH}"
+    waypaper --backend swww --folder "$wall_dir" \
+        || die "Failed to apply wallpaper via waypaper"
+}
 
-    #choose the entire wall collection for pywal 
-    #as it is fully dependent on the wallpaper 
-    else 
 
-        WALL_PATH="${Wallpaper_Path}"
-        Apply_Wall "${WALL_PATH}"
-    fi
-    #Query for the update in the "swww query" command and then apply that theme
-    #this allows swww to cache for as long as it wants
-    while true ; do
-        NEW_OUTPUT=$(swww query)
-        if ! [[ "$LAST_OUTPUT" = "$NEW_OUTPUT" ]] ; then
-            break
-        fi
+wait_for_swww_update() {
+    local last="$1"
+    local current=""
+
+    while true; do
+        current="$(swww query 2>/dev/null)" || continue
+        [[ "$last" != "$current" ]] && break
         sleep 1
-     done
+    done
+}
 
-     python ${ThemePath}/switcheroo.py -t $THEME 
-     #reloading some apps
-     killall -INT dunst waybar  
 
-     dunst -conf ${ThemePath}/Theme/dunstrc &
+# --------------------------------------------------
+# Kill other running instances
+# --------------------------------------------------
 
-     niri msg outputs && \
-     GTK_THEME=Adwaita waybar -c  ${ThemePath}/Theme/waybar/config-niri.jsonc \
-     -s ${ThemePath}/Theme/waybar/style-niri.css >/dev/null 2>&1 & \
-     swaybg -i ${ThemePath}/Theme/assets/blured_wall.png >/dev/null 2>&1 &
-     
-     sleep 1.5
-     dunstify -I ${ThemePath}/Theme/icons/icon.png "$THEME"
+for pid in $(pgrep -f "$SCRIPT_NAME" 2>/dev/null); do
+    [[ "$pid" != "$CURRENT_PID" ]] && kill -9 "$pid" 2>/dev/null
+done
 
-     ${ThemePath}/Theme/gowall/gowall.sh >/dev/null 2>&1
+
+# --------------------------------------------------
+# Main logic
+# --------------------------------------------------
+
+if [[ -n "$THEME" ]]; then
+    LAST_SWWW_OUTPUT="$(swww query 2>/dev/null)" \
+        || die "Unable to query swww"
+
+    killall -INT wofi 2>/dev/null || true
+
+    if [[ "$THEME" == "WAL" ]]; then
+        apply_wallpaper "$WALLPAPER_ROOT"
+    else
+        apply_wallpaper "${WALLPAPER_ROOT}/${THEME}"
+    fi
+
+    wait_for_swww_update "$LAST_SWWW_OUTPUT"
+
+    python "${THEME_PATH}/switcheroo.py" -t "$THEME" \
+        || die "Theme application failed"
+
+    # Reload UI components (non-fatal)
+    killall -INT dunst waybar 2>/dev/null || true
+
+    dunst -conf "${THEME_PATH}/Theme/dunstrc" &
+
+    niri msg outputs 2>/dev/null || true
+
+    GTK_THEME=Adwaita waybar \
+        -c "${THEME_PATH}/Theme/waybar/config-niri.jsonc" \
+        -s "${THEME_PATH}/Theme/waybar/style-niri.css" \
+        >/dev/null 2>&1 &
+
+    swaybg -i "${THEME_PATH}/Theme/assets/blured_wall.png" \
+        >/dev/null 2>&1 &
+    
+    "${THEME_PATH}/Theme/gowall/gowall.sh" >/dev/null 2>&1 || true
+
+    sleep 1.5
+
+    dunstify -I "${THEME_PATH}/Theme/icons/icon.png" "$THEME" || true
 
 fi
 
-#This generates the required options for wofi to choose from ,
-#it must run every time otherwise no options would show up
-python ${ThemePath}/switcheroo.py --themes && echo WAL
+
+# ----
+

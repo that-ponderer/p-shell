@@ -177,7 +177,7 @@ install_zshenv() {
 ######################################
 
 setup_dirs() {
-    mkdir -p p-shell/Theme/{assets,clipcat,mpd/playlists}
+    mkdir -p p-shell/Theme/{clipcat,mpd/playlists}
 }
 
 setup_clipcat() {

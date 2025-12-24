@@ -137,6 +137,19 @@ backup_and_copy() {
 
     cp -r "$src" "$dest"
 }
+backup_and_copy_file() {
+    local src="$1"
+    local dest="$2"
+
+    if [[ -f "$dest" ]]; then
+        log "Backing up $dest → ${dest}.bak"
+        rm -f "${dest}.bak"
+        cp "$dest" "${dest}.bak" || return 1
+        rm -f "$dest"
+    fi
+
+    cp "$src" "$dest"
+}
 
 move_project_files() {
     mkdir -p "$HOME/Theme"
@@ -169,7 +182,7 @@ change_shell() {
 install_zshenv() {
     read -rp "Install .zshenv? [Y/n] " choice
     [[ "$choice" =~ ^[nN]$ ]] && return
-    cp zshenv "$HOME/.zshenv"
+    backup_and_copy_file zshenv "$HOME/.zshenv" 
 }
 
 ######################################

@@ -48,7 +48,7 @@
 - ⚠️ As of now P-Shell only supports `arch`
 ```
 # Clone the repo
-git clone https://github.com/that-ponderer/p-shell.git
+git clone https://github.com/that-ponderer/p-shell.git --depth 1
 
 cd p-shell
 

@@ -57,7 +57,7 @@ cd p-shell
 ```
 ---
 > [!CAUTION]
-> You will be asked to backup and replace your .zshenv file.
+> You will be asked to backup and replace your `.zshenv` file.
 > If you would like to do that manually select `n` and add these lines to your `.zshenv`
 > ```
 > export ThemePath="${HOME}/Theme/p-shell"

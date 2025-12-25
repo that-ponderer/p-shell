@@ -20,6 +20,7 @@
 # TODO:
 
 - 🔔 Replace **dunst** with swaync.
+- 💚 Improve the **Gtk Theme**.
 - 🥭 Add **mangowc** support.
 - 📝 Include my **vim** configs.
 

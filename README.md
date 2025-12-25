@@ -11,7 +11,7 @@
 - 🐧 **Arch** based btw :)
 - 🎨 **Switchable themes** with keyboard shortcuts.  
 - 🩷 **Dynamic color integration** using Pywal.
-- 💜 **GTK theme gen** using wpgtk.  
+- 💜 **GTK theme generation** using wpgtk.  
 - 🪟 Built on **Niri** for maximum minimalism.
 
 > [!IMPORTANT]
@@ -45,6 +45,7 @@
 - Notification Manager ⚠️ `dunst`
 
 # Installation:
+- ⚠️ As of now P-Shell only supports `arch`
 ```
 # Clone the repo
 git clone https://github.com/that-ponderer/p-shell.git
@@ -57,7 +58,7 @@ cd p-shell
 ---
 > [!CAUTION]
 > You will be asked to backup and replace your .zshenv file.
-> if you would like to do that manually select `n` and add these lines to your .zshenv
+> If you would like to do that manually select `n` and add these lines to your `.zshenv`
 > ```
 > export ThemePath="${HOME}/Theme/p-shell"
 > export ZDOTDIR="${ThemePath}/Theme/zsh"

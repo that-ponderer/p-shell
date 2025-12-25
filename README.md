@@ -78,11 +78,15 @@ cd p-shell
 ## cava:
 <img width="500"  alt="cava" src="https://github.com/user-attachments/assets/5d7910d6-7840-44c2-aca7-2cfd4a7c9b98" />
 
+## rmpc:
+<img width="500" alt="rmpc" src="https://github.com/user-attachments/assets/04c7b5b3-13bb-4b55-afaa-7989fe019549" />
+
 ## clipcat-menu:
 <img width="500" alt="clipcat" src="https://github.com/user-attachments/assets/bb8b3715-317e-4a06-bfaa-02928cd47c49" />
 
-## rmpc:
-<img width="500" alt="rmpc" src="https://github.com/user-attachments/assets/04c7b5b3-13bb-4b55-afaa-7989fe019549" />
+## yazi:
+<img width="500" alt="yazi" src="https://github.com/user-attachments/assets/345e7642-9f76-4407-9fc6-091623f5c4b8" />
+
 
 ## rofimoji:
 <img width="500" alt="rofiemoji" src="https://github.com/user-attachments/assets/01fbec78-e9c1-4b53-8b57-1d0131441ed8" />

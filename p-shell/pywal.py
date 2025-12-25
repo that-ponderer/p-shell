@@ -67,7 +67,7 @@ def _get_current_wallpaper() -> str:
 def _generate_pywal_colors(wallpaper: str) -> None:
     try:
         subprocess.run(
-            ["wal", "-n", "-i", wallpaper],
+            ["wal", "-n" ,"-s", "-t", "-i", wallpaper],
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
             check=True,
@@ -80,7 +80,7 @@ def _generate_wpgtk_colors(wallpaper: str, wall_name: str) -> None:
     try:
         subprocess.run(
             f"""
-            wpg -a "{wallpaper}" &&
+            wpg -n --noterminal -a "{wallpaper}" &&
             wpg -s "{wall_name}" &&
             wpg -d "{wall_name}"
             """,

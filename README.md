@@ -1,3 +1,4 @@
+<p align="center"><img  width="100" alt="Mob_logo1_Cat" src="https://github.com/user-attachments/assets/42d05b09-635f-4024-b98f-94565975354c" /></p>
 <h1 align="center">P-Shell</h1>
 
 <p align="center">A Ponderer's Shell</p>

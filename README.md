@@ -7,7 +7,7 @@
 
 # About:
 
-🥪 These Are My Personal Suckless Dotfiles Intended To Be As Minimal As Possible While Also Looking Edible. 
+🥪 These Are My Personal Suckless `dotfiles` Intended To Be As Minimal As Possible While Also Looking Edible. 
 - 🐧 **Arch** based btw :)
 - 🎨 **Switchable themes** with keyboard shortcuts.  
 - 🩷 **Dynamic color integration** using Pywal.

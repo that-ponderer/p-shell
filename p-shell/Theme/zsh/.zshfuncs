@@ -10,15 +10,11 @@ kitty() {
     command kitty -c "${ThemePath}/Theme/kitty/kitty.conf" "$@"
 }
 
-wofi-drun() {
-   wofi --show drun \
-        -s "${ThemePath}/Theme/wofi.css" \
-        -W 500 -H 342 \
-        -p Appplications \
-        --allow-images --define image_size=20 --no-action \
-        "$@"
+drun() {
+    rofi -show drun -show-icons \
+        -config "${ThemePath}/Theme/rofi/config.rasi" \
+        -theme-str 'window { width: 500px; } listview {lines: 8;}'
 }
-
 bluetooth() {
     kitty -T bluetuith -c "${ThemePath}/Theme/kitty/kitty.conf" bluetuith "$@"
 }
@@ -65,4 +61,16 @@ screen_record() {
 
 screen_record_stop() {
     pkill -SIGINT -f gpu-screen-recorder "$@"
+}
+# --------------------------------
+# Vim integration with kitty
+# --------------------------------
+kitvim() {
+    KITTY_PADDING=20
+    KITTY_BG_OP="0.7"
+    kitten @ set-spacing padding=10
+    kitten @ set-background-opacity 1
+    /usr/bin/env vim "$@"
+    kitten @ set-spacing padding="$KITTY_PADDING"
+    kitten @ set-background-opacity "$KITTY_BG_OP"
 }

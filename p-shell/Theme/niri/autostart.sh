@@ -3,9 +3,13 @@
 # The Gnome Auth Agent
 /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 
-# --------------------------------------------
-# Wallpaper 
-# --------------------------------------------
+# Audio stack ------------------------
+pw-cli info || pipewire & 
+pactl info || pipewire-pulse &
+wpctl status || wireplumber &
+# -------------------------------------
+
+# Wallpaper -----------------------------
 readonly SWITCHER_LOG="${ThemePath}/.cache"
 readonly DISPLAY='eDP-1'
 
@@ -26,13 +30,17 @@ else
     swww restore
 fi
 # ----------------------------------------------
-## Some other Apps 
+
+# Daemons --------------------------------------
 GTK_THEME=Adwaita waybar -c "${ThemePath}/Theme/waybar/config-niri.jsonc" \
 -s "${ThemePath}/Theme/waybar/style-niri.css" &
-dunst -conf "${ThemePath}/Theme/dunstrc" & 
 mpd "${ThemePath}/Theme/mpd/mpd.conf" &
-nm-applet &
-swayidle -w before-sleep "${ThemePath}/Theme/niri/swaylock.sh" &
+swayidle -w before-sleep "bash ${ThemePath}/Theme/niri/swaylock.sh" &
 swaybg -i "${ThemePath}/Theme/assets/blured_wall.png" &
 clipcatd -c "${ThemePath}/Theme/clipcat/clipcatd.toml" &
+dunst -conf "${ThemePath}/Theme/dunstrc" &
+# ----------------------------------------------
 
+# misc _---------------------------------------
+brightnessctl s "5%"
+# ---------------------------------------------

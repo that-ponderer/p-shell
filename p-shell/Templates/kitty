@@ -9,7 +9,7 @@ inactive_tab_foreground   {7}
 inactive_tab_background   {0}
 
 active_border_color   {7}
-inactive_border_color {0}
+inactive_border_color {8}
 bell_border_color     {1}
 
 color0       {0}

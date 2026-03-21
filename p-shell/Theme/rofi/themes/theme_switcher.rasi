@@ -1,10 +1,10 @@
 * {
     border-color: #89b4fa;
     text-selected: #181825;
-    text-idle: #6C6F85;
+    text-idle: #6c7086;
     text-unselected: #cdd6f4;
     highlighter: #a6e3a1;
-    bg-color: @text-selected;
+    bg-color: #181825cc;
     color:@text-unselected;
     background-color:@bg-color;
     }
@@ -20,16 +20,17 @@ window {
     border-color: @border-color;
     }
 mainbox {
-    background-color: @bg-color;
+    background-color: transparent;
     margin: 5px;
     spacing: 8px;
     }
 inputbar{
     children: [textbox-header-A, textbox-header-B, textbox-header-C, prompt , textbox-arrow-hollow];
     spacing: 0px;
+    background-color: transparent;
     }
 prompt {
-    background-color: @bg-color;
+    background-color: transparent;
     color: @text-unselected;
     padding: 0px 4px 0px 4px;
 }
@@ -51,7 +52,7 @@ textbox-header-C{
     expand: false;
     content: "";
     color: @text-idle;
-    background-color: @bg-color;
+    background-color: transparent;
 }
 textbox-arrow-hollow{
     expand: false;
@@ -59,19 +60,20 @@ textbox-arrow-hollow{
     color: @text-unselected;
 }
 listview {
-    background-color: @bg-color;
+    background-color: transparent;
     border-radius: 4px;
     padding: 0px 10px 10px 10px;
     lines:1;
     columns:10;
     }
 element {
-    background-color:inherit;
+    background-color: transparent;
     orientation: vertical;
 }
 element-icon {
     size: 100px;
     padding: 15px;
+    background-color: transparent;
 }
 element selected {
     border: 0px 0px 4px 0px solid;
@@ -79,4 +81,3 @@ element selected {
 element-text {
     enabled:false;
 }    
-

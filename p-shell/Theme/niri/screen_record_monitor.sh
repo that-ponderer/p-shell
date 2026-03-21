@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-pgrep -f gpu-screen-recorder >> /dev/null && echo '{"text":"󰻃"}' 
+pgrep -f "zsh -c screen_record" >> /dev/null && echo '{"text":"󰻃"}' 

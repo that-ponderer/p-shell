@@ -104,22 +104,20 @@ window#waybar {
 #custom-tray-icon:hover{
     background-color: @color1;
 }
-#tray,#bluetooth{
-    margin: 8px 0px 8px 4px ;
+#tray{
+    margin: 8px 6px 8px 2px ;
     padding: 0px 6px;
     background-color:@color0;
     border:2px solid @color7;
-    border-radius:4px;
+    border-radius: 4px;
     color:@color6;
     transition:0.1s ease;
+    
 }
-#tray:hover,#bluetooth:hover{
+#tray:hover{
     background-color: @color2;
 }
-#bluetooth{
-    font-size: 18px;
-    margin: 8px 4px 8px 4px ;
-}
+
 #battery:hover,
 #cpu:hover,
 #temperature:hover,
@@ -131,8 +129,8 @@ window#waybar {
 #power-profiles-daemon:hover,
 #network:hover,
 #cava:hover,
-#clock:hover  {
-    color: @color0;
+#clock:hover,
+#bluetooth:hover {
     border: 2px solid @color7;
     margin:8px 10px;
     transition:0.1s ease;
@@ -146,7 +144,8 @@ window#waybar {
 #backlight,
 #battery,
 #network,
-#pulseaudio
+#pulseaudio,
+#bluetooth
  {
     color: @text;
     margin: 7px 2px ;
@@ -216,6 +215,14 @@ window#waybar {
 }
 #network{
     background-color: @color1;
+    background-image: linear-gradient(
+        to bottom,
+        alpha(@color7, 0.5),
+        alpha(@color7, 0.01)
+    );  
+}
+#bluetooth{
+    background-color: @color2;
     background-image: linear-gradient(
         to bottom,
         alpha(@color7, 0.5),

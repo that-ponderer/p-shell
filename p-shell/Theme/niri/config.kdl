@@ -1,7 +1,7 @@
 prefer-no-csd
-
 spawn-at-startup "zsh" "-c" "${ThemePath}/Theme/niri/autostart.sh"
 
+// Input {{{
 input {
     keyboard {
         xkb {
@@ -21,8 +21,9 @@ input {
     }
     focus-follows-mouse 
 }
+//}}}
 
-
+// Output {{{
 output "eDP-1" {
     mode "1920x1080@144"
     scale 1
@@ -35,9 +36,11 @@ output "Virtual-1" {
     transform "normal"
 
 }
+// }}}
 
+// Layout {{{
 layout {
-    gaps 10
+    gaps 5
     center-focused-column "never"
     always-center-single-column
     preset-column-widths {
@@ -70,12 +73,13 @@ layout {
     struts {
         left 5
         right 5
-        top 5
-        bottom 5
+        top 2
+        bottom 2
     }
 }
+// }}}
 
-
+// Misc {{{
 hotkey-overlay {
     skip-at-startup
 }
@@ -90,7 +94,7 @@ gestures {
     dnd-edge-view-scroll {
     trigger-width 10
     delay-ms 100
-    max-speed 1500
+    max-speed 3000
     }
 }
 clipboard {
@@ -102,12 +106,7 @@ recent-windows {
     // ALt+Tab thingy , I dont need
     off
 }
-
-// Put swaybg inside the overview backdrop.
-layer-rule {
-    match namespace="^wallpaper$"
-    place-within-backdrop true
-}
+// }}}
 
 // Animations {{{
 //Original code; https://github/XansiVA
@@ -238,9 +237,9 @@ animations {
 binds {
     Mod+Q { spawn "zsh" "-c" "kitty" ; }
     Mod+Shift+Q { spawn "zsh" "-c" "kitty -o window_padding_width=0" ; }
-    Mod+space  { spawn "zsh" "-c"  "wofi-drun" ; } 
+    Mod+space  { spawn "zsh" "-c"  "drun" ; } 
     Mod+R { spawn-sh "nemo" ; }
-    Mod+U { spawn-sh "zen-browser  --ozone-platform=wayland " ; }
+    Mod+U { spawn-sh "librewolf" ; }
     Mod+E {spawn "zsh" "-c" "qute"; }
 
     // Reload Waybar
@@ -361,24 +360,20 @@ binds {
 
 // }}}
 
-// Window Rules {{{
+// Rules {{{
+
+// Put swaybg inside the overview backdrop.
+layer-rule {
+    match namespace="^wallpaper$"
+    place-within-backdrop true
+}
 window-rule {
     geometry-corner-radius 8
     clip-to-geometry true
 }
 window-rule {
-    match title="Waypaper"
     match title="Pipewire Volume Control"
-    match title="bluetuith"
-
+    match title="overskride"
     open-floating true
-}
-window-rule {
-    match app-id="kitty"
-    //opacity 0.9
-}
-window-rule{
-    match app-id="com.github.neithern.g4music"
-    default-column-width { proportion 0.33333; }
 }
 // }}}

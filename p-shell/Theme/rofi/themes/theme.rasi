@@ -1,29 +1,31 @@
 * {
     border-color: #89b4fa;
     text-selected: #181825;
-    text-idle: #6C6F85;
+    text-idle: #6c7086;
     text-unselected: #cdd6f4;
     highlighter: #a6e3a1;
-    bg-color: @text-selected;
+    bg-color: #181825cc;
     color:@text-unselected;
-    background-color:@bg-color;
+    background-color: transparent;
     }
 
 window {
     width: 730px;
     background-color: @bg-color;
+    border: 2px solid;
+    border-color: @border-color;
     border-radius: 8px;
     padding: 4px;
     }
 mainbox {
-    background-color: @bg-color;
+    background-color: transparent;
     margin: 5px;
     border-radius: 4px;
     spacing: 8px;
     }
 inputbar{
     text-color: @text-idle; 
-    background-color: @bg-color;
+    background-color: transparent;
     children: [textbox-seach-icon,entry];
     border: 0px solid 0px solid 2px solid 0px solid;
     border-color: @border-color;
@@ -33,17 +35,15 @@ textbox-seach-icon{
     expand: false;
     content: " ";
     margin: 6px 2px 6px 8px;
-    background-color: @bg-color;
+    background-color: transparent;
     }
 entry { 
     text-color: @text-unselected; 
     padding: 5px 0px 0px 0px;
-    background-color: @bg-color;
+    background-color: transparent;
     }
 listview {
-    background-color: @bg-color;
-    border: 2px solid;
-    border-color: @border-color;
+    background-color: transparent;
     border-radius: 4px;
     padding: 6px 10px;
     lines: 8;
@@ -56,7 +56,9 @@ element {
     background-color:inherit;
 }
 element selected {
-    background-color: @highlighter;
+    background-image: linear-gradient(to top,#a6e3a1,#a6e3a1,#a6e3a1,#cdd6f4);
+    border: 1px solid;
+    border-color: @text-unselected;
     text-color: @text-selected;
     }
 element-text {
@@ -64,4 +66,3 @@ element-text {
                                  // it hides the weird text background
     text-color:      inherit;
 }    
-

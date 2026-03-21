@@ -13,6 +13,7 @@ source ${ZDOTDIR}/.zshcols
 #---------------------------------
 # Set the vimrc location
 export VIMINIT='let $MYVIMRC="${ThemePath}/vim/vimrc" | source $MYVIMRC'
+vim() { kitvim "$@" }
 # Match bat theme
 export BAT_THEME='base16'
 #---------------------------------
@@ -80,11 +81,11 @@ eval "$(zoxide init zsh --cmd cd)"
 setopt PROMPT_SUBST
 function gen_prompt() {
     local PWD="$(pwd)"
-    if [[ "$PWD" =~ "$HOME" ]] ; then 
+    if [[ "$PWD" == "$HOME" ]] ; then 
         local PROMPT_PATH="${PWD/$HOME/}"
-        local PROMPT_PATH_COMPONEMT='~/'
-    elif [[ "$PWD" == "$HOME" ]] ; then
         local PROMPT_PATH_COMPONEMT='~'
+    elif [[ "$PWD" =~ "$HOME" ]] ; then
+        local PROMPT_PATH_COMPONEMT='~/'
         local PROMPT_PATH="${PWD/$HOME/}"
     else
         local PROMPT_PATH_COMPONEMT='/'
@@ -92,15 +93,23 @@ function gen_prompt() {
     fi
     IFS=/ read -rA PATH_COMPONENTS <<< "${PROMPT_PATH#/}"
     PATH_COMPONENTS_LEN="${#PATH_COMPONENTS[@]}"
-    [[ "$PWD" == "$HOME" ]] && PROMPT_PATH_COMPONEMT='~'
+
     local i=1
     while true; do 
+        # remove the extra '/' at the end  and break
         [[ "$i" -gt "$PATH_COMPONENTS_LEN" ]] && \
             { PROMPT_PATH_COMPONEMT="${PROMPT_PATH_COMPONEMT%/}" ; break ; }
+
         if [[ "$i" -le $(( "$PATH_COMPONENTS_LEN" - 2 )) ]] ; then
             PROMPT_PATH_COMPONEMT+="${PATH_COMPONENTS[i]:0:1}/"
         else 
-            PROMPT_PATH_COMPONEMT+="${PATH_COMPONENTS[i]}/"
+            # Shrink if the directory name is bigger then 40% of the 
+            # width of the terminal 
+            if (( ${#PATH_COMPONENTS[i]} > ( COLUMNS * 40 / 100 ) )) ; then
+                PROMPT_PATH_COMPONEMT+="${PATH_COMPONENTS[i]:0:5}../"
+            else 
+                PROMPT_PATH_COMPONEMT+="${PATH_COMPONENTS[i]}/"
+            fi
         fi
         (( i++ ))
     done
@@ -108,16 +117,15 @@ function gen_prompt() {
     PROMPT_COMP2="%K{4}%F{8}%f%k%K{0}%F{8}%f%k"
     PROMPT_COMP3=" $PROMPT_PATH_COMPONEMT"
     PROMPT_COMP4="%F{8} %f"
-    PROMPT_COMP5="└─(%(?.%F{5}%(!.#.$)%f.%F{1}%(!.#.$))) "
-    printf '%s%s%s%s\n%s' \
-        "$PROMPT_COMP1" "$PROMPT_COMP2" \
-        "$PROMPT_COMP3" "$PROMPT_COMP4" \
-        "$PROMPT_COMP5"
+    PROMPT_COMP5="└─(%(?.%F{5}%(!.#.$)%f.%F{1}%(!.#.$))%f) "
+    
+    # Notice the single quotes, set the value as a literal string
+    # zsh does the updating by itself, if double quotes are used
+    # zsh will parse one time and foget..:)
+    PROMPT="$PROMPT_COMP1$PROMPT_COMP2$PROMPT_COMP3$PROMPT_COMP4
+$PROMPT_COMP5"
 }
-# Notice the single quotes, set the value as a literal string
-# zsh does the updating by itself, if double quotes are used
-# zsh will parse one time and foget..:)
-PROMPT='$(gen_prompt)'
+precmd_functions+=(gen_prompt)
 #yazi
 function y() {
 	local tmp="$(mktemp -t "yazi-cwd.XXXXXX")" cwd
@@ -126,6 +134,219 @@ function y() {
 	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
 	rm -f -- "$tmp"
 }
+# --------------------------------
+# Glow (render markdown)
+# --------------------------------
+
+glow() {
+    read -r -d '' GLOW_THEME <<EOF
+    {
+      "document": {
+        "block_prefix": "\n",
+        "block_suffix": "\n",
+        "color": "4"
+      },
+      "block_quote": {
+        "color": "3",
+        "italic": true,
+        "indent": 1,
+        "indent_token": "▍ "
+      },
+      "paragraph": {
+      "color": "7"
+      },
+      "list": {
+        "color": "5",
+        "level_indent": 2
+      },
+      "heading": {
+        "block_suffix": "\n",
+        "color": "0",
+        "bold": true,
+        "suffix": " "
+      },
+      "h1": {
+        "prefix": " # ",
+        "background_color": "5"
+      },
+      "h2": {
+        "prefix": " ## ",
+        "background_color": "1"
+      },
+      "h3": {
+        "prefix": " ### ",
+        "background_color": "4"
+      },
+      "h4": {
+        "prefix": " #### ",
+        "background_color": "3"
+      },
+      "h5": {
+        "prefix": " ##### ",
+        "background_color": "2"
+      },
+      "h6": {
+        "prefix": " ###### ",
+        "background_color": "6"
+      },
+      "text": {},
+      "strikethrough": {
+        "crossed_out": true
+      },
+      "emph": {
+        "color": "4",
+        "italic": true
+      },
+      "strong": {
+        "color": "3",
+        "bold": true
+      },
+      "hr": {
+        "color": "8",
+        "format": "\n$( for ((i=0; i < COLUMNS; i++)) ; do printf '%s' "━" ; done )\n"
+      },
+      "item": {
+        "block_prefix": "◇ "
+      },
+      "enumeration": {
+        "block_prefix": ". ",
+        "color": "#8be9fd"
+      },
+      "task": {
+        "ticked": "[✓] ",
+        "unticked": "[ ] "
+      },
+      "link": {
+        "color": "6",
+        "underline": true,
+        "block_prefix": "(",
+        "block_suffix": ")"
+      },
+      "link_text": {
+        "color": "1"
+      },
+      "image": {
+        "color": "6",
+        "underline": true,
+        "block_prefix": "(",
+        "block_suffix": ")"
+      },
+      "image_text": {
+        "color": "1",
+        "format": "Image: {{.text}} →"
+      },
+      "code": {
+        "color": "2"
+      },
+      "code_block": {
+      "color": "${COL3}",
+      "margin": 2,
+      "chroma": {
+            "text": {
+              "color": "${COL7}"
+            },
+            "error": {
+              "color": "${COL7}",
+              "background_color": "${COL1}"
+            },
+            "comment": {
+              "color": "${COL8}"
+            },
+            "comment_preproc": {
+              "color": "${COL5}"
+            },
+            "keyword": {
+              "color": "${COL5}"
+            },
+            "keyword_reserved": {
+              "color": "${COL5}"
+            },
+            "keyword_namespace": {
+              "color": "${COL5}"
+            },
+            "keyword_type": {
+              "color": "${COL11}"
+            },
+            "operator": {
+              "color": "${COL6}"
+            },
+            "punctuation": {
+              "color": "${COL7}"
+            },
+            "name": {
+              "color": "${COL7}"
+            },
+            "name_builtin": {
+              "color": "${COL6}"
+            },
+            "name_tag": {
+              "color": "${COL6}"
+            },
+            "name_attribute": {
+              "color": "${COL10}"
+            },
+            "name_class": {
+              "color": "${COL11}"
+            },
+            "name_constant": {
+              "color": "${COL12}"
+            },
+            "name_decorator": {
+              "color": "${COL5}"
+            },
+            "name_exception": {},
+            "name_function": {
+              "color": "${COL4}"
+            },
+            "name_other": {},
+            "literal": {},
+            "literal_number": {
+              "color": "${COL3}"
+            },
+            "literal_date": {},
+            "literal_string": {
+              "color": "${COL2}"
+            },
+            "literal_string_escape": {
+              "color": "${COL5}"
+            },
+            "generic_deleted": {
+              "color": "${COL1}"
+            },
+            "generic_emph": {
+              "color": "${COL2}",
+              "italic": true
+            },
+            "generic_inserted": {
+              "color": "${COL2}"
+            },
+            "generic_strong": {
+              "color": "${COL3}",
+              "bold": true
+            },
+            "generic_subheading": {
+              "color": "${COL12}"
+            },
+            "background": {
+              "background_color": "${COL0}"
+            }
+         }
+      },
+      "table": {
+      "color": "3"
+      },
+      "definition_list": {},
+      "definition_term": {},
+      "definition_description": {
+        "block_prefix": "\n "
+      },
+      "html_block": {},
+      "html_span": {}
+    }
+EOF
+    PAGER="less -r" /usr/bin/env glow "$@" -p -s <(printf '%s' "$GLOW_THEME")
+}
+
 #---------------------------------
 # Overrides 
 #---------------------------------

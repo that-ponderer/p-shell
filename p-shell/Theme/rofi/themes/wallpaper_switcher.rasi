@@ -1,10 +1,10 @@
 * {
     border-color: #89b4fa;
     text-selected: #181825;
-    text-idle: #6C6F85;
+    text-idle: #6c7086;
     text-unselected: #cdd6f4;
     highlighter: #a6e3a1;
-    bg-color: @text-selected;
+    bg-color: #181825cc;
     color:@text-unselected;
     background-color:@bg-color;
     }
@@ -19,13 +19,13 @@ window {
     border-color: @border-color;
     }
 mainbox {
-    background-color: @bg-color;
+    background-color: transparent;
     }
 inputbar{
     enabled: false;
     }
 listview {
-    background-color: @bg-color;
+    background-color: transparent;
     border-radius: 4px;
     padding: 0px 10px 15px 10px;
     lines:1;
@@ -34,9 +34,11 @@ listview {
 element {
     background-color:inherit;
     orientation: vertical;
+    background-color: transparent;
 }
 element-icon {
     size: 150px;
+    background-color: transparent;
 }
 element selected {
     border: 0px 0px 4px 0px solid;
@@ -44,4 +46,3 @@ element selected {
 element-text {
     enabled:false;
 }    
-

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash
 
 InsideCol=cba6f7ff
 InsideClearCol=a6e3a1ff

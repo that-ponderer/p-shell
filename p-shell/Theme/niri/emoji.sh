@@ -4,6 +4,7 @@
 # Auto pasting does not work 
 rofimoji \
 --selector-args="-config ${ThemePath}/Theme/rofi/config.rasi" \
+--max-recent 9 \
 -a copy
 
 

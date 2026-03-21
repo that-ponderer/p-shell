@@ -10,7 +10,7 @@
 @define-color color5 #cba6f7;
 @define-color color6 #74c7ec;
 @define-color color7 #cdd6f4;
-@define-color color8 #181825;
+@define-color color8 #6c7086;
 @define-color color9 #eba0ac;
 @define-color color10 #94e2d5;
 @define-color color11 #f9e2af;
@@ -104,22 +104,20 @@ window#waybar {
 #custom-tray-icon:hover{
     background-color: @color1;
 }
-#tray,#bluetooth{
-    margin: 8px 0px 8px 4px ;
+#tray{
+    margin: 8px 6px 8px 2px ;
     padding: 0px 6px;
     background-color:@color0;
     border:2px solid @color7;
-    border-radius:4px;
+    border-radius: 4px;
     color:@color6;
     transition:0.1s ease;
+    
 }
-#tray:hover,#bluetooth:hover{
+#tray:hover{
     background-color: @color2;
 }
-#bluetooth{
-    font-size: 18px;
-    margin: 8px 4px 8px 4px ;
-}
+
 #battery:hover,
 #cpu:hover,
 #temperature:hover,
@@ -131,8 +129,8 @@ window#waybar {
 #power-profiles-daemon:hover,
 #network:hover,
 #cava:hover,
-#clock:hover  {
-    color: @color0;
+#clock:hover,
+#bluetooth:hover {
     border: 2px solid @color7;
     margin:8px 10px;
     transition:0.1s ease;
@@ -146,7 +144,8 @@ window#waybar {
 #backlight,
 #battery,
 #network,
-#pulseaudio
+#pulseaudio,
+#bluetooth
  {
     color: @text;
     margin: 7px 2px ;
@@ -222,6 +221,14 @@ window#waybar {
         alpha(@color7, 0.01)
     );  
 }
+#bluetooth{
+    background-color: @color2;
+    background-image: linear-gradient(
+        to bottom,
+        alpha(@color7, 0.5),
+        alpha(@color7, 0.01)
+    );  
+}
 #pulseaudio{
     background-color: @color6;
     background-image: linear-gradient(
@@ -237,4 +244,3 @@ window#waybar {
     color:@color1;
     margin: 0px 4px 0px 4px;
   }
-

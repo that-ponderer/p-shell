@@ -1,4 +1,3 @@
-
 {
     "layer": "top",
     "position":"top",
@@ -7,24 +6,16 @@
     "margin-right":4,
     "margin-bottom":2,
     "margin-left":4,
-    
-
-
    
     "modules-left": [
         "niri/workspaces",
         "niri/window"
     ],
 
-
-
     "modules-center": [
         "custom/screenrec",
-        "cava",
         "clock"
     ],
-
-
 
     "modules-right": [
         "cpu",
@@ -34,61 +25,12 @@
         "backlight",
         "battery",
         "network",
+        "network#eth",
+        "bluetooth",
         "pulseaudio",
         "group/traygroup"
     ],
 
-
-
-    "cava": {
-        "framerate": 30,
-        "autosens": 1,
-        "sensitivity": 1,
-        "bars": 14,
-        "lower_cutoff_freq": 50,
-        "higher_cutoff_freq": 10000,
-        "hide_on_silence": false,
-        "method": "pulse",
-        "source": "auto",
-        "stereo": true,
-        "reverse": false,
-        "bar_delimiter": 0,
-        "monstercat": false,
-        "waves": false,
-        "noise_reduction": 0.77,
-        "input_delay": 2,
-        "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█" ],
-        "actions": {
-                   "on-click-right": "mode"
-                   }
-    },
-    "disk": {
-    "interval": 30,
-    "format": "{percentage_free}% 󰨣",
-    "path": "/home"
-    },
-
-    "clock": {
-        "format": "|{:%I:%M}|",
-        "format-alt": "{:%A, %B %d, %Y (%R)}",
-        "tooltip-format": "<tt><small>{calendar}</small></tt>",
-        "calendar": {
-                    "mode"          : "year",
-                    "mode-mon-col"  : 3,
-                    "weeks-pos"     : "right",
-                    "on-scroll"     : 1,
-                    "format": {
-                              "months":     "<span color='#ffead3'><b>{}</b></span>",
-                              "days":       "<span color='#ecc6d9'><b>{}</b></span>",
-                              "weeks":      "<span color='#99ffdd'><b>W{}</b></span>",
-                              "weekdays":   "<span color='#ffcc66'><b>{}</b></span>",
-                              "today":      "<span color='#ff6699'><b><u>{}</u></b></span>"
-                              }
-                    },
-        "actions":  {
-                    "on-click-right": "mode"
-                    }
-    },
     "niri/workspaces": {
 	   "format": "{index}",
 	   "current-only": false,
@@ -97,45 +39,55 @@
        "sort-by-id": true
     }, 
 
-
-    "group/traygroup": {
-    "orientation":"horizontal",
-    "modules":["custom/tray-icon", "tray", "bluetooth"],
-    "drawer": {
-        "transition-duration":300,
-        "transition-left-to-right":false,
-        "click-to-reveal":true
-    },
-    "tray": {
-        "icon-size": 20,
-        "spacing": 6
-    }
+    "niri/window": {
+       "format": "{title}",
+       "hide-empty-text": true 
     },
 
+    "custom/screenrec" : {
+        "exec": "${ThemePath}/Theme/niri/screen_record_monitor.sh",
+        "format": "{text}",
+        "interval": 1 ,
+        "return-type": "json" ,
+        "hide-empty-text": true ,
+        "on-click": "pkill -SIGINT -f gpu-screen-recorder"
 
-   "custom/tray-icon":{
-    "format":"󰣇",
-    "tooltip-format":"I Use Arch btw!"
-   },
+    },
 
-
+    "clock": {
+        "format": "{:%I:%M}",
+        "format-alt": "{:%A, %B %d, %Y (%R)}",
+        "tooltip": false,
+        "actions":  {
+                    "on-click-right": "mode"
+        }
+    },
+    
     "cpu": {
         "format": "{usage}% ",
         "tooltip": false
     },
 
-    "memory": {
-        "format": "{}% "
-    },
     "temperature": {
         "critical-threshold": 80,
         "format": "{temperatureC}°C {icon}",
         "format-icons": ["", "", ""]
     },
-    "backlight": {
-        "format": "{percent}% {icon}",
-        "format-icons": ["", "", "", "", "", "", "", "", ""]
+
+    "memory": {
+        "format": "{}% "
     },
+
+    "disk": {
+    "interval": 30,
+    "format": "{percentage_free}% 󰝰",
+    "path": "/home"
+    },
+
+    "backlight": {
+        "format": "{percent}% 󰖨",
+    },
+
     "battery": {
         "states": {
             "warning": 30,
@@ -148,16 +100,35 @@
         "format-alt": "{time} {icon}",
         "format-icons": ["", "", "", "", ""]
     },
+
     "network": {
-    "interval":1,
-    "format": "{bandwidthDownBytes} 󰓅",
-    "format-disconnected":"",
-    "tooltip-format": "{ifname} via {gwaddr} 󰊗",
-    "tooltip-format-wifi": "{essid} ({signalStrength}%) ",
-    "tooltip-format-ethernet": "{ifname} ",
-    "tooltip-format-disconnected": "Disconnected"
- 
+        "interface": "wlan0",
+        "interval":1,
+        "format": "{bandwidthDownBytes} ",
+        "tooltip-format": "[{essid}] freq: {frequency}GHz ss: {signaldBm}dBm",
+        "format-disconnected":"",
+        "format-disabled": ""
    },
+
+   "network#eth": {
+        "interface": "eth0",
+        "interval":1,
+        "format": "{bandwidthDownBytes} ",
+        "tooltip": false,
+        "format-disconnected":"",
+        "format-disabled": ""
+   },
+
+    "bluetooth": {
+        "format-disabled": "", 
+        "format-no-controller": "",
+        "format-off": "",
+        "format-on": "[0] <span size='large'>󰂯</span>",
+        "format-connected": "[{num_connections}] <span size='large'>󰂱</span>",
+        "tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{device_enumerate}",
+        "tooltip-format-enumerate-connected": "[{device_alias}] {device_address}",
+        "on-click": "GTK_THEME= overskride"
+    },
 
     "pulseaudio": {
         "format": "{volume}% {icon} {format_source}",
@@ -175,31 +146,25 @@
             "car": " ",
             "default": ["", "", ""]
         },
-        "on-click": "flatpak run com.saivert.pwvucontrol"
+        "on-click": "GTK_THEME= pwvucontrol"
     },
 
-    "niri/window": {
-       "format": "|{title}|",
-       "hide-empty-text": true 
-       
-     },
-     
-    "bluetooth": {
-    "icon-size":30,
-	"format": "󰂯",
-	"format-disabled": "", 
-	"format-connected": "󰂱",
-	"tooltip-format": "{controller_alias}\t{controller_address}",
-	"tooltip-format-connected": "{controller_alias}\t{controller_address}\n\n{device_enumerate}",
-	"tooltip-format-enumerate-connected": "{device_alias}\t{device_address}"
+    "group/traygroup": {
+        "orientation":"horizontal",
+        "modules":["custom/tray-icon", "tray"],
+        "drawer": {
+            "transition-duration":100,
+            "transition-left-to-right":false,
+            "click-to-reveal":true
+        },
+        "tray": {
+            "icon-size": 20,
+            "spacing": 6
+        }
     },
-    "custom/screenrec" : {
-        "exec": "${ThemePath}/Theme/niri/screen_record_monitor.sh",
-        "format": "{text}",
-        "interval": 1 ,
-        "return-type": "json" ,
-        "hide-empty-text": true ,
-        "on-click": "pkill -SIGINT -f gpu-screen-recorder"
 
+   "custom/tray-icon":{
+    "format":"<span size='x-small'></span>",
+    "tooltip-format":"I Use Artix btw!"
     }
 }

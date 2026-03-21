@@ -5,10 +5,6 @@ plugin_dir="/usr/share/zsh/plugins"
 source $plugin_dir/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh
 source $plugin_dir/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh
 #---------------------------------
-# Generated Colors
-#---------------------------------
-source ${ZDOTDIR}/.zshcols
-#---------------------------------
 # Env Vars
 #---------------------------------
 # Set the vimrc location

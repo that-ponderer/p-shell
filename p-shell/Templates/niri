@@ -248,13 +248,13 @@ binds {
     Mod+W { spawn "zsh" "-c" "switch" ; }
     Mod+S { spawn "zsh" "-c" "clipboard" ; } 
     Alt+space { spawn "zsh" "-c" "emoji" ; } 
-    Shift+Print { spawn "zsh" "-c" "screenshot" ; }
-    Print { spawn "zsh" "-c" "screenshot_dynamic" ; }  
+    Shift+Print { spawn "zsh" "-c" "screenshot d" ; }
+    Print { spawn "zsh" "-c" "screenshot r" ; }  
     Mod+B { spawn "zsh" "-c" "bluetooth" ; }
-    Mod+Shift+O { spawn "zsh" "-c" "lock" ; }
+    Mod+Shift+B { spawn "zsh" "-c" "lock" ; }
     Mod+P {spawn "zsh" "-c" "colorpicker";} 
-    Mod+F2 { spawn "zsh" "-c" "screen_record_dynamic" ; }
-    Mod+F3 { spawn "zsh" "-c" "screen_record" ; }
+    Mod+F2 { spawn "zsh" "-c" "screen_record r" ; }
+    Mod+F3 { spawn "zsh" "-c" "screen_record d" ; }
     Mod+F1 { spawn "zsh" "-c" "screen_record_stop" ; }
 
     XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05+"; }

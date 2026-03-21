@@ -28,7 +28,7 @@ ueberzug_offset = [ 0, 0, 0, 0 ]
 
 [opener]
 edit = [
-	{ run = "zsh -c 'kitvim %s'", desc = "$EDITOR",      for = "unix", block = true },
+	{ run = "zsh -c \"kitvim %s\"", desc = "$EDITOR",      for = "unix", block = true },
 	{ run = "code %s",          desc = "code",         for = "windows", orphan = true },
 	{ run = "code -w %s",       desc = "code (block)", for = "windows", block = true },
 ]

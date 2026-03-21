@@ -1,0 +1,84 @@
+* {
+    border-color: {4};
+    text-selected: {0};
+    text-idle: {8};
+    text-unselected: {7};
+    highlighter: {2};
+    bg-color: {0}cc;
+    color:@text-unselected;
+    background-color:@bg-color;
+    }
+
+window {
+    location: south;
+    y-offset: -30px;
+    width: 600px;
+    background-color: @bg-color;
+    border-radius: 8px;
+    padding: 4px;
+    border: 2px solid;
+    border-color: @border-color;
+    }
+mainbox {
+    background-color: transparent;
+    margin: 5px;
+    spacing: 8px;
+    }
+inputbar{
+    children: [textbox-header-A, textbox-header-B, textbox-header-C, prompt , textbox-arrow-hollow];
+    spacing: 0px;
+    background-color: transparent;
+    }
+prompt {
+    background-color: transparent;
+    color: @text-unselected;
+    padding: 0px 4px 0px 4px;
+}
+textbox-header-A{
+    expand: false;
+    content: "Themes";
+    color: @text-selected;
+    background-color: @highlighter;
+    padding: 0px 4px 0px 4px;
+}
+textbox-header-B{
+    expand: false;
+    content: "";
+    color: @text-idle;
+    background-color: @highlighter;
+    padding: -1px 0px 0px 0px;
+}
+textbox-header-C{
+    expand: false;
+    content: "";
+    color: @text-idle;
+    background-color: transparent;
+}
+textbox-arrow-hollow{
+    expand: false;
+    content: "";
+    color: @text-unselected;
+}
+listview {
+    background-color: transparent;
+    border-radius: 4px;
+    padding: 0px 10px 10px 10px;
+    lines:1;
+    columns:10;
+    }
+element {
+    background-color: transparent;
+    orientation: vertical;
+}
+element-icon {
+    size: 100px;
+    padding: 15px;
+    background-color: transparent;
+}
+element selected {
+    border: 0px 0px 4px 0px solid;
+}
+element-text {
+    enabled:false;
+}    
+

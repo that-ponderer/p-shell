@@ -1,0 +1,47 @@
+* {
+    border-color: #89b4fa;
+    text-selected: #181825;
+    text-idle: #6C6F85;
+    text-unselected: #cdd6f4;
+    highlighter: #a6e3a1;
+    bg-color: @text-selected;
+    color:@text-unselected;
+    background-color:@bg-color;
+    }
+
+window {
+    location: south;
+    y-offset: -30px;
+    width: 90%;
+    background-color: @bg-color;
+    border-radius: 8px;
+    border: 2px solid;
+    border-color: @border-color;
+    }
+mainbox {
+    background-color: @bg-color;
+    }
+inputbar{
+    enabled: false;
+    }
+listview {
+    background-color: @bg-color;
+    border-radius: 4px;
+    padding: 0px 10px 15px 10px;
+    lines:1;
+    columns:10;
+    }
+element {
+    background-color:inherit;
+    orientation: vertical;
+}
+element-icon {
+    size: 150px;
+}
+element selected {
+    border: 0px 0px 4px 0px solid;
+}
+element-text {
+    enabled:false;
+}    
+

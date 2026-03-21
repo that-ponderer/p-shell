@@ -1,0 +1,82 @@
+* {
+    border-color: #89b4fa;
+    text-selected: #181825;
+    text-idle: #6C6F85;
+    text-unselected: #cdd6f4;
+    highlighter: #a6e3a1;
+    bg-color: @text-selected;
+    color:@text-unselected;
+    background-color:@bg-color;
+    }
+
+window {
+    location: south;
+    y-offset: -30px;
+    width: 600px;
+    background-color: @bg-color;
+    border-radius: 8px;
+    padding: 4px;
+    border: 2px solid;
+    border-color: @border-color;
+    }
+mainbox {
+    background-color: @bg-color;
+    margin: 5px;
+    spacing: 8px;
+    }
+inputbar{
+    children: [textbox-header-A, textbox-header-B, textbox-header-C, prompt , textbox-arrow-hollow];
+    spacing: 0px;
+    }
+prompt {
+    background-color: @bg-color;
+    color: @text-unselected;
+    padding: 0px 4px 0px 4px;
+}
+textbox-header-A{
+    expand: false;
+    content: "Themes";
+    color: @text-selected;
+    background-color: @highlighter;
+    padding: 0px 4px 0px 4px;
+}
+textbox-header-B{
+    expand: false;
+    content: "";
+    color: @text-idle;
+    background-color: @highlighter;
+    padding: -1px 0px 0px 0px;
+}
+textbox-header-C{
+    expand: false;
+    content: "";
+    color: @text-idle;
+    background-color: @bg-color;
+}
+textbox-arrow-hollow{
+    expand: false;
+    content: "";
+    color: @text-unselected;
+}
+listview {
+    background-color: @bg-color;
+    border-radius: 4px;
+    padding: 0px 10px 10px 10px;
+    lines:1;
+    columns:10;
+    }
+element {
+    background-color:inherit;
+    orientation: vertical;
+}
+element-icon {
+    size: 100px;
+    padding: 15px;
+}
+element selected {
+    border: 0px 0px 4px 0px solid;
+}
+element-text {
+    enabled:false;
+}    
+

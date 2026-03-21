@@ -1,0 +1,5 @@
+configuration {
+font: "JetBrainsMono Nerd Font 13";
+hover-select: false;
+}
+@theme "./themes/theme.rasi"

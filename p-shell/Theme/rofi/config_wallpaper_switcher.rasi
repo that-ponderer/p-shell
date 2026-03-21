@@ -1,0 +1,6 @@
+configuration {
+font: "JetBrainsMono Nerd Font 13";
+hover-select: false;
+show-icons:true;
+}
+@theme "./themes/wallpaper_switcher.rasi"

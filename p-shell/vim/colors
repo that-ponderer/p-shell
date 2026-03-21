@@ -1,0 +1,5 @@
+"This is a dynamically changed file that sets the vim colorschemes
+
+colorscheme catppuccin_mocha
+let g:airline_theme = "catppuccin_mocha"
+

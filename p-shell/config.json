@@ -1,0 +1,19 @@
+{
+    "css":["css.css","hex",true],
+    "cava":["cavaconfig","hex",true],
+    "dunst":["dunstrc","hex",true],
+    "kitty":["kitty.conf","hex",true],
+    "rmpc":["themes.ron","hex",true],
+    "waybar-niri":["waybar/style-niri.css","hex",true],
+    "zsh":["zsh/.zshcols","hex",true],
+    "rofi":["rofi/themes/theme.rasi","hex",true],
+    "rofi_theme_switcher":["rofi/themes/theme_switcher.rasi","hex",true],
+    "rofi_wallpaper_switcher":["rofi/themes/wallpaper_switcher.rasi","hex",true],
+    "swaylock":["niri/swaylock.sh","hex",false],
+    "qutebrowser":["qutebrowser/colors.py","hex",true],
+    "start_page_cols":["qutebrowser/start_page_cols.css","hex",true],
+    "wofi":["wofi.css","hex",true],
+    "mpd":["mpd/mpd.conf","hex",true],
+    "gowall":["gowall/colors.json","hex",true],
+    "niri":["niri/config.kdl","hex",true]
+}

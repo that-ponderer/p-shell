@@ -8,7 +8,7 @@
 # About:
 
 🥪 These Are My Personal Suckless Dotfiles Intended To Be As Minimal As Possible While Also Looking Edible. 
-- 🐧 **Arch** based btw :)
+- 🐧 **Arch/Artix** based btw :)
 - 🎨 **Switchable themes** with keyboard shortcuts.  
 - 🩷 **Dynamic color integration** using Pywal.
 - 💜 **GTK theme gen** using wpgtk.  
@@ -21,10 +21,10 @@
 
 - 🔔 Replace **dunst** with swaync. 🚧
 - 🥭 Add **mangowc** support.
-- 📝 Include my **vim** configs. ✅
+- 📝 Include my **vim** config. ✅
 - 🗣️ Add OSD with **swayosd** 
 - 📚 Add Global Dictionary 
-- 🔎 Add Text Extractor 
+- 🔎 Add OCR/Text Extractor ✅ 
 
 # Features:
 - Wayland Compositor `niri`
@@ -41,11 +41,12 @@
 - Audio Visualizer `cava`
 - Terminal `kitty`
 - Prompt `oh-my-posh`
-- Drun `wofi`
+- Drun `rofi`
 - Emoji Picker `rofimoji` + `rofi`
 - Clipboard Manager `clipcat` + `rofi`
-- Notification Manager ⚠️ `dunst`
-
+- Notification Manager `dunst`
+- OCR `tesserect`
+- Editor `vim` *Not the 'neo' kind*
 # Installation:
 ```
 # Clone the repo
@@ -65,43 +66,5 @@ cd p-shell
 > export ZDOTDIR="${ThemePath}/Theme/zsh"
 > source ${ZDOTDIR}/.zshenv
 > ```
-
-# Gallery:
-## theme-switcher:
-[switcher.webm](https://github.com/user-attachments/assets/b5468df0-92e3-4d90-9e10-4d2a086f5b9f)
-
-## fastfetch:
-<img width="500" alt="fastfetch" src="https://github.com/user-attachments/assets/6fa4a072-85a5-405d-9d37-caf98d74d7a1" />
-
-## qutebrowser:
-[browser.webm](https://github.com/user-attachments/assets/c128ef15-d774-411e-a167-dd9d040a6eab)
-
-## swaylock:
-[lock.webm](https://github.com/user-attachments/assets/5a5b5b2b-43ee-45ff-9a3b-4c1cc86bacf9)
-
-## cava:
-<img width="500"  alt="cava" src="https://github.com/user-attachments/assets/5d7910d6-7840-44c2-aca7-2cfd4a7c9b98" />
-
-## rmpc:
-<img width="500" alt="rmpc" src="https://github.com/user-attachments/assets/04c7b5b3-13bb-4b55-afaa-7989fe019549" />
-
-## clipcat-menu:
-<img width="500" alt="clipcat" src="https://github.com/user-attachments/assets/bb8b3715-317e-4a06-bfaa-02928cd47c49" />
-
-## yazi:
-<img width="500" alt="yazi" src="https://github.com/user-attachments/assets/345e7642-9f76-4407-9fc6-091623f5c4b8" />
-
-
-## rofimoji:
-<img width="500" alt="rofiemoji" src="https://github.com/user-attachments/assets/01fbec78-e9c1-4b53-8b57-1d0131441ed8" />
-
-## switcher:
-<img width="350" alt="switcher" src="https://github.com/user-attachments/assets/8605b533-a0a0-4112-8e8f-98f5e06c1453" />
-
-## waybar:
-<img width="1920" alt="waybar" src="https://github.com/user-attachments/assets/89c3e852-e92a-4c37-ac17-d0360b7b38c5" />
-
-# wofi-drun:
-<img width="500" alt="wofi-drun" src="https://github.com/user-attachments/assets/ca566aa2-59f4-48fb-aacb-a9dc9798361b" />
 
 ---

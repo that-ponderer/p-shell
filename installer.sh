@@ -4,7 +4,7 @@ shopt -s extglob nullglob
 
 # Global vars ---------------------------------------------------------
 if [[ -d $XDG_CACHE_HOME ]] ; then  cache_dir="$XDG_CACHE_HOME/p-shell"
-else cache_dir="$HOME/.cache/p-shell" ; mkdir -p "$cache_dir" ; fi
+else cache_dir="$HOME/.cache/p-shell" ; fi
 current_dir="$(pwd)"
 total_deps=()
 
@@ -31,45 +31,48 @@ declare -A deps_arch=(
     ffmpegthumbnailer,
     "
     ["soft"]="
-    cava, 
-    clipcat, 
-    gowall, 
-    kitty, 
-    mpd, 
-    niri, 
-    xwayland-satellite,
-    xdg-desktop-portal-gnome, 
-    xdg-desktop-portal-gtk,
-    rmpc,
-    qutebrowser, 
-    rofi, 
-    swaylock, 
-    waybar, 
-    yazi,
-    fastfetch, 
-    nemo,
-    swaybg, 
-    swayidle, 
-    gpu-screen-recorder, 
-    rofimoji, 
-    grim, 
-    slurp, 
-    wl-clipboard,
-    bat, 
-    fzf, 
-    zoxide, 
-    zsh-autosuggestions, 
-    zsh-syntax-highlighting, 
-    gvim,
-    nodejs, 
-    npm,
-    bluez,
-    bluez-utils,
-    overskride,
-    fd,
-    glow,
-    less,
-    flatpak,
+    cava: Colorful real-time audio visualizer,
+    clipcat: Lightweight clipboard manager with history support,
+    gowall: Generates color schemes from images for theming,
+    kitty: GPU accelerated terminal with image and graphics protocol support,
+    mpd: Minimal flexible music player daemon,
+    niri: Scrollable tiling Wayland compositor window manager,
+    xwayland-satellite: Standalone Xwayland bridge used by Niri,
+    xdg-desktop-portal-gnome: GNOME backend for XDG portals for screenshare and file pickers,
+    xdg-desktop-portal-gtk: GTK based fallback XDG portal implementation,
+    rmpc: Elegant TUI client for MPD,
+    qutebrowser: Keyboard driven minimal browser with Vim like bindings,
+    rofi: Application launcher and dmenu replacement with scripting support,
+    swaylock: Secure screen locker for Wayland compositors,
+    waybar: Highly customizable Wayland status bar,
+    yazi: Fast TUI file manager with async operations and plugins,
+    fastfetch: System information tool alternative to neofetch,
+    nemo: Cinnamon desktop file manager,
+    swaybg: Simple wallpaper setter for Wayland used for static backgrounds,
+    swayidle: Idle management daemon for Wayland triggers lock and sleep,
+    gpu-screen-recorder: Lightweight GPU accelerated screen recorder,
+    rofimoji: Emoji picker using rofi,
+    grim: Screenshot tool for Wayland compositors,
+    slurp: Interactive screen region selector used with grim,
+    wl-clipboard: Wayland clipboard utilities wl copy and wl paste,
+    bat: Cat clone with syntax highlighting and Git integration,
+    fzf: Fuzzy finder for files commands and more,
+    zoxide: Smarter cd command with frequency based navigation,
+    zsh-autosuggestions: Fish like command suggestions for Zsh,
+    zsh-syntax-highlighting: Syntax highlighting for Zsh command line,
+    gvim: GUI version of Vim,
+    nodejs: JavaScript runtime built on V8,
+    npm: Node package manager,
+    bluez: Official Linux Bluetooth protocol stack,
+    bluez-utils: Command line tools for managing Bluetooth devices,
+    overskride: Minimal Wayland friendly Bluetooth device manager,
+    fd: Simple fast alternative to find,
+    glow: Markdown renderer for the terminal,
+    less: Terminal pager for viewing text files,
+    flatpak: Sandbox based application distribution system,
+    tesseract-data-eng: Tesseract language data for the english,
+    tesseract: Command-line OCR (Optical Character Recognition) engine,
+    numr: A text calculator for natural language expressions with a vim-style TUI,
     "
     ["installer"]="
     unzip, 
@@ -84,6 +87,7 @@ declare -A deps_arch=(
 # Colors --
 c1='\e[31m'
 c2='\e[32m'
+c3='\e[33m'
 c4='\e[34m'
 c5='\e[35m'
 c6='\e[36m'
@@ -114,7 +118,8 @@ is_command() {
 yn_choice() {
     printf "${c2}[choice] %s [y/n]:\e[0m" "$*"
     read -r choice
-    [[ "$choice" =~ ^[nN]$ ]] && return 1 || return 0 
+    [[ "$choice" == +(*n*|*N*) ]] && return 1
+    return 0
 }
 print_welcome (){
     welcome_logo=(
@@ -165,8 +170,8 @@ detect_or_install_aur_helper() {
         [[ -z "$choice" ]] && continue
         aur_helper="$choice"
         sudo pacman -S --needed git base-devel || return 1
-        git clone "https://aur.archlinux.org/$choice.git" "$cache_dir/$choice" \
-            || return 1
+        git clone --depth 1 "https://aur.archlinux.org/$choice.git" \
+            "$cache_dir/$choice" || return 1
         cd "$cache_dir/$choice" || return 1
         makepkg -si --noconfirm || return 1
         cd "$current_dir" || return 1
@@ -180,10 +185,14 @@ resolve_soft_deps() {
     printf "${c6}%b\e[0m\n" "$welcome_bar"
 
     declare -a soft_deps
+    declare -a soft_deps_docs
     declare -a hard_deps
     while IFS= read -d ',' -r pak ; do 
         trim "$pak"
-        soft_deps+=( "$trimmed" )
+        while IFS=':' read  -r _pak docs ; do 
+            soft_deps+=( "$_pak" )
+            soft_deps_docs+=( "$docs" )
+        done <<< "$trimmed"
     done  <<< "${deps_arch[soft]}"
     while IFS= read -d ',' -r pak ; do 
         trim "$pak"
@@ -195,7 +204,10 @@ resolve_soft_deps() {
     done  <<< "${deps_arch[installer]}"
 
     for i in "${!soft_deps[@]}"; do
-        echo "[$i] ${soft_deps[i]}"
+        printf "%b" "[$i] \
+${soft_deps[i]}\
+$( for ((j=0; j < 27 - (${#soft_deps[i]}+2+${#i}) ;j++)) ; do printf " " ; done  )\
+${c2}${soft_deps_docs[i]}\e[0m\n"
     done
     printf "${c6}%b\e[0m\n" "$welcome_bar"
     log "Enter numbers to EXCLUDE (space-separated):"
@@ -255,13 +267,14 @@ install_gtk_themes() {
     git clone --depth=1 "https://github.com/EliverLara/Nordic.git" \
         "$cache_dir/Nordic" || \
         { fail "Failed to install gtk theme [Nordic]: skipping.." ; }
-    mv "$cache_dir/Nordic" "$HOME/.themes" || \
+    [[ -d "$HOME/.themes/Nordic" ]] && rm -rf "$HOME/.themes/Nordic"
+    mv -f "$cache_dir/Nordic" "$HOME/.themes" || \
         { fail "Failed to move GTK theme [Nordic]: skipping.." ; }
 
 }
 install_flatpak(){
     log "Applying flatpak overrides.."
-    command -v flatpak || { fail "flatpak not installed: skipping.." ; return 1 ; }
+    is_command flatpak || { fail "flatpak not installed: skipping.." ; return 1 ; }
     flatpak override --user --filesystem="$HOME/.themes" &> /dev/null
     flatpak override --user --filesystem="$HOME/.icons" &> /dev/null
     flatpak override --user --filesystem="$HOME/.local/share/themes" &> /dev/null
@@ -316,7 +329,7 @@ move_fonts() {
 
 # Zsh {{{
 change_shell() {
-    yn-choice "Change default shell to zsh?" || return 1
+    yn_choice "Change default shell to zsh?" || return 1
     log "Changing default shell to zsh"
     chsh -s /usr/bin/zsh
 }
@@ -340,7 +353,7 @@ setup_clipcat() {
     clipcat-menu default-config > "$dir/clipcat-menu.toml" || return 1
     local data
     data="$(< "$dir/clipcat-menu.toml")"
-    [[ -n "$data" ]] && return 1
+    [[ -z "$data" ]] && return 1
     local output
     output="${data/"extra_arguments = []"/"extra_arguments = [ \"-config\", \"$HOME/Theme/p-shell/Theme/rofi/config.rasi\" ]"}"
     printf "%b" "$output" > "$cache_dir/temp" || return 1
@@ -351,7 +364,7 @@ setup_mpd() {
     local mpd_conf="p-shell/Theme/mpd/mpd.conf"
     local data
     data="$(< "$mpd_conf")"
-    [[ -n "$data" ]] && return 1
+    [[ -z "$data" ]] && return 1
     local output
     output="${data//"{ThemePath}"/"${HOME}/Theme/p-shell"}"
     printf "%b" "$output" > "$cache_dir/temp" || return 1
@@ -360,23 +373,23 @@ setup_mpd() {
 # }}}
 
 main() {
-    print_welcome
-    setup_cache
-    detect_or_install_aur_helper 
-    resolve_soft_deps
-    install_packages
-    setup_dirs
-    setup_clipcat
-    setup_mpd
-    move_project_files
-    install_wpgtk_templates
-    move_wpg_config
-    install_vim_config
-    install_gtk_themes
-    install_flatpak
-    move_fonts
-    change_shell
-    install_zshenv
+    print_welcome 
+    setup_cache 
+    detect_or_install_aur_helper || fatal "Could not install AUR helper.."
+    resolve_soft_deps 
+    install_packages 
+    setup_dirs 
+    setup_clipcat 
+    setup_mpd 
+    move_project_files 
+    install_wpgtk_templates 
+    move_wpg_config 
+    install_vim_config 
+    install_gtk_themes 
+    install_flatpak 
+    move_fonts 
+    change_shell 
+    install_zshenv 
     rm -rf "$cache_dir"
     log "Installation complete."
 }

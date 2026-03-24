@@ -71,11 +71,11 @@ screenshot() {
     if [[ "$1" = "d" ]] ; then
         grim -l 0 \
         -g "0,0 1920x1080" \
-        "$shotpath"
+        "$shotpath" || return
     elif [[ "$1" = "r" ]] ; then
         grim -l 0 \
         -g "$(slurp -o)" \
-        "$shotpath"
+        "$shotpath" || return
     else
         exit 1
     fi
@@ -97,7 +97,7 @@ screen_record() {
         -a default_output \
         -encoder cpu \
         -ac aac \
-        -o "$videopath"
+        -o "$videopath" || return
     elif [[ "$1" = "r" ]] ; then
         gpu-screen-recorder \
         -w region \
@@ -106,7 +106,7 @@ screen_record() {
         -a default_output \
         -encoder cpu \
         -ac aac \
-        -o "$videopath"
+        -o "$videopath" || return
     else 
         exit 1
     fi
@@ -114,6 +114,27 @@ screen_record() {
     # freedesktop standerd file transfer mimetype
     # uses urls, used in drag and droping
     wl-copy --type "text/uri-list" "file://${videopath}"
+}
+
+grab_text() {
+    local image_cache
+    if [[ -n "$XDG_CACHE_HOME" ]] ; then 
+        image_cache="$XDG_CACHE_HOME/tesseract_cache"
+    else 
+        image_cache="$HOME/.cache/tesseract_cache"
+    fi
+    mkdir -p "$(dirname "$image_cache")"
+    grim -l 0 -g "$(slurp -o)" "$image_cache" || return
+
+    local text="$(tesseract "$image_cache" - -l eng quiet --psm 3)"
+    if [[ -n "$text" ]]  ; then
+        wl-copy < <( printf "%s" "$text" )
+        notify-send  -i "$image_cache" 'Text Grabbed'
+    fi
+    rm -rf "$image_cache"
+}
+calc(){
+    kitty -T "calculator" "numr"
 }
 
 colorpicker() {

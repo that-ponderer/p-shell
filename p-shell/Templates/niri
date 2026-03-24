@@ -256,6 +256,8 @@ binds {
     Mod+F2 { spawn "zsh" "-c" "screen_record r" ; }
     Mod+F3 { spawn "zsh" "-c" "screen_record d" ; }
     Mod+F1 { spawn "zsh" "-c" "screen_record_stop" ; }
+    Mod+Shift+O { spawn "zsh" "-c" "grab_text" ; }
+    Mod+N { spawn "zsh" "-c" "calc" ; }
 
     XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05+"; }
     XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05-"; }
@@ -374,7 +376,15 @@ window-rule {
 window-rule {
     match title="Pipewire Volume Control"
     match title="overskride"
+    match title="calculator"
     open-floating true
+}
+window-rule {
+    match title="calculator"
+    open-floating true
+    default-column-width { proportion 0.66; }
+    default-window-height { fixed 700; }
+    open-focused true
 }
 // }}}
 

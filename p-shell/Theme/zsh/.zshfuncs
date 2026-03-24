@@ -66,7 +66,7 @@ emoji() {
 screenshot() {
     mkdir -p "$(xdg-user-dir PICTURES)/Screenshots"
     shotpath="$(xdg-user-dir PICTURES)/Screenshots/\
-    $(date +'%Y-%m-%d_%H-%M-%S')_grim.png"
+$(date +'%Y-%m-%d_%H-%M-%S')_grim.png"
 
     if [[ "$1" = "d" ]] ; then
         grim -l 0 \
@@ -87,7 +87,7 @@ screenshot() {
 screen_record() {
     mkdir -p "$(xdg-user-dir VIDEOS)/Screenrecordings"
     videopath="$(xdg-user-dir VIDEOS)/Screenrecordings/\
-    $(date +'%Y-%m-%d_%H-%M-%S')_grim.mp4"
+$(date +'%Y-%m-%d_%H-%M-%S')_grim.mp4"
 
     if [[ "$1" = "d" ]] ; then
         # Gpu encoder does not work for me

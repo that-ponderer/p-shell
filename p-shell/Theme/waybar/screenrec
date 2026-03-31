@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+pgrep -f gpu-screen-recorder &> /dev/null && printf "%s" '{"text":"(+)"}'
+
+

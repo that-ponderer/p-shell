@@ -47,7 +47,6 @@ declare -A deps_arch=(
     waybar: Highly customizable Wayland status bar,
     yazi: Fast TUI file manager with async operations and plugins,
     fastfetch: System information tool alternative to neofetch,
-    nemo: Cinnamon desktop file manager,
     swaybg: Simple wallpaper setter for Wayland used for static backgrounds,
     swayidle: Idle management daemon for Wayland triggers lock and sleep,
     gpu-screen-recorder: Lightweight GPU accelerated screen recorder,
@@ -73,6 +72,7 @@ declare -A deps_arch=(
     tesseract-data-eng: Tesseract language data for the english,
     tesseract: Command-line OCR (Optical Character Recognition) engine,
     numr: A text calculator for natural language expressions with a vim-style TUI,
+    mediainfo: View tags for images and videos, 
     "
     ["installer"]="
     unzip, 

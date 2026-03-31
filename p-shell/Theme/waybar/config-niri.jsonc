@@ -3,9 +3,9 @@
     "position":"top",
     "spacing": 4, 
     "margin-top":4,
-    "margin-right":4,
+    "margin-right":8,
     "margin-bottom":2,
-    "margin-left":4,
+    "margin-left":8,
    
     "modules-left": [
         "niri/workspaces",
@@ -45,7 +45,7 @@
     },
 
     "custom/screenrec" : {
-        "exec": "${ThemePath}/Theme/niri/screen_record_monitor.sh",
+        "exec": "${ThemePath}/Theme/waybar/screenrec",
         "format": "{text}",
         "interval": 1 ,
         "return-type": "json" ,

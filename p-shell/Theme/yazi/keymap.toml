@@ -1,7 +1,10 @@
 "$schema" = "https://yazi-rs.github.io/schemas/keymap.json"
 
 [mgr]
-
+prepend_keymap = [
+    { on = "p", run = "plugin ucp paste", desc = "Paste" },
+    { on = "y", run = "plugin ucp copy", desc = "Copy" }
+]
 keymap = [
 	{ on = "<Esc>", run = "escape",             desc = "Exit visual mode, clear selection, or cancel search" },
 	{ on = "<C-[>", run = "escape",             desc = "Exit visual mode, clear selection, or cancel search" },

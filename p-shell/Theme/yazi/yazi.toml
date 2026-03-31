@@ -93,6 +93,33 @@ image_bound      = [ 10000, 10000 ]
 suppress_preload = false
 
 [plugin]
+prepend_preloaders = [
+  { mime = "{audio,video,image}/*", run = "mediainfo" },
+  { mime = "application/subrip", run = "mediainfo" },
+
+  { mime = "application/postscript", run = "mediainfo" },
+  { mime = "application/illustrator", run = "mediainfo" },
+  { mime = "application/dvb.ait", run = "mediainfo" },
+  { mime = "application/vnd.adobe.illustrator", run = "mediainfo" },
+  { mime = "image/x-eps", run = "mediainfo" },
+  { mime = "application/eps", run = "mediainfo" },
+
+  { url = "*.{ai,eps,ait}", run = "mediainfo" },
+]
+prepend_previewers = [
+  { mime = "{audio,video,image}/*", run = "mediainfo"},
+  { mime = "application/subrip", run = "mediainfo" },
+
+  { mime = "application/postscript", run = "mediainfo" },
+  { mime = "application/illustrator", run = "mediainfo" },
+  { mime = "application/dvb.ait", run = "mediainfo" },
+  { mime = "application/vnd.adobe.illustrator", run = "mediainfo" },
+  { mime = "image/x-eps", run = "mediainfo" },
+  { mime = "application/eps", run = "mediainfo" },
+
+  { url = "*.{ai,eps,ait}", run = "mediainfo" },
+]
+
 fetchers = [
 	# Mimetype
 	{ id = "mime", url = "*/",         run = "mime.dir", prio = "high" },

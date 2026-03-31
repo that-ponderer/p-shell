@@ -781,7 +781,7 @@ wallpaper_switcher (){
             if pidof swww-daemon &> >(debug) ; then
                 killall -INT swww-daemon
             fi
-            mpvpaper "$DISPLAY" \
+            mpvpaper -s "$DISPLAY" \
             -o "no-audio --loop-playlist" \
             "$WALLPAPER_ROOT/$_selected_wallpaper_name" &> >(debug) \
             || fail "Failed to launch mpvpaper: skipping.." &

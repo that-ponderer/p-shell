@@ -59,6 +59,7 @@ declare -A deps_arch=(
     zoxide: Smarter cd command with frequency based navigation,
     zsh-autosuggestions: Fish like command suggestions for Zsh,
     zsh-syntax-highlighting: Syntax highlighting for Zsh command line,
+    zsh-vi-mode: A Better vi mode for zsh,
     gvim: GUI version of Vim,
     nodejs: JavaScript runtime built on V8,
     npm: Node package manager,

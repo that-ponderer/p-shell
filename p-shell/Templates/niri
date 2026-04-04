@@ -166,6 +166,7 @@ binds {
     Mod+T { spawn "zsh" "-c" "grab_text" ; }
     Mod+Shift+T { spawn "zsh" "-c" "grab_text" "p" ; }
     Mod+N { spawn "zsh" "-c" "calc" ; }
+    Mod+V { spawn "zsh" "-c" "stt_toggle" ; }
 
     XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05+"; }
     XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05-"; }
@@ -297,6 +298,7 @@ window-rule {
 layer-rule {
     match namespace="^rofi$"
     match namespace="^waybar$"
+    match namespace="^notifications$"
     background-effect {
         blur true
     }

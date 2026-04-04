@@ -44,7 +44,7 @@
     # Offset from the origin
     # NOTE: Dunst from version 1.11 and older use this alternative notation
     # offset = 10x50
-    offset = (10, 30)
+    offset = (30, 27)
 
     # Scale factor. It is auto-detected if value is 0.
     scale = 0
@@ -343,14 +343,14 @@
 [urgency_low]
     # IMPORTANT: colors have to be defined in quotation marks.
     # Otherwise the "#" and following would be interpreted as a comment.
-    background = "#18182599"
+    background = "#181825b3"
     foreground = "#cdd6f4"
     frame_color = "#cdd6f470"
     timeout = 2
     default_icon = dialog-information
 
 [urgency_normal]
-    background = "#18182599"
+    background = "#181825b3"
     foreground = "#cdd6f4"
     frame_color = "#cdd6f470"
     timeout = 3
@@ -358,7 +358,7 @@
     default_icon = dialog-information
 
 [urgency_critical]
-    background = "#18182599"
+    background = "#181825b3"
     foreground = "#cdd6f4"
     frame_color = "#cdd6f470"
     timeout = 10

@@ -15,7 +15,8 @@
 - 🪟 Built on **Niri** for maximum minimalism.
 
 > [!IMPORTANT]
-> This project is prone to drastic change as it is in constant development.
+> Expect a few bugs, while I try to keep it as moduler as possible its still based
+> on my personal use.
 
 # TODO:
 

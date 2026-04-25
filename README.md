@@ -15,8 +15,8 @@
 - 🪟 Built on **Niri** for maximum minimalism.
 
 > [!IMPORTANT]
-> Expect a few bugs, while I try to keep it as moduler as possible its still based
-> on my personal use.
+> Expect a few bugs. While I try to keep it as modular as possible, it’s still 
+> based heavily on my personal use.
 
 # TODO:
 

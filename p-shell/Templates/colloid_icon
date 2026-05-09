@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+readonly dycol_blue="{4}"
+readonly dycol_purple="{5}"
+readonly dycol_pink="{13}"
+readonly dycol_red="{1}"
+readonly dycol_orange="{3}"
+readonly dycol_yellow="{11}"
+readonly dycol_green="{2}"
+readonly dycol_teal="{6}"
+readonly dycol_gray="{7}"
+

@@ -2,46 +2,57 @@
     border-color: {4};
     text-selected: {0};
     text-idle: {8};
-    text-unselected: {7};
+    text-unselected: {15};
     highlighter: {2};
     bg-color: {0}cc;
     color:@text-unselected;
     background-color:@bg-color;
-    }
+}
 
 window {
     location: south;
     y-offset: -30px;
-    width: 90%;
-    background-color: @bg-color;
-    border-radius: 8px;
-    border: 2px solid;
-    border-color: @border-color;
-    }
-mainbox {
+    width: 1500px;
     background-color: transparent;
-    }
+}
+mainbox {
+    background-image: linear-gradient(
+        to top,
+        {0}b3,
+        {0}33
+    );
+    background-color: {5}33;
+    border: 3px solid;
+    border-color: {15}80;
+    border-radius: 8px;
+}
 inputbar{
     enabled: false;
-    }
+}
 listview {
     background-color: transparent;
     border-radius: 4px;
-    padding: 0px 10px 15px 10px;
+    padding: 10px ;
     lines:1;
-    columns:10;
-    }
+    columns:20;
+    spacing: 8px;
+}
 element {
     background-color:inherit;
     orientation: vertical;
     background-color: transparent;
+    border: 2px solid;
+    border-color: {15}33;
+    border-radius: 8px;
 }
 element-icon {
-    size: 150px;
+    size: 200px;
     background-color: transparent;
 }
 element selected {
-    border: 0px 0px 4px 0px solid;
+    border: 2px 2px 4px 2px solid;
+    border-color: {15}80;
+    border: 2px solid;
 }
 element-text {
     enabled:false;

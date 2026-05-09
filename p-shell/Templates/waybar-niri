@@ -30,8 +30,8 @@
 window#waybar {
     background-color: transparent; 
     opacity: 1;
-    border: 2px solid alpha(@color7 ,0.7); 
-    background: alpha( @color0,0.5); 
+    border: 2px solid alpha(@color15 ,0.6); 
+    background: alpha( @color0,0.7); 
     border-radius:8px;
 }
 .modules-right{
@@ -52,7 +52,7 @@ window#waybar {
 .modules-right,
 .modules-left,
 .modules-center {
-    border: 2px solid alpha(@color7 ,0.7); 
+    border: 2px solid alpha(@color15 ,0.7); 
     background: alpha( @color0,0.5); 
     border-radius:8px;
     padding : 0px 8px;
@@ -78,7 +78,7 @@ window#waybar {
     background-color: @color1;
 }
 #workspaces button:hover {
-    border:2px solid @color7;
+    border:2px solid @color15;
     padding:0px 6px;
     transition:0.1s ease;
     border-radius:4px;
@@ -88,9 +88,9 @@ window#waybar {
 #workspaces button {
     margin:7px 2px;
     padding: 0 2px;
-    color:@color7;
+    color:@color15;
     border-radius :0px;
-    border-bottom: 2px solid @color7;
+    border-bottom: 2px solid @color15;
 }
 #workspaces button.active{
     color :@color0;
@@ -99,13 +99,13 @@ window#waybar {
     background-color: @color6;
     background-image: linear-gradient(
         to bottom,
-        alpha(@color7, 0.5),
-        alpha(@color7, 0.01)
+        alpha(@color15, 0.5),
+        alpha(@color15, 0.01)
     );  
    
 }
 #window{
-    color:@color7;
+    color:@color15;
 }
 
 #custom-tray-icon{
@@ -114,7 +114,7 @@ window#waybar {
     margin: 8px 0px ;
     padding: 0px 8px;
     background-color: @color0;
-    border:2px solid @color7;
+    border:2px solid @color15;
     color:@color6;
     transition:0.1s ease;
 }
@@ -125,7 +125,7 @@ window#waybar {
     margin: 8px 6px 8px 2px ;
     padding: 0px 6px;
     background-color:@color0;
-    border:2px solid @color7;
+    border:2px solid @color15;
     border-radius: 4px;
     color:@color6;
     transition:0.1s ease;
@@ -148,7 +148,7 @@ window#waybar {
 #cava:hover,
 #clock:hover,
 #bluetooth:hover {
-    border: 2px solid @color7;
+    border: 2px solid @color15;
     margin:8px 10px;
     transition:0.1s ease;
 }
@@ -178,80 +178,80 @@ window#waybar {
     background-color:@color1;
     background-image: linear-gradient(
         to bottom,
-        alpha(@color7, 0.5),
-        alpha(@color7, 0.1)
+        alpha(@color15, 0.5),
+        alpha(@color15, 0.1)
     );  
 }
 #cpu{
-    background-color: @color7;
+    background-color: @color15;
     background-image: linear-gradient(
         to bottom,
-        alpha(@color7, 0.5),
-        alpha(@color7, 0.01)
+        alpha(@color15, 0.5),
+        alpha(@color15, 0.01)
     );  
 }
 #temperature{
     background-color: @color6;
     background-image: linear-gradient(
         to bottom,
-        alpha(@color7, 0.5),
-        alpha(@color7, 0.01)
+        alpha(@color15, 0.5),
+        alpha(@color15, 0.01)
     );  
 }
 #memory{
     background-color: @color5;
     background-image: linear-gradient(
         to bottom,
-        alpha(@color7, 0.5),
-        alpha(@color7, 0.01)
+        alpha(@color15, 0.5),
+        alpha(@color15, 0.01)
     );  
 }
 #disk{
     background-color: @color4;
     background-image: linear-gradient(
         to bottom,
-        alpha(@color7, 0.5),
-        alpha(@color7, 0.01)
+        alpha(@color15, 0.5),
+        alpha(@color15, 0.01)
     );  
 }
 #backlight{
     background-color: @color3;
     background-image: linear-gradient(
         to bottom,
-        alpha(@color7, 0.5),
-        alpha(@color7, 0.01)
+        alpha(@color15, 0.5),
+        alpha(@color15, 0.01)
     );  
 }
 #battery{
     background-color: @color2;
     background-image: linear-gradient(
         to bottom,
-        alpha(@color7, 0.5),
-        alpha(@color7, 0.01)
+        alpha(@color15, 0.5),
+        alpha(@color15, 0.01)
     );  
 }
 #network{
     background-color: @color1;
     background-image: linear-gradient(
         to bottom,
-        alpha(@color7, 0.5),
-        alpha(@color7, 0.01)
+        alpha(@color15, 0.5),
+        alpha(@color15, 0.01)
     );  
 }
 #bluetooth{
     background-color: @color2;
     background-image: linear-gradient(
         to bottom,
-        alpha(@color7, 0.5),
-        alpha(@color7, 0.01)
+        alpha(@color15, 0.5),
+        alpha(@color15, 0.01)
     );  
 }
 #pulseaudio{
     background-color: @color6;
     background-image: linear-gradient(
         to bottom,
-        alpha(@color7, 0.5),
-        alpha(@color7, 0.01)
+        alpha(@color15, 0.5),
+        alpha(@color15, 0.01)
     );  
 
   }

@@ -182,16 +182,16 @@
                             size: "50%",
                             pane: Pane(Property(
                                 content: [
-                                    (kind: Text("["), style: (fg: "{7}")),
+                                    (kind: Text("["), style: (fg: "{15}")),
                                     (kind: Property(Widget(States(
                                         active_style: (fg: "{2}", modifiers: "Bold"),
-                                        separator_style: (fg: "{7}"),
+                                        separator_style: (fg: "{15}"),
                                     )))),
-                                    (kind: Text("]"), style: (fg: "{7}")),
+                                    (kind: Text("]"), style: (fg: "{15}")),
                                 ],
                                 align: Right,
                             )),
-                            style: (fg: "{7}"),
+                            style: (fg: "{15}"),
                         ),
                     ],
                 ),

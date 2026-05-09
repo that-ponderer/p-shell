@@ -1,6 +1,6 @@
 # External tools: jq gesttings (any gnome package) getopt (coreutil) 
-#                 rofi swww pywal wpgtk dunst waybar swaybg imgmagick
-#                 mpvpaper ffmpegthumbnailer
+#                 rofi awww pywal16 dunst waybar swaybg imgmagick
+#                 mpvpaper ffmpegthumbnailer pastel
 
 # Globals {{{
 
@@ -27,6 +27,11 @@ THEME=""
 WALLPAPER_BACKEND=''
 WALLPAPER=''
 DISPLAY='eDP-1'
+# ------------------------
+# Overrides
+# ------------------------
+BAR="waybar"
+BAR_OPTIONS=('waybar' 'eww')
 
 # }}}
 
@@ -37,10 +42,14 @@ readonly TP="$ThemePath"
 # --------------------------------------------
 readonly DATABASE_FILE="${TP}/database.json"
 readonly CONFIG_FILE="${TP}/config.json"
+readonly OVERRIDES_FILE="${TP}/overrides.json"
 readonly TEMPLATES_DIR="${TP}/Templates"
 readonly THEME_DIR="${TP}/Theme"
 readonly TEMP_FILE="${TP}/temp"
 readonly CACHE="${TP}/.cache"
+# --------------------------------------------
+readonly COLLOID_GTK_THEME_SCRIPT="${TP}/Gtk/Colloid-gtk-theme/install.sh"
+readonly COLLOID_ICON_THEME_SCRIPT="${TP}/Gtk/Colloid-icon-theme/install.sh"
 # --------------------------------------------
 readonly \
 WALLPAPER_ROOT="${TP}/Walls"
@@ -57,8 +66,8 @@ VS_CODE_SETTINGS_FILE=""
 [[ -f "${HOME}/.config/Code - OSS/User/settings.json" ]] && \
     VS_CODE_SETTINGS_FILE="${HOME}/.config/Code - OSS/User/settings.json"
 # --------------------------------------------
-readonly \
-VIM_AND_VIM_AIRLINE_FILE="${TP}/vim/colors"
+# readonly \
+# VIM_AND_VIM_AIRLINE_FILE="${TP}/vim/colors"
 # }}}
 
 # Output helpers {{{
@@ -152,6 +161,7 @@ ${c2}options:${cr}
     ${c5}-l, --list${cr}          list available themes
     ${c5}-t, --theme${cr}         choose one available theme
     ${c5}-c, --clean${cr}         clean cached thumbnails
+    ${c5}-r, --reload_bar${cr}    reload the default bar
 EOF
     printf "%b\n"  "$help_text"
 }
@@ -163,7 +173,7 @@ EOF
 # ----------------------
 # Apply themes
 # ----------------------
-# DEPRICATED (I dont use slop-ditor anymore)
+# DEAD CODE (I dont use vs-slop anymore)
 # ============================================
 apply_vscode_theme() {
     local settings_file="$1"
@@ -183,6 +193,78 @@ apply_vscode_theme() {
     check_pipe "Failed to override vs-code config: skipping.."
 }
 # ============================================
+generate_gtk_theme() {
+    local colliod_gtk_theme="$1"
+    
+    # clear the other themes
+    "$COLLOID_GTK_THEME_SCRIPT" -r &> >(debug)
+    # install the theme
+    case "$colliod_gtk_theme" in
+        "Colloid-Dark-Catppuccin")
+            "$COLLOID_GTK_THEME_SCRIPT" \
+                -c dark --tweaks catppuccin black \
+                &> >(debug)
+            ;;
+        "Colloid-Dark-Gruvbox")
+            "$COLLOID_GTK_THEME_SCRIPT" \
+                -c dark --tweaks gruvbox black \
+                &> >(debug)
+
+            ;;
+        "Colloid-Dark-Nord")
+            "$COLLOID_GTK_THEME_SCRIPT" \
+                -c dark --tweaks nord black \
+                &> >(debug)
+
+            ;;
+        "Colloid-Dark-Dynamic")
+            "$COLLOID_GTK_THEME_SCRIPT" \
+                -c dark --tweaks dynamic black \
+                &> >(debug)
+
+            ;;
+        *)
+            return
+            ;;
+    esac
+
+}
+generate_icon_theme() {
+    local colliod_icon_theme="$1"
+    
+    # clear the other themes
+    "$COLLOID_ICON_THEME_SCRIPT" -r &> >(debug)
+    # install the theme
+    case "$colliod_icon_theme" in
+        "Colloid-Catppuccin-Dark")
+            "$COLLOID_ICON_THEME_SCRIPT" \
+                -s catppuccin  \
+                &> >(debug)
+            ;;
+        "Colloid-Gruvbox-Dark")
+            "$COLLOID_ICON_THEME_SCRIPT" \
+                -s gruvbox  \
+                &> >(debug)
+
+            ;;
+        "Colloid-Nord-Dark")
+            "$COLLOID_ICON_THEME_SCRIPT" \
+                -s nord  \
+                &> >(debug)
+
+            ;;
+        "Colloid-Dynamic-Dark")
+            "$COLLOID_ICON_THEME_SCRIPT" \
+                -s dynamic  \
+                &> >(debug)
+
+            ;;
+        *)
+            return
+            ;;
+    esac
+
+}
 apply_gtk_theme() {
     local gtk_theme_name="$1"
     local icon_theme_name="$2"
@@ -210,7 +292,7 @@ apply_gtk_theme_flatpak() {
     local font_name="$3"
     local font_size="${4:-12}"
 
-    log "Applying flagtk gtk theme.."
+    log "Applying flatpak gtk theme.."
     command -v flatpak &> >(debug) || fail "flatpak not installed: skipping.."
     flatpak override --user --env=GTK_THEME="$gtk_theme_name" 2>&1 \
         | debug
@@ -226,6 +308,7 @@ apply_gtk_theme_flatpak() {
         check_pipe "Failed to install font-theme: skipping.."
     fi
 }
+# DEAD CODE ---------------------------------------------------------
 apply_vim_theme(){
     local _vim_theme="$1"
     local _temp_file="$2"
@@ -266,6 +349,7 @@ apply_vim_airline_theme(){
     mv "$_temp_file" "$VIM_AND_VIM_AIRLINE_FILE" &> >(debug) ||
         fatal "Internal error.."
 }
+# --------------------------------------------------------------------
 # ----------------------
 # Json
 # ----------------------
@@ -395,6 +479,7 @@ fetch_gtk_font_size(){
         printf "%s" "$_gtk_font_size"
     fi
 }
+# DEAD CODE ---------------------------------------------------------
 fetch_vim_colorscheme(){
     local _theme_name="$1"
     local _database_file="$2"
@@ -421,6 +506,7 @@ fetch_vim_airline_colorscheme(){
         printf "%s" "$_vim_airline_colorscheme"
     fi
 }
+# ---------------------------------------------------------------------
 write_cache(){
     local _current_theme="$1"
     local _current_wallpaper="$2"
@@ -569,6 +655,26 @@ update_pywal_colors() {
             || fail "Failed to generate pywal colors: Skipping..")"
     done
 
+    # Generate grays -------------------------------
+    declare -a _arr_grays
+    local _pastel_data
+    _pastel_data="$(pastel gradient -n 19 \
+        2> /dev/null "${_arr_pywal[0]}" "${_arr_pywal[-1]}" \
+        | pastel format hex 2> /dev/null )"
+    [[ "$_pastel_data" ]] || fail "Failed to generate grays: Skipping..."
+    if [[ "$_pastel_data" ]] ; then 
+        local _idx=0
+        while IFS= read -r _gra ; do 
+            _database_data="$( jq -r --arg _idx "$_idx" \
+                --arg _gra "$_gra"\
+                '."Dynamic"."placeholders".["g\($_idx)"] = $_gra' \
+                <<< "$_database_data" 2> >(debug) \
+                || fail "Failed to generate grays: Skipping..")"
+            (( _idx++ ))
+        done <<< "$_pastel_data"
+    fi
+    # ----------------------------------------------
+
     check_parent "$_temp_file"
     printf "%s" "$_database_data" > "$_temp_file"  2> >(debug) || \
         fatal "Internal error: exiting.."
@@ -587,9 +693,10 @@ fetch_themes(){
 pywal (){
     [[ -z "$WALLPAPER" ]] && return 1
     
-    wal -c -n -q -s -t -e -i "$WALLPAPER" &> >(debug) \
+    wal --cols16 lighten -nste -i "$WALLPAPER" &> >(debug) \
         || fatal "Failed to launch pywal: exiting.."
 }
+# DEAD CODE ------------------------------------------------------
 wpgtk () {
     wpg -n --noterminal --noreload -a "${WALLPAPER}" &> >(debug) \
     || fatal "Failed to launch wpg: exiting.."
@@ -598,6 +705,7 @@ wpgtk () {
     wpg -n --noterminal --noreload -d "${WALLPAPER##*/}" &> >(debug) \
     || fatal "Failed to launch wpg: exiting.."
 }
+# -----------------------------------------------------------------
 generate_blurred_wallpaper() {
     local _resolution="1980x1080"
     local _blur="0x35"
@@ -610,21 +718,32 @@ generate_blurred_wallpaper() {
 # ------------------------
 reload_modules() {
     # non fatal 
-    killall -INT dunst waybar &> >(debug) || true
+    killall -9 dunst waybar swaybg eww &> >(debug) || true
+
+    # dunst
     dunst -conf "${TP}/Theme/dunstrc" &> >(debug) &
-    GTK_THEME=Adwaita waybar \
-        -c "${TP}/Theme/waybar/config-niri.jsonc" \
-        -s "${TP}/Theme/waybar/style-niri.css" \
-        1> /dev/null 2> >(debug) &
+    # bar
+    case "$BAR" in 
+        "waybar") 
+            GTK_THEME=Adwaita waybar \
+                -c "${TP}/Theme/waybar/config-niri.jsonc" \
+                -s "${TP}/Theme/waybar/style-niri.css" \
+                1> /dev/null 2> >(debug) &
+        ;;
+        "eww")
+            XDG_CONFIG_HOME="${TP}/Theme" eww open OBTRemAll \
+            1> /dev/null 2> >(debug) &
+    esac
 
     
+    # gowall
     "${TP}/Theme/gowall/gowall.sh" > >(debug) 2>&1 || \
         fail "Failed to generate fastfetch icons: skipping.."
 
     dunstify -I "${TP}/Theme/icons/icon.png" "$THEME" &> >(debug)
 
     # Generating blured_wall takes the most amount of time in this script
-    # Keep it at last..
+    # do it at the end..
     # ------------------------------------------------------------------
     generate_blurred_wallpaper
     swaybg -i "${TP}/Theme/assets/blured_wall.png" \
@@ -651,7 +770,7 @@ generate_thumbnail() {
 
     if [[ "$_file_extension" == *(mp4|mkv) ]]; then
         if ! [[ -f "$_thumbnail_file" ]] ; then
-            if ffmpegthumbnailer -i "$_file" -s 256 \
+            if ffmpegthumbnailer -i "$_file" -s 256 -a \
                 -o "$_thumbnail_file" \
                 &> >(debug) ; then
                 _output="$_thumbnail_file"
@@ -665,7 +784,7 @@ generate_thumbnail() {
     else
         if ! [[ -f "$_thumbnail_file" ]] ; then 
             if ffmpegthumbnailer -i "$_file" \
-                -s 265 -o "$_thumbnail_file" \
+                -s 265 -a -o "$_thumbnail_file" \
                 &> >(debug) ; then
 
                 _output="$_thumbnail_file"
@@ -729,7 +848,7 @@ wallpaper_switcher (){
     log "Launching wallpaper switcher.."
     # This is a wallpaper selector script made with rofi
     # Some of the stuff dont do anything and just here for future use
-    # Like the surrent wallpaper part, My rofi menu has text disabled so
+    # Like the current wallpaper part, The rofi menu has text disabled so
     # It makes Zero diff in the layout 
 
     local _theme="$1"
@@ -778,8 +897,8 @@ wallpaper_switcher (){
         # ---------------------------
         if [[ "$_selected_wallpaper_extension" == *(mp4|mkv) ]] ; then
             # -------------------------------
-            if pidof swww-daemon &> >(debug) ; then
-                killall -INT swww-daemon
+            if pidof awww-daemon &> >(debug) ; then
+                killall -9 awww-daemon
             fi
             mpvpaper -s "$DISPLAY" \
             -o "no-audio --loop-playlist" \
@@ -789,18 +908,18 @@ wallpaper_switcher (){
             # -------------------------------
         else
             # -------------------------------
-            if ! pidof swww-daemon &> >(debug) ; then
-                swww-daemon &> >(debug) || \
-                    fatal "Failed to launch swww daemon: exiting.." & 
+            if ! pidof awww-daemon &> >(debug) ; then
+                awww-daemon &> >(debug) || \
+                    fatal "Failed to launch awww daemon: exiting.." & 
             fi
-            swww img "$WALLPAPER_ROOT/$_selected_wallpaper_name" \
+            awww img "$WALLPAPER_ROOT/$_selected_wallpaper_name" \
                 --transition-type wipe \
                 --transition-angle 315  \
                 --transition-step 90 \
                 --transition-duration 1 \
                 --transition-fps 60 \
-                || fatal "Failed to launch swww: exiting.."
-            WALLPAPER_BACKEND="swww"
+                || fatal "Failed to launch awww: exiting.."
+            WALLPAPER_BACKEND="awww"
             # -------------------------------
         fi
         # ---------------------------
@@ -812,10 +931,69 @@ wallpaper_switcher (){
 }
 # }}}
 
+# Parsing Overrides {{{
+parse_overrides(){
+    # bar
+    local overrides_data="$(< "$OVERRIDES_FILE")"
+    [[ "$overrides_data" ]] || \
+        { fail "Failed to parse overrides, Skipping..." ; return 1 ; } 
+    local bar_override="$(jq -r '.bar' 2> /dev/null <<< "$overrides_data" )"
+    if [[ "$bar_override" ]] ; then
+        local match="false"
+        for opt in "${BAR_OPTIONS[@]}"  ; do 
+            [[ "$opt" == "$bar_override" ]] && match="true"
+        done
+        if $match ; then
+            BAR="$bar_override"
+        else
+            fail "<$bar_override> is not a valid option, Skipping.." 
+        fi
+    else
+        fail "Failed to parse bar overrides, Skipping..." 
+    fi
+}
+reload_bar() {
+    parse_overrides
+    
+    for bar in "${BAR_OPTIONS[@]}" ; do 
+        killall -9 "$bar" &> >(debug) || true
+    done
+
+    case "$BAR" in 
+        "waybar") 
+            GTK_THEME=Adwaita waybar \
+                -c "${TP}/Theme/waybar/config-niri.jsonc" \
+                -s "${TP}/Theme/waybar/style-niri.css" \
+                1> /dev/null 2> >(debug) &
+        ;;
+        "eww")
+            XDG_CONFIG_HOME="${TP}/Theme" eww open OBTRemAll \
+            1> /dev/null 2> >(debug) &
+    esac
+} 
+toggle_bar(){
+    parse_overrides
+    
+    case "$BAR" in 
+        "waybar") 
+            killall waybar &> /dev/null || \
+            GTK_THEME=Adwaita waybar \
+                -c "${TP}/Theme/waybar/config-niri.jsonc" \
+                -s "${TP}/Theme/waybar/style-niri.css" \
+                1> /dev/null 2> >(debug) &
+        ;;
+        "eww")
+            killall eww &> /dev/null || \
+            XDG_CONFIG_HOME="${TP}/Theme" eww open OBTRemAll \
+            1> /dev/null 2> >(debug) &
+    esac
+}
+# }}}
+
 # Parsing Args {{{
 
-PARSED_OPTS=$( getopt -o hdlt:c \
-    --long "help,debug,list,theme,clean" \
+PARSED_OPTS=$( getopt -o hdlt:crb \
+    --long "help,debug,list,theme,clean,reload_bar,toggle_bar" \
     -n 'switcheroo.sh' \
     -- "$@" ) \
     || fatal "Failed to parse options" 
@@ -831,6 +1009,8 @@ while true; do
         -c | --clean) rm -r "$THUMBNAIL_DIR" &> >(debug) ; \
             log "Cleaned the thumbnail cache..." ; exit 0 ;;
         --) shift ; break ;;
+        -r | --reload_bar) reload_bar ; exit 0 ;;
+        -b | --toggle_bar) toggle_bar ; exit 0 ;;
         *) fatal "Internal error" ;;
     esac
 done
@@ -949,33 +1129,24 @@ apply_theme(){
     _gtk_icon_theme="$( fetch_gtk_icon_theme "$_theme_name" "$_database_file" )"
     _font_name="$( fetch_gtk_font "$_theme_name" "$_database_file" )"
     _font_size="$( fetch_gtk_font_size "$_theme_name" "$_database_file" )"
-   
+    
+    # Generate colliod gtk theme and icon theme
+    generate_gtk_theme "$_gtk_theme"
+    generate_icon_theme "$_gtk_icon_theme"
+
     apply_gtk_theme "$_gtk_theme" "$_gtk_icon_theme" "$_font_name" "$_font_size"
     apply_gtk_theme_flatpak "$_gtk_theme" "$_gtk_icon_theme" \
         "$_font_name" "$_font_size"
-
-    # Vim and Vim airline
-    # ----------------------------
-    log "Parsing vim theme.."
-    local _vim_theme
-    _vim_theme="$( fetch_vim_colorscheme "$_theme_name" "$_database_file" )"
-    log "Parsing vim airline theme.."
-    local _vim_airline_theme
-    _vim_airline_theme="$( fetch_vim_airline_colorscheme \
-        "$_theme_name" "$_database_file" )"
-
-    apply_vim_theme "$_vim_theme" "$TEMP_FILE"
-    apply_vim_airline_theme "$_vim_airline_theme" "$TEMP_FILE"
 }
 
 main(){
+    parse_overrides
     [[ -z "$THEME" ]] && \
         theme_switcher
     if [[ -n "$THEME" ]] ; then
         wallpaper_switcher "$THEME"
         write_cache "$THEME" "$WALLPAPER" "$WALLPAPER_BACKEND"
         pywal
-        wpgtk
         update_pywal_colors "$DATABASE_FILE" "$TEMP_FILE" 
         apply_theme "$THEME" "$DATABASE_FILE" "$CONFIG_FILE" \
         "$TEMPLATES_DIR" "$THEME_DIR" "$TEMP_FILE"

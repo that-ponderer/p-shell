@@ -2,7 +2,6 @@
 
 [mgr]
 prepend_keymap = [
-    { on = "p", run = "plugin ucp paste", desc = "Paste" },
     { on = "y", run = "plugin ucp copy", desc = "Copy" }
 ]
 keymap = [

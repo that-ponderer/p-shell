@@ -28,7 +28,7 @@ ueberzug_offset = [ 0, 0, 0, 0 ]
 
 [opener]
 edit = [
-	{ run = "zsh -c \"kitvim %s\"", desc = "$EDITOR",      for = "unix", block = true },
+	{ run = "zsh -c \"$EDITOR_FUNC %s\"", desc = "$EDITOR",      for = "unix", block = true },
 	{ run = "code %s",          desc = "code",         for = "windows", orphan = true },
 	{ run = "code -w %s",       desc = "code (block)", for = "windows", block = true },
 ]
@@ -60,7 +60,9 @@ download = [
 	{ run = "ya emit download --open %S", desc = "Download and open" },
 	{ run = "ya emit download %S",        desc = "Download" },
 ]
-
+mpv = [
+	{ run = "mpv %s",    desc = "Open", for = "linux" },
+]
 [open]
 rules = [
 	# Folder
@@ -68,9 +70,9 @@ rules = [
 	# Text
 	{ mime = "text/*", use = [ "edit", "reveal" ] },
 	# Image
-	{ mime = "image/*", use = [ "open", "reveal" ] },
+	{ mime = "image/*", use = [ "open" , "reveal" ] },
 	# Media
-	{ mime = "{audio,video}/*", use = [ "play", "reveal" ] },
+	{ mime = "{audio,video}/*", use = [ "mpv" , "play", "reveal" ] },
 	# Archive
 	{ mime = "application/{zip,rar,7z*,tar,gzip,xz,zstd,bzip*,lzma,compress,archive,cpio,arj,xar,ms-cab*}", use = [ "extract", "reveal" ] },
 	# JSON
@@ -119,7 +121,6 @@ prepend_previewers = [
 
   { url = "*.{ai,eps,ait}", run = "mediainfo" },
 ]
-
 fetchers = [
 	# Mimetype
 	{ id = "mime", url = "*/",         run = "mime.dir", prio = "high" },

@@ -1,66 +1,84 @@
 * {
-    border-color: {4};
-    text-selected: {0};
-    text-idle: {8};
-    text-unselected: {7};
-    highlighter: {2};
-    bg-color: {0}cc;
-    color:@text-unselected;
     background-color: transparent;
-    }
+    text-color: {15};
+}
 
 window {
     width: 730px;
-    background-color: @bg-color;
+    background-color: {0}c0;
     border: 2px solid;
-    border-color: @border-color;
-    border-radius: 8px;
-    padding: 4px;
-    }
-mainbox {
-    background-color: transparent;
-    margin: 5px;
+    border-color: {15}80;
+    padding: 16px;
     border-radius: 4px;
+}
+mainbox {
     spacing: 8px;
-    }
+}
 inputbar{
-    text-color: @text-idle; 
-    background-color: transparent;
+    background-image: linear-gradient(
+        to bottom,
+        {15}80,
+        {15}01,
+        {15}01,
+        {15}01
+    );
+    background-color: {4}99;
     children: [textbox-seach-icon,entry];
-    border: 0px solid 0px solid 2px solid 0px solid;
-    border-color: @border-color;
-    }
+    border: 2px solid;
+    border-color: {15}80;
+    border-radius: 4px;
+}
 textbox-seach-icon{
-    text-color: @text-idle; 
     expand: false;
     content: " ";
     margin: 6px 2px 6px 8px;
     background-color: transparent;
-    }
+    color: {15};
+    text-outline: true;
+    text-outline-width: 1;
+    text-outline-color: {15};
+    padding: 0px 0px 0px 2px;
+}
 entry { 
-    text-color: @text-unselected; 
+    text-color: {15}; 
     padding: 5px 0px 0px 0px;
     background-color: transparent;
-    }
+}
 listview {
-    background-color: transparent;
-    border-radius: 4px;
-    padding: 6px 10px;
+    padding: 6px 6px;
     lines: 8;
-    }
+    background-image: linear-gradient(
+        to bottom,
+        {15}80,
+        {15}01
+    );
+    background-color: {4}99;
+    children: [textbox-seach-icon,entry];
+    background-color: {5}33;
+    border: 2px solid;
+    border-color: {15}80;
+    border-radius: 4px;
+}
 element {
     border-radius: 4px;
-    padding: 4px 0px 3px 10px;
+    padding: 2px 0px 2px 10px;
+    margin: 1px 0px;
     border: 0;
-    text-color: @text-unselected;
-    background-color:inherit;
+    text-color: {15};
+    background-color: {0}27;
 }
 element selected {
-    background-image: linear-gradient(to top,{2},{2},{2},{7});
-    border: 1px solid;
-    border-color: @text-unselected;
-    text-color: @text-selected;
-    }
+    background-image: linear-gradient(
+        to bottom,
+        #ffffff80,
+        #ffffff01,
+        #ffffff01
+    );
+    background-color: {14}b3;
+    border: 2px solid;
+    border-color: #ffffff80;
+    text-color: {0};
+}
 element-text {
     background-color: #00000000; // This line is super imp , 
                                  // it hides the weird text background

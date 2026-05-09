@@ -1,0 +1,590 @@
+@define-color color0 {0};
+@define-color color1 {1};
+@define-color color2 {2};
+@define-color color3 {3};
+@define-color color4 {4};
+@define-color color5 {5};
+@define-color color6 {6};
+@define-color color7 {7};
+@define-color color8 {8};
+@define-color color9 {9};
+@define-color color10 {10};
+@define-color color11 {11};
+@define-color color12 {12};
+@define-color color13 {13};
+@define-color color14 {14};
+@define-color color15 {15};
+
+*{
+    all: unset;
+    font-family: DepartureMono Nerd Font Propo, sans-serif;
+    font-size: 14px;
+    font-weight:bold;
+    padding: 0px;
+
+}
+.OBTRemAll_outer{
+    background-color: transparent;
+}
+.OBTRemAll_inner{
+    background-color: alpha(@color0,0.75);
+    border-radius: 8px;
+    border: 2px solid alpha(@color15,0.7); 
+}
+.element{
+    color: @color0;
+    margin: 4px 0px ;
+    padding: 0px 6px;
+    border-radius: 4px;
+    border: 2px solid alpha(white,0.6);
+    background-image: linear-gradient(
+        to bottom,
+        alpha(white, 0.5),
+        alpha(white, 0.01)
+    );  
+    box-shadow: 2px -2px 2px alpha(@color0,0.8);
+
+}
+.element_hover_box:hover .element{
+    border: 2px solid alpha(white,0.8);
+    box-shadow: 1px 1px 2px alpha(white,0.8);
+}
+.outer {
+    background-color: transparent;
+}
+.inner {
+    background-color: alpha(@color0,0.75);
+    padding: 12px;
+    border-radius: 0px 0px 8px 8px;
+    border-width: 0px 2px 2px 2px;
+    border-style: solid;
+    border-color: alpha(white,0.6);
+}
+.inner_inner {
+    padding: 8px;
+    border-radius: 8px;
+    border: 2px solid alpha(@color15,0.6);
+    background-image: linear-gradient(
+        to bottom,
+        alpha(white, 0.3),
+        alpha(white, 0.01)
+    );  
+}
+/* workspaces */
+.wp_eventbox label {
+    color: @color15;
+    padding: 0px 4px;
+    margin: 4px 0px;
+    text-shadow: 1px 1px 2px alpha(@color15,0.8) ;
+}
+.wp_eventbox .active {
+    border-width: 0px 0px 2px 0px; 
+    border-color: alpha(white,0.6);
+    border-style: solid;
+}
+.wp_eventbox .focused {
+    color :@color0;
+    border: 2px solid alpha(white,0.5);
+    border-radius:4px;
+    background-color: @color6;
+    background-image: linear-gradient(
+        to bottom,
+        alpha(white, 0.5),
+        alpha(white, 0.01)
+    );  
+}
+.wp_eventbox:hover .focused {
+    box-shadow: 1px 1px 2px alpha(white,0.7) ;
+}
+.wp_eventbox .urgent {
+    color :@color0;
+    border: 2px solid alpha(white,0.5);
+    border-radius:4px;
+    background-color: @color1;
+    background-image: linear-gradient(
+        to bottom,
+        alpha(white, 0.5),
+        alpha(white, 0.01)
+    );  
+}
+.wp_eventbox:first-child label {
+    margin-left: 6px;
+}
+.wp_eventbox:hover .active {
+    border-color: alpha(white,0.8);
+}
+/* window */
+.window {
+    color :@color15;
+    margin-left: 12px;
+}
+/* music */
+.music label  {
+    text-shadow: 1px 1px 2px alpha(white,0.5); 
+}
+.music_card_inner .nav label {
+    font-size: 24px;
+}
+.music_card_inner .image_inner {
+    min-height: 170px;
+    min-width: 170px;
+    border-radius:8px;
+    border: 2px solid alpha(white,0.6);
+    background-size: cover;
+    box-shadow: 3px 7px 5px alpha(white,0.5) inset;
+}
+.music_card_inner .previous label,
+.music_card_inner .next label,
+.music_card_inner .play label,
+.music_card_inner .pause label
+{
+    color: @color0;
+    margin: 4px 0px ;
+    padding: 0px 6px;
+    border-radius: 4px;
+    border: 2px solid alpha(white,0.6);
+    background-image: linear-gradient(
+        to bottom,
+        alpha(white, 0.5),
+        alpha(white, 0.01)
+    );  
+    box-shadow: 2px 2px 5px alpha(@color0,0.8);
+}
+.music_card_inner .previous label,
+.music_card_inner .next label {
+    background-color: @color12;
+}
+.music_card_inner .play label {
+    background-color: @color10;
+}
+.music_card_inner .pause label {
+    background-color: @color9;
+}
+.music_card_inner .previous:hover label,
+.music_card_inner .next:hover label,
+.music_card_inner .play:hover label,
+.music_card_inner .pause:hover label{
+    border: 2px solid alpha(white,0.8);
+    box-shadow: 2px 2px 5px alpha(white,0.5);
+}
+.music_card_inner .image_outer:hover .image_inner {
+    border: 2px solid alpha(white,0.8);
+}
+.music_card_inner .repeat label,
+.music_card_inner .random label,
+.music_card_inner .single label,
+.music_card_inner .consume label,
+.music_card_inner .norepeat label,
+.music_card_inner .norandom label,
+.music_card_inner .nosingle label,
+.music_card_inner .noconsume label,
+.music_card_inner .oneshot label
+{
+    color: @color0;
+    margin: 3px;
+    padding: 2px 4px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: 2px solid alpha(white,0.6);
+    background-image: linear-gradient(
+        to bottom,
+        alpha(white, 0.5),
+        alpha(white, 0.01)
+    );  
+    box-shadow: 2px 2px 5px alpha(@color0,0.8);
+}
+.music_card_inner .repeat:hover label,
+.music_card_inner .random:hover label,
+.music_card_inner .single:hover label,
+.music_card_inner .consume:hover label,
+.music_card_inner .norepeat:hover label,
+.music_card_inner .norandom:hover label,
+.music_card_inner .nosingle:hover label,
+.music_card_inner .noconsume:hover label,
+.music_card_inner .oneshot:hover label
+{
+    border: 2px solid alpha(white,0.8);
+    box-shadow: 2px 2px 5px alpha(white,0.5);
+}
+.music_card_inner .repeat label,
+.music_card_inner .random label,
+.music_card_inner .single label,
+.music_card_inner .consume label{
+    background-color: @color2;
+}
+.music_card_inner .norepeat label,
+.music_card_inner .norandom label,
+.music_card_inner .nosingle label,
+.music_card_inner .noconsume label {
+    background-color: @color9;
+}
+.music_card_inner .oneshot label {
+    background-color: @color5;
+}
+.music_card_inner .artist,
+.music_card_inner .title {
+    text-shadow: 1px 1px 2px alpha(white,0.5); 
+}
+.music_card_inner scale trough {
+    min-width: 128px;
+    background-color: alpha(@color8,0.2);
+    background-image: linear-gradient(
+        to bottom,
+        alpha(white, 0.02),
+        alpha(white, 0.2)
+    );  
+    border-radius: 4px;
+}
+.music_card_inner scale highlight {
+    background-image: linear-gradient(
+        to right,
+        @color4,
+        @color1
+    );  
+    border-radius: 4px;
+    min-height: 10px;
+    box-shadow: 1px 0px 2px alpha(@color0,0.8);
+}
+/* clock */
+.clock .element {
+    background-color: @color12;
+    margin-right: 24px;
+}
+calender {
+    color: @color15;
+}
+calendar:selected {
+    color: @color1;
+}
+calendar.header,
+calendar.button,
+calendar.highlight,
+calendar:indeterminate {
+    color: @color4;
+}
+calendar * {
+    padding: 3px;
+}
+
+/* cpu */
+.cpu .element{
+    background-color: @color2;
+}
+.cpu_card_inner {
+    text-shadow: 1px 1px 2px @color2; 
+}
+.cpu_card_inner .inner_inner {
+    background-color: alpha(@color2,0.2);
+    box-shadow: 3px 3px 4px alpha(@color2,0.5);
+}
+.cpu_card_inner progressbar trough {
+    min-width: 128px;
+    background-color: alpha(@color8,0.6);
+    background-image: linear-gradient(
+        to bottom,
+        alpha(white, 0.02),
+        alpha(white, 0.2)
+    );  
+    border-radius: 4px;
+}
+.cpu_card_inner progressbar progress {
+    background-color: @color2;
+    background-image: linear-gradient(
+        to bottom,
+        alpha(white, 0.7),
+        alpha(white, 0.01)
+    );  
+    border-radius: 4px;
+    min-height: 10px;
+    box-shadow: 1px 0px 2px alpha(white,0.8);
+}
+.cpu_card_inner label {
+    margin: 4px;
+}
+/* temp */
+.temp .element{
+    background-color: @color4;
+}
+.temp_card_inner {
+    text-shadow: 1px 1px 2px @color4; 
+}
+.temp_card_inner .inner_inner {
+    background-color: alpha(@color4,0.2);
+    box-shadow: 3px 3px 4px alpha(@color4,0.5);
+}
+/* memory */
+.memory .element{
+    background-color: @color1;
+}
+.memory_card_inner {
+    text-shadow: 1px 1px 2px @color1; 
+}
+.memory_card_inner .inner_inner {
+    background-color: alpha(@color1,0.2);
+    box-shadow: 3px 3px 4px alpha(@color1,0.5);
+}
+.memory_card_inner circular-progress {
+    color: @color1;
+    background-color: alpha(@color8,0.2);
+}
+/* storage */
+.storage .element{
+    background-color: @color5;
+}
+.storage_card_inner .inner_inner {
+    background-color: alpha(@color5,0.2);
+    box-shadow: 3px 3px 4px alpha(@color5,0.5);
+    text-shadow: 1px 1px 2px @color5; 
+}
+/* brightness */
+.brightness scale trough {
+    background-color: alpha(@color8,0.2);
+    border-radius: 4px;
+}
+.brightness scale highlight {
+    /* finicky value */
+    min-height: 18px;
+    /* ----------------------------------------- */
+    background-color: @color3;
+    border-radius: 4px;
+    border: 2px solid alpha(white,0.6);
+    background-image: linear-gradient(
+        to bottom,
+        alpha(white, 0.5),
+        alpha(white, 0.01)
+    );  
+}
+.brightness .element{
+    background-color: @color3;
+}
+/* battery */
+.battery .element{
+    background-color: @color2;
+}
+/* network */
+.network .element{
+    background-color: @color6;
+}
+.network_card_inner .inner_inner {
+    background-color: alpha(@color6,0.2);
+    box-shadow: 3px 3px 4px alpha(@color6,0.5);
+    text-shadow: 1px 1px 2px @color6; 
+}
+.network_card_inner .inner_inner .UP,
+.network_card_inner .inner_inner .DOWN, 
+.network_card_inner .inner_inner .ip,
+.network_card_inner .inner_inner .gate,
+.network_card_inner .inner_inner .speed
+{
+    color: @color0;
+    text-shadow: none; 
+    margin: 4px 0px ;
+    padding: 0px 10px;
+    border-radius: 4px;
+    border: 2px solid alpha(white,0.6);
+    background-image: linear-gradient(
+        to bottom,
+        alpha(white, 0.5),
+        alpha(white, 0.01)
+    );  
+    box-shadow: 3px 3px 5px alpha(@color0,0.5);
+}
+.network_card_inner .inner_inner .UP {
+    background-color: @color10;
+}
+.network_card_inner .inner_inner .DOWN {
+    background-color: @color9;
+}
+.network_card_inner .inner_inner .device {
+    border-width: 0px 0px 2px 0px;
+    border-style: dashed;
+    border-color: alpha(white,0.7);
+}
+.network_card_inner .inner_inner .ip {
+    background-color: @color4;
+}
+.network_card_inner .inner_inner .gate {
+    background-color: @color5;
+}
+.network_card_inner .inner_inner .speed {
+    background-color: @color6;
+}
+/* bluetooth */
+.bluetooth .element{
+    background-color: @color10;
+}
+.on label {
+    color: @color0;
+    margin: 4px 0px ;
+    padding: 0px 10px;
+    border-radius: 4px;
+    border: 2px solid alpha(white,0.6);
+    background-image: linear-gradient(
+        to bottom,
+        alpha(white, 0.5),
+        alpha(white, 0.01)
+    );  
+    background-color: @color10;
+    box-shadow: 3px 3px 5px alpha(@color0,0.5);
+}
+.off label {
+    color: @color0;
+    margin: 4px 0px ;
+    padding: 0px 10px;
+    border-radius: 4px;
+    border: 2px solid alpha(white,0.6);
+    background-image: linear-gradient(
+        to bottom,
+        alpha(white, 0.5),
+        alpha(white, 0.01)
+    );  
+    background-color: @color9;
+    box-shadow: 3px 3px 5px alpha(@color0,0.5);
+}
+.remove label {
+    color:@color1;
+    text-shadow: 1px 1px 2px @color1; 
+    font-size: 18px;
+}
+.remove:hover label {
+    text-shadow: 1px 1px 2px @color15; 
+    font-size: 18px;
+}
+.on:hover label, 
+.off:hover label { 
+    border: 2px solid alpha(white,0.8);
+    box-shadow: 2px 2px 2px alpha(white,0.5);
+}
+.controllers,
+.devices {
+    padding: 8px;
+    border-radius: 8px;
+    border: 2px solid alpha(@color15,0.6);
+    box-shadow: 3px 3px 4px alpha(@color5,0.5);
+    background-image: linear-gradient(
+        to bottom,
+        alpha(white, 0.3),
+        alpha(white, 0.01)
+    );  
+}
+.controllers {
+    background-color: alpha(@color5,0.2);
+}
+.devices {
+    background-color: alpha(@color14,0.2);
+}
+.controllers_header,
+.devices_header{
+    text-shadow: 1px 1px 2px alpha(white,0.8); 
+}
+/* audio */
+.audio .element{
+    background-color:@color13;
+}
+.sink, .source {
+    padding: 8px;
+    border-radius: 8px;
+    border: 2px solid alpha(@color15,0.6);
+    box-shadow: 3px 3px 4px alpha(@color4,0.5);
+    background-image: linear-gradient(
+        to bottom,
+        alpha(white, 0.3),
+        alpha(white, 0.01)
+    );  
+}
+.sink {
+    background-color: alpha(@color4,0.2);
+}
+.source {
+    background-color: alpha(@color4,0.2);
+}
+.audio_card_inner {
+    text-shadow: 1px 1px 2px @color15; 
+}
+.audio_card_inner .icon {
+    padding-left: 5px;
+}
+.audio_card_inner scale trough {
+    min-width: 128px;
+    background-color: alpha(@color8,0.6);
+    background-image: linear-gradient(
+        to bottom,
+        alpha(white, 0.02),
+        alpha(white, 0.2)
+    );  
+    border-radius: 4px;
+}
+.audio_card_inner scale highlight {
+    background-color: @color14;
+    background-image: linear-gradient(
+        to bottom,
+        alpha(white, 0.7),
+        alpha(white, 0.01)
+    );  
+    border-radius: 4px;
+    min-height: 10px;
+    box-shadow: 1px 0px 2px alpha(@color0,0.8);
+}
+/* logo */
+.logo .element {
+    min-width: unset;
+    padding: 0px 6px;
+    margin-right: 8px;
+    background-color: @color4;
+}
+.logo_card_inner .logo,
+.logo_card_inner .quote {
+    padding: 8px;
+    border-radius: 8px;
+    border: 2px solid alpha(@color15,0.6);
+    box-shadow: 3px 3px 4px alpha(@color5,0.5);
+    background-image: linear-gradient(
+        to bottom,
+        alpha(white, 0.3),
+        alpha(white, 0.01)
+    );  
+    text-shadow: 1px 1px 2px @color15; 
+}
+.logo_card_inner .logo {
+    background-color: alpha(@color5,0.2);
+}
+.logo_card_inner .quote {
+    background-color: alpha(@color5,0.2);
+}
+.logo label {
+    min-width:50px;
+    padding: 4px 8px;
+    background-color: alpha(@color0,0.2);
+    border-radius:8px;
+    border: 2px solid alpha(white,0.4);
+    box-shadow: 2px 2px 5px alpha(white,0.2) inset;
+}
+/* tray */
+.tray_card_inner .tray {
+    padding: 8px;
+    border-radius: 8px;
+    border: 2px solid alpha(@color15,0.6);
+    box-shadow: 3px 3px 4px alpha(@color6,0.5);
+    background-color: alpha(@color6,0.2);
+    background-image: linear-gradient(
+        to bottom,
+        alpha(white, 0.3),
+        alpha(white, 0.01)
+    );  
+}
+menu {
+    padding: 8px;
+    border-radius: 8px;
+    border: 2px solid alpha(@color15,0.6);
+    box-shadow: 3px 3px 4px alpha(@color6,0.5);
+    background-color: alpha(@color6,0.3);
+    background-image: linear-gradient(
+        to bottom,
+        alpha(white, 0.3),
+        alpha(white, 0.01)
+    );  
+}
+menu menuitem:hover {
+    border-radius: 8px;
+    background-color: alpha(@color15,0.3);
+}

@@ -8,7 +8,7 @@
       "4": "#89b4fa",
       "5": "#cba6f7",
       "6": "#74c7ec",
-      "7": "#cdd6f4",
+      "7": "#bac2de",
       "8": "#6c7086",
       "9": "#eba0ac",
       "10": "#94e2d5",
@@ -16,14 +16,13 @@
       "12": "#b4befe",
       "13": "#f5c2e7",
       "14": "#89dceb",
-      "15": "#bac2de"
+      "15": "#cdd6f4",
+      "t": "Catppuccin"
     },
-    "gtk-theme": "Catppuccin-Dark",
-    "gtk-icon-theme": "Hatter-kde-dark",
+    "gtk-theme": "Colloid-Dark-Catppuccin",
+    "gtk-icon-theme": "Colloid-Catppuccin-Dark",
     "gtk-font": "JetBrainsMono Nerd Font Propo",
-    "gtk-font-size": 12,
-    "vim-colorscheme": "catppuccin_mocha",
-    "vim-airline-colorscheme": "catppuccin_mocha"
+    "gtk-font-size": 12
   },
   "Gruvbox": {
     "placeholders": {
@@ -34,7 +33,7 @@
       "4": "#458588",
       "5": "#b16286",
       "6": "#689d6a",
-      "7": "#ebdbb2",
+      "7": "#a89984",
       "8": "#928374",
       "9": "#fb4934",
       "10": "#b8bb26",
@@ -42,14 +41,13 @@
       "12": "#83a598",
       "13": "#d3869b",
       "14": "#8ec07c",
-      "15": "#a89984"
+      "15": "#ebdbb2",
+      "t": "Gruvbox"
     },
-    "gtk-theme": "Gruvbox-Dark",
-    "gtk-icon-theme": "Hatter-Yellow",
+    "gtk-theme": "Colloid-Dark-Gruvbox",
+    "gtk-icon-theme": "Colloid-Gruvbox-Dark",
     "gtk-font": "JetBrainsMono Nerd Font Propo",
-    "gtk-font-size": 12,
-    "vim-colorscheme": "gruvbox",
-    "vim-airline-colorscheme": "gruvbox"
+    "gtk-font-size": 12
   },
   "Nordic": {
     "placeholders": {
@@ -68,39 +66,56 @@
       "12": "#81a1c1",
       "13": "#b48ead",
       "14": "#88c0d0",
-      "15": "#e5e9f0"
+      "15": "#e5e9f0",
+      "t": "Nordic"
     },
-    "gtk-theme": "Nordic",
-    "gtk-icon-theme": "Hatter-Slate",
+    "gtk-theme": "Colloid-Dark-Nord",
+    "gtk-icon-theme": "Colloid-Nord-Dark",
     "gtk-font": "JetBrainsMono Nerd Font Propo",
-    "gtk-font-size": 12,
-    "vim-colorscheme": "nord",
-    "vim-airline-colorscheme": "nord"
+    "gtk-font-size": 12
   },
   "Dynamic": {
     "placeholders": {
-      "0": "#191923",
-      "1": "#7D8BA2",
-      "2": "#8A96AD",
-      "3": "#9899AD",
-      "4": "#94A4BB",
-      "5": "#99ADC4",
-      "6": "#AFB6CB",
-      "7": "#d5d7e1",
-      "8": "#95969d",
-      "9": "#7D8BA2",
-      "10": "#8A96AD",
-      "11": "#9899AD",
-      "12": "#94A4BB",
-      "13": "#99ADC4",
-      "14": "#AFB6CB",
-      "15": "#d5d7e1"
+      "0": "#181312",
+      "1": "#526067",
+      "2": "#8F6A69",
+      "3": "#316A8F",
+      "4": "#507595",
+      "5": "#608DA4",
+      "6": "#5D9FC7",
+      "7": "#9a9090",
+      "8": "#70605b",
+      "9": "#5491b5",
+      "10": "#c37775",
+      "11": "#5791b7",
+      "12": "#6a98bf",
+      "13": "#7aadc6",
+      "14": "#8cb5cd",
+      "15": "#c5c4c3",
+      "t": "Dynamic",
+      "g0": "#181312",
+      "g1": "#201b1b",
+      "g2": "#282423",
+      "g3": "#302c2b",
+      "g4": "#393534",
+      "g5": "#423e3d",
+      "g6": "#4b4746",
+      "g7": "#555150",
+      "g8": "#5e5a5a",
+      "g9": "#686463",
+      "g10": "#716e6d",
+      "g11": "#7b7978",
+      "g12": "#868382",
+      "g13": "#908d8c",
+      "g14": "#9a9897",
+      "g15": "#a5a3a2",
+      "g16": "#afaead",
+      "g17": "#bab9b8",
+      "g18": "#c5c4c3"
     },
-    "gtk-theme": "linea-nord-color",
-    "gtk-icon-theme": "flattrcolor-dark",
+    "gtk-theme": "Colloid-Dark-Dynamic",
+    "gtk-icon-theme": "Colloid-Dynamic-Dark",
     "gtk-font": "JetBrainsMono Nerd Font Propo",
-    "gtk-font-size": 12,
-    "vim-colorscheme": "wal",
-    "vim-airline-colorscheme": "wal"
+    "gtk-font-size": 12
   }
 }

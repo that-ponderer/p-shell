@@ -1,0 +1,72 @@
+// Catppuccin Theme Color Palette
+
+// Red
+$red-light: {9};
+$red-dark: {1};
+
+// Pink
+$pink-light: {9};
+$pink-dark: {1};
+
+// Purple
+$purple-light: {13};
+$purple-dark: {5};
+
+// Blue
+$blue-light: {12};
+$blue-dark: {4};
+
+// Teal
+$teal-light: {14};
+$teal-dark: {6};
+
+// Green
+$green-light: {10};
+$green-dark: {2};
+
+// Yellow
+$yellow-light: {11};
+$yellow-dark: {3};
+
+// Orange
+$orange-light: {11};
+$orange-dark: {3};
+
+// Grey
+$grey-050: {g18};
+$grey-100: {g17};
+$grey-150: {g16};
+$grey-200: {g15};
+$grey-250: {g14};
+$grey-300: {g13};
+$grey-350: {g12};
+$grey-400: {g11};
+$grey-450: {g10};
+$grey-500: {g9};
+$grey-550: {g8};
+$grey-600: {g7};
+$grey-650: {g6};
+$grey-700: {g5};
+$grey-750: {g4};
+$grey-800: {g3};
+$grey-850: {g2};
+$grey-900: {g1};
+$grey-950: {g0};
+
+// White
+$white: {15};
+
+// Black
+$black: {0};
+
+// Button
+$button-close: if($variant == 'light', $red-dark, $red-light);
+$button-max: if($variant == 'light', $green-dark, $green-light);
+$button-min: if($variant == 'light', $yellow-dark, $yellow-light);
+
+// Link
+$links: if($variant == 'light', {4}, {12});
+
+// Theme
+$default-light: $blue-light;
+$default-dark: $blue-dark;

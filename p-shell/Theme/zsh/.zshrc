@@ -2,14 +2,24 @@
 # Plugins
 #---------------------------------
 plugin_dir="/usr/share/zsh/plugins"
+source $plugin_dir/zsh-vi-mode/zsh-vi-mode.plugin.zsh 
 source $plugin_dir/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh
 source $plugin_dir/zsh-syntax-highlighting/zsh-syntax-highlighting.plugin.zsh
 #---------------------------------
+# Plugin config
+#---------------------------------
+ZVM_NORMAL_MODE_CURSOR=$ZVM_CURSOR_BLINKING_BLOCK
+ZVM_INSERT_MODE_CURSOR=$ZVM_CURSOR_BLINKING_BEAM
+ZVM_VISUAL_MODE_CURSOR=$ZVM_CURSOR_BLOCK
+ZVM_VISUAL_LINE_MODE_CURSOR=$ZVM_CURSOR_BLOCK
+ZVM_OPPEND_MODE_CURSOR=$ZVM_CURSOR_BLOCK
+#---------------------------------
 # Env Vars
 #---------------------------------
-# Set the vimrc location
-export VIMINIT='let $MYVIMRC="${ThemePath}/vim/vimrc" | source $MYVIMRC'
-vim() { kitvim "$@" }
+# More editor mappings
+export EDITOR_FUNC="kitnvim"
+vim() { kitnvim "$@" }
+nvim() { kitnvim "$@" }
 # Match bat theme
 export BAT_THEME='base16'
 #---------------------------------
@@ -120,6 +130,10 @@ function gen_prompt() {
     # zsh will parse one time and foget..:)
     PROMPT="$PROMPT_COMP1$PROMPT_COMP2$PROMPT_COMP3$PROMPT_COMP4
 $PROMPT_COMP5"
+
+    # misc ----------------------------------------- 
+    # fix Ctrl-R not working with zsh-vi-mode plugin
+    bindkey '^R' fzf-history-widget
 }
 precmd_functions+=(gen_prompt)
 #yazi
@@ -130,219 +144,6 @@ function y() {
 	[ -n "$cwd" ] && [ "$cwd" != "$PWD" ] && builtin cd -- "$cwd"
 	rm -f -- "$tmp"
 }
-# --------------------------------
-# Glow (render markdown)
-# --------------------------------
-
-glow() {
-    read -r -d '' GLOW_THEME <<EOF
-    {
-      "document": {
-        "block_prefix": "\n",
-        "block_suffix": "\n",
-        "color": "4"
-      },
-      "block_quote": {
-        "color": "3",
-        "italic": true,
-        "indent": 1,
-        "indent_token": "▍ "
-      },
-      "paragraph": {
-      "color": "7"
-      },
-      "list": {
-        "color": "5",
-        "level_indent": 2
-      },
-      "heading": {
-        "block_suffix": "\n",
-        "color": "0",
-        "bold": true,
-        "suffix": " "
-      },
-      "h1": {
-        "prefix": " # ",
-        "background_color": "5"
-      },
-      "h2": {
-        "prefix": " ## ",
-        "background_color": "1"
-      },
-      "h3": {
-        "prefix": " ### ",
-        "background_color": "4"
-      },
-      "h4": {
-        "prefix": " #### ",
-        "background_color": "3"
-      },
-      "h5": {
-        "prefix": " ##### ",
-        "background_color": "2"
-      },
-      "h6": {
-        "prefix": " ###### ",
-        "background_color": "6"
-      },
-      "text": {},
-      "strikethrough": {
-        "crossed_out": true
-      },
-      "emph": {
-        "color": "4",
-        "italic": true
-      },
-      "strong": {
-        "color": "3",
-        "bold": true
-      },
-      "hr": {
-        "color": "8",
-        "format": "\n$( for ((i=0; i < COLUMNS; i++)) ; do printf '%s' "━" ; done )\n"
-      },
-      "item": {
-        "block_prefix": "◇ "
-      },
-      "enumeration": {
-        "block_prefix": ". ",
-        "color": "#8be9fd"
-      },
-      "task": {
-        "ticked": "[✓] ",
-        "unticked": "[ ] "
-      },
-      "link": {
-        "color": "6",
-        "underline": true,
-        "block_prefix": "(",
-        "block_suffix": ")"
-      },
-      "link_text": {
-        "color": "1"
-      },
-      "image": {
-        "color": "6",
-        "underline": true,
-        "block_prefix": "(",
-        "block_suffix": ")"
-      },
-      "image_text": {
-        "color": "1",
-        "format": "Image: {{.text}} →"
-      },
-      "code": {
-        "color": "2"
-      },
-      "code_block": {
-      "color": "${COL3}",
-      "margin": 2,
-      "chroma": {
-            "text": {
-              "color": "${COL7}"
-            },
-            "error": {
-              "color": "${COL7}",
-              "background_color": "${COL1}"
-            },
-            "comment": {
-              "color": "${COL8}"
-            },
-            "comment_preproc": {
-              "color": "${COL5}"
-            },
-            "keyword": {
-              "color": "${COL5}"
-            },
-            "keyword_reserved": {
-              "color": "${COL5}"
-            },
-            "keyword_namespace": {
-              "color": "${COL5}"
-            },
-            "keyword_type": {
-              "color": "${COL11}"
-            },
-            "operator": {
-              "color": "${COL6}"
-            },
-            "punctuation": {
-              "color": "${COL7}"
-            },
-            "name": {
-              "color": "${COL7}"
-            },
-            "name_builtin": {
-              "color": "${COL6}"
-            },
-            "name_tag": {
-              "color": "${COL6}"
-            },
-            "name_attribute": {
-              "color": "${COL10}"
-            },
-            "name_class": {
-              "color": "${COL11}"
-            },
-            "name_constant": {
-              "color": "${COL12}"
-            },
-            "name_decorator": {
-              "color": "${COL5}"
-            },
-            "name_exception": {},
-            "name_function": {
-              "color": "${COL4}"
-            },
-            "name_other": {},
-            "literal": {},
-            "literal_number": {
-              "color": "${COL3}"
-            },
-            "literal_date": {},
-            "literal_string": {
-              "color": "${COL2}"
-            },
-            "literal_string_escape": {
-              "color": "${COL5}"
-            },
-            "generic_deleted": {
-              "color": "${COL1}"
-            },
-            "generic_emph": {
-              "color": "${COL2}",
-              "italic": true
-            },
-            "generic_inserted": {
-              "color": "${COL2}"
-            },
-            "generic_strong": {
-              "color": "${COL3}",
-              "bold": true
-            },
-            "generic_subheading": {
-              "color": "${COL12}"
-            },
-            "background": {
-              "background_color": "${COL0}"
-            }
-         }
-      },
-      "table": {
-      "color": "3"
-      },
-      "definition_list": {},
-      "definition_term": {},
-      "definition_description": {
-        "block_prefix": "\n "
-      },
-      "html_block": {},
-      "html_span": {}
-    }
-EOF
-    PAGER="less -r" /usr/bin/env glow "$@" -p -s <(printf '%s' "$GLOW_THEME")
-}
-
 #---------------------------------
 # Overrides 
 #---------------------------------

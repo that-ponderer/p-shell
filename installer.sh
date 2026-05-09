@@ -14,9 +14,8 @@ aur_helper=""
 # package db  {{{
 declare -A deps_arch=(
     ["hard"]="
-    python-pywal,
+    python-pywal16-git,
     imagemagick, 
-    wpgtk, 
     awww, 
     glib2, 
     zsh, 
@@ -29,6 +28,9 @@ declare -A deps_arch=(
     jq,
     mpvpaper,
     ffmpegthumbnailer,
+    pastel,
+    sassc,
+    rust,
     "
     ["soft"]="
     cava: Colorful real-time audio visualizer,
@@ -41,7 +43,6 @@ declare -A deps_arch=(
     xdg-desktop-portal-gnome: GNOME backend for XDG portals for screenshare and file pickers,
     xdg-desktop-portal-gtk: GTK based fallback XDG portal implementation,
     rmpc: Elegant TUI client for MPD,
-    qutebrowser: Keyboard driven minimal browser with Vim like bindings,
     rofi: Application launcher and dmenu replacement with scripting support,
     swaylock: Secure screen locker for Wayland compositors,
     waybar: Highly customizable Wayland status bar,
@@ -60,7 +61,6 @@ declare -A deps_arch=(
     zsh-autosuggestions: Fish like command suggestions for Zsh,
     zsh-syntax-highlighting: Syntax highlighting for Zsh command line,
     zsh-vi-mode: A Better vi mode for zsh,
-    gvim: GUI version of Vim,
     nodejs: JavaScript runtime built on V8,
     npm: Node package manager,
     bluez: Official Linux Bluetooth protocol stack,
@@ -71,7 +71,6 @@ declare -A deps_arch=(
     flatpak: Sandbox based application distribution system,
     tesseract-data-eng: Tesseract language data for the english,
     tesseract: Command-line OCR (Optical Character Recognition) engine,
-    numr: A text calculator for natural language expressions with a vim-style TUI,
     mediainfo: View tags for images and videos, 
     neovim: A fast extensible modern fork of Vim designed for developers,
     tree-sitter: A fast parsing library for building syntax trees of source code,
@@ -236,46 +235,6 @@ install_packages() {
 # }}}
 
 # Installers {{{
-install_wpgtk_templates() {
-    is_command wpg || return 1
-    log "Installing wpgtk templates..."
-    mkdir -p "$HOME/.config/wpg/templates"
-    /usr/bin/wpg-install.sh -Gi || log "Skipped wpgtk templates..."
-}
-install_vim_config() {
-    is_command vim || return 1
-    curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim || \
-    { fail "vim-plug could not be installed.." ; return 1 ; }
-
-}
-install_gtk_themes() {
-    local themes=(
-    "https://github.com/Fausto-Korpsvart/Catppuccin-GTK-Theme.git"
-    "https://github.com/Fausto-Korpsvart/Gruvbox-GTK-Theme.git"
-        )
-    for idx in "${!themes[@]}" ; do
-        git clone --depth=1  "${themes[$idx]}" "$cache_dir/gtk_theme_$idx" || \
-            { fail "Failed to install gtk theme [${themes[$idx]}]: skipping.." \
-                ; continue ; }
-        cd "$cache_dir/gtk_theme_$idx/themes" \
-            || { fail "failed to change directory.." ; continue  ; } 
-
-        ./install.sh -c "dark" --tweaks "float" --tweaks "macos" \
-            || { fail "Failed to install gtk theme: skipping.." ; continue  ; } 
-        cd "$current_dir" || \
-            { fatal "Failed to change directory.." ; }
-    done
-    
-    # Nordic
-    git clone --depth=1 "https://github.com/EliverLara/Nordic.git" \
-        "$cache_dir/Nordic" || \
-        { fail "Failed to install gtk theme [Nordic]: skipping.." ; }
-    [[ -d "$HOME/.themes/Nordic" ]] && rm -rf "$HOME/.themes/Nordic"
-    mv -f "$cache_dir/Nordic" "$HOME/.themes" || \
-        { fail "Failed to move GTK theme [Nordic]: skipping.." ; }
-
-}
 install_flatpak(){
     log "Applying flatpak overrides.."
     is_command flatpak || { fail "flatpak not installed: skipping.." ; return 1 ; }
@@ -284,6 +243,16 @@ install_flatpak(){
     flatpak override --user --filesystem="$HOME/.local/share/themes" &> /dev/null
     flatpak override --user --filesystem="$HOME/.local/share/icons" &> /dev/null
     flatpak override --user --filesystem="$HOME/.local/share/fonts" &> /dev/null
+}
+install_eww(){
+    local install_dir="$cache_dir/eww"
+    git clone --depth 1 "https://github.com/elkowar/eww" "$install_dir" || return 1 
+    cd "$install_dir" || return 1 
+    cargo build --release --no-default-features --features=wayland || return 1
+    mkdir -p ~/.local/bin &> /dev/null 
+    chmod +x "target/release/eww" &> /dev/null
+    cp "target/release/eww" ~/.local/bin
+    cd "$current_dir" || return 1
 }
 # }}}
 
@@ -321,10 +290,6 @@ move_project_files() {
     mkdir -p "$HOME/Theme"
     backup_and_copy "p-shell" "$HOME/Theme"
 }
-move_wpg_config() {
-    is_command wpg || return 1
-    backup_and_copy "config-overrides/wpg" "$HOME/.config"
-}
 move_fonts() {
     log "Installing fonts"
     cp -rn fonts "$HOME/.local/share/fonts"
@@ -337,7 +302,6 @@ change_shell() {
     log "Changing default shell to zsh"
     chsh -s /usr/bin/zsh
 }
-
 install_zshenv() {
     yn_choice "Install .zshenv?" || { log "Skipping .zshenv..." ; return 1 ; }
     backup_and_copy_file zshenv "$HOME/.zshenv"
@@ -382,13 +346,11 @@ main() {
     detect_or_install_aur_helper || fatal "Could not install AUR helper.."
     resolve_soft_deps 
     install_packages 
+    install_eww
     setup_dirs 
     setup_clipcat 
     setup_mpd 
     move_project_files 
-    install_wpgtk_templates 
-    move_wpg_config 
-    install_vim_config 
     install_gtk_themes 
     install_flatpak 
     move_fonts 

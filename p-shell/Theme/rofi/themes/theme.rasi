@@ -1,66 +1,84 @@
 * {
-    border-color: #89b4fa;
-    text-selected: #181825;
-    text-idle: #6c7086;
-    text-unselected: #cdd6f4;
-    highlighter: #a6e3a1;
-    bg-color: #181825cc;
-    color:@text-unselected;
     background-color: transparent;
-    }
+    text-color: #cdd6f4;
+}
 
 window {
     width: 730px;
-    background-color: @bg-color;
+    background-color: #181825c0;
     border: 2px solid;
-    border-color: @border-color;
-    border-radius: 8px;
-    padding: 4px;
-    }
-mainbox {
-    background-color: transparent;
-    margin: 5px;
+    border-color: #cdd6f480;
+    padding: 16px;
     border-radius: 4px;
+}
+mainbox {
     spacing: 8px;
-    }
+}
 inputbar{
-    text-color: @text-idle; 
-    background-color: transparent;
+    background-image: linear-gradient(
+        to bottom,
+        #cdd6f480,
+        #cdd6f401,
+        #cdd6f401,
+        #cdd6f401
+    );
+    background-color: #89b4fa99;
     children: [textbox-seach-icon,entry];
-    border: 0px solid 0px solid 2px solid 0px solid;
-    border-color: @border-color;
-    }
+    border: 2px solid;
+    border-color: #cdd6f480;
+    border-radius: 4px;
+}
 textbox-seach-icon{
-    text-color: @text-idle; 
     expand: false;
     content: " ";
     margin: 6px 2px 6px 8px;
     background-color: transparent;
-    }
+    color: #cdd6f4;
+    text-outline: true;
+    text-outline-width: 1;
+    text-outline-color: #cdd6f4;
+    padding: 0px 0px 0px 2px;
+}
 entry { 
-    text-color: @text-unselected; 
+    text-color: #cdd6f4; 
     padding: 5px 0px 0px 0px;
     background-color: transparent;
-    }
+}
 listview {
-    background-color: transparent;
-    border-radius: 4px;
-    padding: 6px 10px;
+    padding: 6px 6px;
     lines: 8;
-    }
+    background-image: linear-gradient(
+        to bottom,
+        #cdd6f480,
+        #cdd6f401
+    );
+    background-color: #89b4fa99;
+    children: [textbox-seach-icon,entry];
+    background-color: #cba6f733;
+    border: 2px solid;
+    border-color: #cdd6f480;
+    border-radius: 4px;
+}
 element {
     border-radius: 4px;
-    padding: 4px 0px 3px 10px;
+    padding: 2px 0px 2px 10px;
+    margin: 1px 0px;
     border: 0;
-    text-color: @text-unselected;
-    background-color:inherit;
+    text-color: #cdd6f4;
+    background-color: #18182527;
 }
 element selected {
-    background-image: linear-gradient(to top,#a6e3a1,#a6e3a1,#a6e3a1,#cdd6f4);
-    border: 1px solid;
-    border-color: @text-unselected;
-    text-color: @text-selected;
-    }
+    background-image: linear-gradient(
+        to bottom,
+        #ffffff80,
+        #ffffff01,
+        #ffffff01
+    );
+    background-color: #89dcebb3;
+    border: 2px solid;
+    border-color: #ffffff80;
+    text-color: #181825;
+}
 element-text {
     background-color: #00000000; // This line is super imp , 
                                  // it hides the weird text background

@@ -142,44 +142,43 @@ animations {
 // Binds {{{
 
 binds {
+    // Apps
     Mod+Q { spawn "zsh" "-c" "kitty" ; }
     Mod+Shift+Q { spawn "zsh" "-c" "kitty -o window_padding_width=0" ; }
     Mod+space  { spawn "zsh" "-c"  "drun" ; } 
     Mod+R { spawn-sh "nautilus -w" ; }
     Mod+U { spawn-sh "brave" ; }
-    Mod+E {spawn "zsh" "-c" "qute"; }
-
-    // Reload Waybar
-    Mod+F4 { spawn  "zsh" "-c" "killall waybar ; bar" ; } 
-
+    Mod+F4 { spawn  "zsh" "-c" "\"${ThemePath}/switcheroo.sh\" -b" ; } 
     Mod+W { spawn "zsh" "-c" "switch" ; }
     Mod+S { spawn "zsh" "-c" "clipboard" ; } 
     Alt+space { spawn "zsh" "-c" "emoji" ; } 
     Shift+Print { spawn "zsh" "-c" "screenshot d" ; }
     Print { spawn "zsh" "-c" "screenshot r" ; }  
-    Mod+B { spawn "zsh" "-c" "bluetooth" ; }
-    Mod+Shift+B { spawn "zsh" "-c" "lock" ; }
     Mod+P {spawn "zsh" "-c" "colorpicker";} 
     Mod+F2 { spawn "zsh" "-c" "screen_record r" ; }
     Mod+F3 { spawn "zsh" "-c" "screen_record d" ; }
     Mod+F1 { spawn "zsh" "-c" "screen_record_stop" ; }
     Mod+T { spawn "zsh" "-c" "grab_text" ; }
-    Mod+Shift+T { spawn "zsh" "-c" "grab_text" "p" ; }
+    Mod+Shift+T { spawn "zsh" "-c" "grab_text p" ; }
     Mod+N { spawn "zsh" "-c" "calc" ; }
-    Mod+V { spawn "zsh" "-c" "stt_toggle" ; }
+    Mod+B { spawn "zsh" "-c" "stt_toggle" ; }
 
+    // Audio
     XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05+"; }
     XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.05-"; }
+    Shift+XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_SOURCE@ 0.05+"; }
+    Shift+XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_SOURCE@ 0.05-"; }
     XF86AudioMute        allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
     XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
 
+    // Brightness
     XF86MonBrightnessUp allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "+1%"; }
     XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "1%-"; }
 
     Mod+Tab repeat=false { toggle-overview; }
-
     Mod+C repeat=false { close-window; }
 
+    // Nav
     Mod+Left  { focus-column-left; }
     Mod+Down  { focus-window-down; }
     Mod+Up    { focus-window-up; }
@@ -274,13 +273,23 @@ binds {
 // Rules {{{
 
 // Put swaybg inside the overview backdrop.
-layer-rule {
-    match namespace="^wallpaper$"
-    place-within-backdrop true
-}
 window-rule {
     geometry-corner-radius 8
     clip-to-geometry true
+}
+window-rule {
+    match title="^stt_hud$"
+    open-focused false
+    open-floating true
+    baba-is-float true
+    default-column-width { fixed 170; }
+    default-window-height { fixed 118; }
+    default-floating-position x=875 y=110 relative-to="bottom-left"
+    border {
+        width 2
+        inactive-color "{5}b3"
+        active-color "{5}b3"
+    }
 }
 window-rule {
     match title="Pipewire Volume Control"
@@ -292,16 +301,21 @@ window-rule {
     match title="calculator"
     open-floating true
     default-column-width { proportion 0.66; }
-    default-window-height { fixed 700; }
+    default-window-height { fixed 712; }
     open-focused true
+}
+layer-rule {
+    match namespace="^wallpaper$"
+    place-within-backdrop true
 }
 layer-rule {
     match namespace="^rofi$"
     match namespace="^waybar$"
     match namespace="^notifications$"
+    match namespace="^gtk-layer-shell$"
     background-effect {
         blur true
     }
+    geometry-corner-radius 8
 }
 // }}}
-

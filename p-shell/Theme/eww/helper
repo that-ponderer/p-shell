@@ -1,0 +1,752 @@
+#!/usr/bin/env bash 
+
+shopt -s nullglob extglob
+
+# Variable 
+if [[ -d "$XDG_CACHE_HOME" ]] ; then declare CACHE_DIR="$XDG_CACHE_HOME/OBTRemAll"
+else [[ -d "$HOME" ]] || exit 1 ; declare CACHE_DIR="$HOME/.cache/OBTRemAll" ; fi
+[[ -d "$CACHE_DIR" ]] || mkdir -p "$CACHE_DIR"
+
+
+is_open(){
+    local card="$1"
+    while read -r _name name ; do 
+        [[ "$name" == "$card" ]] && return 0
+    done < <(eww active-windows)
+    return 1
+}
+flash() {
+    local card="$1"
+
+    if ! is_open "$card" ; then 
+        eww open "$card"
+    else
+        eww close "$card"
+    fi
+}
+setvar() {
+    local name="$1"  
+    local value="$2"  
+    local delay="$3"  
+    [[ "$delay" ]] && sleep "$delay"
+    eww update "$name=$value"
+}
+pollvar() {
+    local name="$1"  
+    local delay="$2"  
+    [[ "$delay" ]] && sleep "$delay"
+    eww poll "$name"
+}
+togglevar(){
+    local name="$1"  
+    local inverse="$2"  
+    local lock_file="$CACHE_DIR/yuck_var[$name]"
+    if [[ "$inverse" == "inverse" ]] ; then 
+
+        [[ -f "$lock_file" ]] && \
+            { eww update "$name=true" ; rm "$lock_file" ; return 1 ; } 
+        eww update "$name=false"
+        printf "%s" "(inv)value: false" > "$lock_file"
+        return 0;
+    fi
+    [[ -f "$lock_file" ]] && \
+        { eww update "$name=false" ; rm "$lock_file" ; return 1 ; } 
+    eww update "$name=true"
+    printf "%s" "value: true" > "$lock_file"
+}
+animate(){
+    local frames=( "$@" )
+    local animation_time_file="$CACHE_DIR/animation_time_file"
+    [[ -f "$animation_time_file" ]] || printf '%s' "0" > "$animation_time_file"
+    local current_time="$(< "$animation_time_file")"
+    [[ "$current_time" != +([[:digit:]]) ]] && { printf 'null' ; return 1 ; }
+    printf "%s" "${frames[$(( current_time % ${#frames[@]} ))]}"
+    current_time="$(( current_time + 1 ))"
+    [[ "$current_time" -eq 100 ]] && current_time="0"
+    printf '%s' "$current_time" > "$animation_time_file"
+    return 0
+}
+fetch_network(){
+    command -v ip &> /dev/null || { printf '[]' ; return 1 ; }
+    declare -A net_dev_state  # dev:state
+    declare -A net_link_state  # dev:link_state
+    declare -A net_ip_addr # dev:ip ...
+    declare -A net_gate # dev:dest-gateway ...
+    declare -A net_up_speed # dev:bytes
+    declare -A net_down_speed #dev:bytes
+    local interval=1
+    # Link layer
+    local link_out_start="$( ip -o -s link )"
+    sleep "$interval"
+    local link_out_end="$( ip -o -s link )"
+    declare -A down_speed_start
+    declare -A down_speed_end
+    declare -A up_speed_start
+    declare -A up_speed_end
+    local idx dev dev_info mtu mtu_v q_d q_d_v link_state link_state_v rest
+    while read -r idx dev dev_info mtu mtu_v q_d q_d_v link_state link_state_v \
+        rest ; do
+        local dev=${dev%%:}
+        if ! [[ "$dev" == lo ]] ; then
+            if [[ "$dev_info" == *UP* ]] ; then
+                local dev_state="UP"
+            else
+                local dev_state="DOWN"
+            fi
+            net_dev_state["$dev"]="$dev_state"
+            net_link_state["$dev"]="$link_state_v"
+            if [[ "$link_state_v" == "UP" ]] ; then
+                while read -ra arr ; do
+                    for idx in "${!arr[@]}" ; do
+                        if [[ "${arr[$idx]}" == "RX:" ]] ; then
+                            down_speed_start["$dev"]="${arr[$(( idx + 8 ))]}"
+                        fi
+                        if [[ "${arr[$idx]}" == "TX:" ]] ; then
+                            up_speed_start["$dev"]="${arr[$(( idx + 8 ))]}"
+                        fi
+                    done
+                done <<< "$rest"
+            fi
+        fi
+    done <<< "$link_out_start"
+    while read -r idx dev dev_info mtu mtu_v q_d q_d_v link_state link_state_v \
+        rest ; do
+        local dev=${dev%%:}
+        if ! [[ "$dev" == lo ]] ; then
+            if [[ "$link_state_v" == "UP" ]] ; then
+                while read -ra arr ; do
+                    for idx in "${!arr[@]}" ; do
+                        if [[ "${arr[$idx]}" == "RX:" ]] ; then
+                            down_speed_end["$dev"]="${arr[$(( idx + 8 ))]}"
+                        fi
+                        if [[ "${arr[$idx]}" == "TX:" ]] ; then
+                            up_speed_end["$dev"]="${arr[$(( idx + 8 ))]}"
+                        fi
+                    done
+                done <<< "$rest"
+            fi
+        fi
+    done <<< "$link_out_end"
+    for dev in "${!down_speed_start[@]}" ;  do
+        net_down_speed["$dev"]="$(( ( ${down_speed_end[$dev]} - \
+            ${down_speed_start[$dev]}) / interval ))"
+        net_up_speed["$dev"]="$(( ( ${up_speed_end[$dev]} - \
+            ${up_speed_start[$dev]}) / interval ))"
+    done
+    # Network Layer
+    net_ip_addr=()
+    local inet ip
+    while read -r idx dev inet ip rest ; do
+        for d in "${!net_dev_state[@]}" ; do
+            if [[ "$dev" == "$d" ]] ; then
+                if [[ "$ip" == +([[:digit:]./]) ]] ; then
+                    net_ip_addr["$dev"]+="$ip "
+                fi
+            fi
+        done
+    done <  <(ip -o addr)
+    # -----------------
+    net_gate=()
+    local dest via gate dev_v
+    while read -r dest via gate dev dev_v rest ; do
+        for d in "${!net_dev_state[@]}" ; do
+            if [[ "$dev_v" == "$d" ]] ; then
+                if [[ "$dest" == "default" ]]  ; then
+                    dest="0.0.0.0"
+                fi
+                if [[ "$gate" == +([[:digit:]./]) ]] ; then
+                    net_gate["$dev_v"]+="$dest-$gate "
+                fi
+            fi
+        done
+    done < <(ip -o route)
+    # -----------------
+
+    declare -a dev_order_link_state
+    declare -a dev_order_down_speed
+
+    # sorting based of link state
+    for dev in "${!net_link_state[@]}" ; do 
+        [[ "${net_link_state[$dev]}" == "UP" ]] && \
+            dev_order_link_state+=("$dev")
+    done
+    # sorting based on down speed
+    local down_speed=0
+    local idx=999
+    for dev in "${dev_order_link_state[@]}" ; do 
+        if [[ "${net_down_speed["$dev"]}" -ge $down_speed ]] ; then
+            down_speed="${net_down_speed["$dev"]}"
+            dev_order_down_speed[idx]="$dev"
+        fi
+    done
+    # -------------------------------------------
+    for dev in "${!net_link_state[@]}" ; do 
+        [[ "${net_link_state[$dev]}" == "DOWN" ]] && \
+            dev_order_down_speed+=("$dev")
+    done
+
+    # construct json output
+    local net_json_out="[]"
+
+    # single-valued-keys
+    for dev in "${dev_order_down_speed[@]}" ; do
+        [[ "${net_down_speed["$dev"]}" ]] || net_down_speed["$dev"]="0"
+        [[ "${net_up_speed["$dev"]}" ]] || net_up_speed["$dev"]="0"
+        net_json_out=$(printf '%s' "$net_json_out" \
+            | jq  --arg dev "$dev" \
+            --arg state "${net_dev_state["$dev"]}" \
+            --arg link_state "${net_link_state["$dev"]}" \
+            --arg net_down_speed "${net_down_speed["$dev"]}" \
+            --arg net_up_speed "${net_up_speed["$dev"]}" \
+            '. += [{"dev":$dev,"state":$state,
+        "link_state":$link_state,"net_down_speed":$net_down_speed,
+        "net_up_speed":$net_up_speed}]') 
+    done
+    # array-valued-keys
+    for dev in "${dev_order_down_speed[@]}" ; do
+        while IFS= read -r -d ' ' ip_addr ; do 
+            net_json_out=$(printf '%s' "$net_json_out" \
+                | jq \
+                --arg dev "$dev" \
+                --arg ip_addr "$ip_addr" \
+                'map(if .dev == $dev then ."ip_addr" += [$ip_addr] else ."ip_addr" += ["null"] end)') 
+        done <<< "${net_ip_addr["$dev"]}"
+    done
+    for dev in "${dev_order_down_speed[@]}" ; do
+        while IFS= read -r -d ' ' gate ; do 
+            while IFS='-' read -r dest via ; do
+                net_json_out=$(printf '%s' "$net_json_out" \
+                    | jq \
+                    --arg dev "$dev" \
+                    --arg dest "$dest" \
+                    --arg via "$via" \
+                    'map(if .dev == $dev then ."gate" += [[$dest,$via]] else ."gate" += [["null","null"]] end)') 
+            done <<< "$gate"
+        done <<< "${net_gate["$dev"]}"
+    done
+
+    # check if valid json
+    if printf '%s' "$net_json_out" | jq &> /dev/null ; then
+        printf '%s' "$net_json_out"
+    else 
+        printf ''
+    fi
+}
+fetch_bluetooth(){
+    local bluetooth_info_json="{}"
+    command -v bluetoothctl &> /dev/null \
+        || { printf '%s' "$bluetooth_info_json" ; return 1 ; }
+    
+    # controller info
+    # ---------------
+    local ctrl mac alias default
+    while read -r ctrl mac alias default ; do 
+        local is_default="no"
+        [[ "$default" == "[default]" ]] && is_default="yes"
+        bluetooth_info_json="$(jq \
+            --arg mac "$mac" \
+            --arg alias "$alias" \
+            --arg is_default "$is_default" \
+            '.controllers += 
+            [{"mac_addr":$mac,"alias":$alias,"is_default":$is_default}]' \
+            <<< "$bluetooth_info_json" )"
+    done < <( bluetoothctl list )
+    
+    # jq outputs valid json with quotes and stuff, we dont want that. use -r 
+    for ctrl in $(jq -r '.controllers[].mac_addr' <<< "$bluetooth_info_json") ; do 
+        local key value
+        while read -r key value ; do 
+            case "$key" in 
+                # |= acts exactly like a pipe, but just modifies the data instead
+                # of a fully filtered output.
+                "Powered:") \
+                    bluetooth_info_json=$(jq \
+                    --arg ctrl "$ctrl" --arg value "$value" \
+                    '.controllers |=
+                    map( if .mac_addr == $ctrl then .is_powered = $value end )' \
+                    <<< "$bluetooth_info_json") ;;
+                "Discoverable:") \
+                    bluetooth_info_json=$(jq \
+                    --arg ctrl "$ctrl" --arg value "$value" \
+                    '.controllers |=
+                    map( if .mac_addr == $ctrl then .is_discoverable = $value end )' \
+                    <<< "$bluetooth_info_json") ;;
+                "Pairable:") \
+                    bluetooth_info_json=$(jq \
+                    --arg ctrl "$ctrl" --arg value "$value" \
+                    '.controllers |=
+                    map( if .mac_addr == $ctrl then .is_pairable = $value end )' \
+                    <<< "$bluetooth_info_json") ;;
+                "Discovering:")  \
+                    bluetooth_info_json=$(jq \
+                    --arg ctrl "$ctrl" --arg value "$value" \
+                    '.controllers |=
+                    map( if .mac_addr == $ctrl then .is_discovering = $value end )' \
+                    <<< "$bluetooth_info_json") ;;
+                "*") true ;;
+            esac
+        done < <(bluetoothctl show "$ctrl")
+    done
+    # devices info
+    # ---------------
+    local dev name
+    while read -r dev mac_addr name ; do 
+        bluetooth_info_json="$(jq \
+            --arg mac_addr "$mac_addr" \
+            --arg name "$name" \
+            '.devices += [{"mac_addr":$mac_addr,"name":$name}]' \
+            <<< "$bluetooth_info_json" )"
+    done < <(bluetoothctl devices)
+
+    for dev in $(jq -r '.devices[].mac_addr' <<< "$bluetooth_info_json" ) ; do 
+        while read -r key value ; do 
+            case "$key" in 
+                "Paired:") \
+                    bluetooth_info_json=$(jq \
+                    --arg dev "$dev" \
+                    --arg value "$value" \
+                    '.devices |= 
+                    map(if .mac_addr == $dev then .is_paired = $value end)' \
+                    <<< "$bluetooth_info_json" ) ;;
+                "Bonded:") \
+                    bluetooth_info_json=$(jq \
+                    --arg dev "$dev" \
+                    --arg value "$value" \
+                    '.devices |= 
+                    map(if .mac_addr == $dev then .is_bonded = $value end)' \
+                    <<< "$bluetooth_info_json" ) ;;
+                "Trusted:") \
+                    bluetooth_info_json=$(jq \
+                    --arg dev "$dev" \
+                    --arg value "$value" \
+                    '.devices |= 
+                    map(if .mac_addr == $dev then .is_trusted = $value end)' \
+                    <<< "$bluetooth_info_json" ) ;;
+                "Blocked:") \
+                    bluetooth_info_json=$(jq \
+                    --arg dev "$dev" \
+                    --arg value "$value" \
+                    '.devices |= 
+                    map(if .mac_addr == $dev then .is_blocked = $value end)' \
+                    <<< "$bluetooth_info_json" ) ;;
+                "Connected:") \
+                    bluetooth_info_json=$(jq \
+                    --arg dev "$dev" \
+                    --arg value "$value" \
+                    '.devices |= 
+                    map(if .mac_addr == $dev then .is_connected = $value end)' \
+                    <<< "$bluetooth_info_json" ) ;;
+                "Battery") 
+                    value=${value##*'('} 
+                    value=${value%%')'*} 
+                    bluetooth_info_json=$(jq \
+                    --arg dev "$dev" \
+                    --arg value "$value" \
+                    '.devices |= 
+                    map(if .mac_addr == $dev then .battery_perc = $value end)' \
+                    <<< "$bluetooth_info_json" ) ;;
+            esac
+            case "$value" in 
+                "Audio Sink"*|"Advanced Audio"*) \
+                    bluetooth_info_json=$(jq \
+                    --arg dev "$dev" \
+                    '.devices |= 
+                    map(if .mac_addr == $dev then .is_audio_device = "yes" else .is_audio_device = "no" end)' \
+                    <<< "$bluetooth_info_json" ) ;;
+            esac
+        done < <( bluetoothctl info "$dev" )
+    done
+
+    jq '.' <<< "$bluetooth_info_json" &> /dev/null || { printf '{}' ; return 1 ;} 
+    printf '%s' "$bluetooth_info_json"
+}
+
+toggle_bt_scan(){
+    local bt_card="$1"
+    local pid_file="$CACHE_DIR/bt_scan_pid"
+    local pid_files=( "$CACHE_DIR/bt_scan_pid"* )
+    if is_open "$bt_card" ; then 
+        local is_powered="no"
+        for i in $(fetch_bluetooth | jq -r '.controllers[] | .is_powered') ; do
+            [[ "$i" == "yes" ]] && is_powered="yes"
+        done
+        if [[ "$is_powered" == "yes" ]] ; then 
+            if ! (( ${#pid_files[@]} > 0 )) ; then
+                while true ; do
+                    bluetoothctl -t 10 scan on  &> /dev/null
+                done &
+                printf '%d' $! 1> "${pid_file}[$!]"
+            fi
+        fi
+    else
+        for file in "${pid_files[@]}" ; do
+            if [[ "$(< "$file" )" == +([[:digit:]]) ]] ; then 
+                kill -9 "$(< "$file")" && rm -f "$file"
+            fi
+            killall -9 bluetoothctl
+        done
+    fi
+}
+fetch_bluetooth_basic(){
+    local connected_count=0
+    while read -r key value ; do  
+        [[ "$key" == "Connected:" && "$value" == "yes" ]] && ((connected_count++))
+    done < <(bluetoothctl info)
+    printf '%d' "$connected_count"
+}
+bt(){
+    local action="$1"
+    local bool="$2"
+    local device="$3"
+    case "$action" in 
+        "power") 
+            if [[ "$bool" == "no" ]] ; then 
+                bluetoothctl power on 
+            else 
+                bluetoothctl power off
+            fi
+            ;;
+        "discoverable") 
+            if [[ "$bool" == "no" ]] ; then 
+                bluetoothctl discoverable on 
+            else 
+                bluetoothctl discoverable off
+            fi
+            ;;
+        "pairable") 
+            if [[ "$bool" == "no" ]] ; then 
+                bluetoothctl pairable on 
+            else 
+                bluetoothctl pairable off
+            fi
+            ;;
+        "pair") 
+            if [[ "$bool" == "no" ]] ; then 
+                bluetoothctl pair "$device" 
+            else 
+                bluetoothctl pair "$device"
+            fi
+            ;;
+        "trust") 
+            if [[ "$bool" == "no" ]] ; then 
+                bluetoothctl trust "$device" 
+            else 
+                bluetoothctl untrust "$device"
+            fi
+            ;;
+        "block") 
+            if [[ "$bool" == "no" ]] ; then 
+                bluetoothctl block "$device" 
+            else 
+                bluetoothctl unblock "$device"
+            fi
+            ;;
+        "connect") 
+            if [[ "$bool" == "no" ]] ; then 
+                bluetoothctl connect "$device" 
+            else 
+                bluetoothctl disconnect "$device"
+            fi
+            ;;
+        "remove") 
+            if [[ "$bool" == "yes" ]] ; then 
+                bluetoothctl remove "$device" 
+            fi
+            ;;
+    esac
+}
+fetch_audio(){
+    command -v wpctl &> /dev/null && command -v pipewire &> /dev/null || return 1
+    audio_data_json="{}"
+    # output
+    local _vol vol is_mute
+    while read -r _vol vol is_mute ; do
+        if [[ "$is_mute" == '' ]] ; then is_mute="no"
+        else is_mute="yes" ; fi
+        audio_data_json=$(jq \
+            --argjson vol "${vol}" \
+            --arg is_mute "$is_mute" \
+            '.default_sink += {"volume":$vol,"is_mute":$is_mute}' \
+            <<< "$audio_data_json" )
+    done < <(wpctl get-volume @DEFAULT_SINK@)
+    # Input
+    while read -r _vol vol is_mute ; do
+        if [[ "$is_mute" == '' ]] ; then is_mute="no"
+        else is_mute="yes" ; fi
+        audio_data_json=$(jq \
+            --argjson vol "${vol}" \
+            --arg is_mute "$is_mute" \
+            '.default_source += {"volume":$vol,"is_mute":$is_mute}' \
+            <<< "$audio_data_json" )
+    done < <(wpctl get-volume @DEFAULT_SOURCE@)
+    jq '.' <<< "$audio_data_json" &> /dev/null && printf '%s' "$audio_data_json"
+}
+
+audio(){
+    local action="$1"
+    local node="$2"
+    local value="$3"
+    case "$action" in 
+        "set_volume") 
+            if [[ "$node" == "sink" ]] ; then 
+                wpctl set-volume @DEFAULT_SINK@ "$value"%
+            elif [[ "$node" == "source" ]] ; then
+                wpctl set-volume @DEFAULT_SOURCE@ "$value"%
+            fi
+            ;;
+    esac
+}
+fetch_general(){
+    general_info_json="{}"
+    general_info_json="$(jq --arg user "$(whoami)" \
+        '.user = $user' <<< "$general_info_json" )"
+    local key value
+    IFS='"' read -r key value < "/etc/os-release"
+    general_info_json="$(jq --arg os "$value" \
+        '.os = $os' <<< "$general_info_json" )"
+    general_info_json="$(jq --arg kernel "$(uname -r)" \
+        '.kernel = $kernel' <<< "$general_info_json" )"
+    general_info_json="$(jq --arg shell "$SHELL" \
+        '.shell = $shell' <<< "$general_info_json" )"
+    get_wm() {
+        local socket="${XDG_RUNTIME_DIR}/${WAYLAND_DISPLAY:-wayland-0}"
+        local wm
+
+        if [[ -S $socket ]]; then
+            local pid
+            pid=$(lsof -t "$socket" 2>/dev/null || \
+                fuser "$socket" 2>/dev/null)
+
+            [[ $pid ]] && wm=$(ps -p "$pid" -o comm=)
+        elif [[ $DISPLAY ]] && command -v xprop >/dev/null; then
+            local id
+            id=$(xprop -root -notype _NET_SUPPORTING_WM_CHECK 2>/dev/null)
+            id=${id##* }
+            wm=$(xprop \
+                -id "$id" -notype -len 100 -f _NET_WM_NAME 8t 2>/dev/null)
+            wm=${wm#*WM_NAME = }
+            wm=${wm//\"}
+        fi
+        if [[ -z "$wm" ]] ; then
+            wm=$(ps ax | grep -m 1 -o -F \
+                               -e arcan \
+                               -e asc \
+                               -e clayland \
+                               -e dwc \
+                               -e fireplace \
+                               -e gnome-shell \
+                               -e greenfield \
+                               -e grefsen \
+                               -e hikari \
+                               -e kwin \
+                               -e lipstick \
+                               -e maynard \
+                               -e mazecompositor \
+                               -e motorcar \
+                               -e orbital \
+                               -e orbment \
+                               -e perceptia \
+                               -e river \
+                               -e rustland \
+                               -e sway \
+                               -e ulubis \
+                               -e velox \
+                               -e wavy \
+                               -e way-cooler \
+                               -e wayfire \
+                               -e wayhouse \
+                               -e westeros \
+                               -e westford \
+                               -e weston)
+        fi
+        # Rename window managers to their proper values.
+        [[ $wm == *gnome*shell* ]] && wm=Mutter
+        wm=${wm:-unknown}
+
+        printf '%s' "$wm"
+    }
+    general_info_json="$(jq --arg wm "$(get_wm)" \
+        '.wm = $wm' <<< "$general_info_json" )"
+    printf '%s' "$general_info_json"
+}
+fetch_music () {
+    command -v rmpc &> /dev/null || return 1
+    local albumart_file="$CACHE_DIR/albumart"
+
+    music_info_json="$(rmpc song 2> /dev/null)"
+    [[ "$music_info_json" == "" ]] && { printf '{}' ; return 1 ; }
+    local status_info
+    status_info="$(rmpc status 2> /dev/null)"
+    [[ "$status_info" == "" ]] && { printf '{}' ; return 1 ; }
+    music_info_json=$(jq --argjson status "$status_info" \
+            '. += $status' <<< "$music_info_json" )
+    rmpc albumart -o "$albumart_file" &> /dev/null
+    if [[ -f "$albumart_file" ]] ; then 
+        music_info_json=$(jq --arg albumart "$albumart_file" \
+            '.albumart = $albumart' <<< "$music_info_json" )
+    fi
+    local title="$(jq -r '.metadata.title' <<< "$music_info_json" 2> /dev/null)"
+    local artist="$(jq -r '.metadata.artist' <<< "$music_info_json" 2> /dev/null)"
+    if [[ "$title" ]] ; then 
+        local scroll_title="$(scroll_text "$title" 18)" 
+        music_info_json=$(jq --arg scroll_title "$scroll_title" \
+            '.scroll_title = $scroll_title' <<< "$music_info_json" )
+    fi
+    if [[ "$artist" ]] ; then 
+        local scroll_artist="$(scroll_text "$artist" 18)" 
+        music_info_json=$(jq --arg scroll_artist "$scroll_artist" \
+            '.scroll_artist = $scroll_artist' <<< "$music_info_json" )
+    fi
+    printf '%s' "$music_info_json"
+
+}
+music() {
+    local action="$1"
+    local value="$2"
+    case "$action" in 
+        "togglepause") 
+            rmpc togglepause
+            ;;
+        "next") 
+            rmpc next
+            ;;
+        "prev") 
+            rmpc prev
+            ;;
+        "togglerepeat") 
+            rmpc togglerepeat
+            ;;
+        "togglerandom") 
+            rmpc togglerandom
+            ;;
+        "togglesingle") 
+            rmpc togglesingle
+            ;;
+        "toggleconsume") 
+            rmpc toggleconsume
+            ;;
+        "seek")
+            rmpc seek "$value"
+            ;;
+    esac
+}
+scroll_text() {
+    local text="$1"
+    local width="$2"
+    local part_file="$CACHE_DIR/slice1"
+
+    local len=${#text}
+
+    # If text fits, just print once
+    if (( len <= width )); then
+        printf "%s" "$text"
+        return
+    fi
+    
+    
+    # Add spacing so it loops nicely
+    local spacer="   "
+    local scroll="$text$spacer"
+    local scroll_len=${#scroll}
+
+    [[ -f "$part_file" ]] || printf '0' > "$part_file"
+    local i 
+    IFS= read -r i < "$part_file"
+    [[ "$i" != +([[:digit:]]) ]] && { printf '' ; return 1 ; }
+    [[ "$i" -ge "${scroll_len}" ]] && i="0"
+
+    local part="${scroll:i:width}"
+    if (( ${#part} < width )); then
+        part+="${scroll:0:width-${#part}}"
+    fi
+    (( i++ ))
+    printf '%d' "$i" > "$part_file"
+    printf "%s" "$part"
+}
+scroll(){
+    local text="$1"
+    local width="$2"
+    local part_file="$CACHE_DIR/slice2"
+
+    local len=${#text}
+    local scroll="$text"
+    local scroll_len=${#scroll}
+
+    [[ -f "$part_file" ]] || printf '0' > "$part_file"
+    local i 
+    IFS= read -r i < "$part_file"
+    [[ "$i" != +([[:digit:]]) ]] && { printf '' ; return 1 ; }
+    [[ "$i" -ge "${scroll_len}" ]] && i="0"
+
+    local part="${scroll:i:width}"
+    if (( ${#part} < width )); then
+        part+="${scroll:0:width-${#part}}"
+    fi
+    (( i++ ))
+    printf '%d' "$i" > "$part_file"
+    printf "%s" "$part"
+}
+is_music(){
+    local music_card="$1"
+    local fetch_music="$2"
+    local music_info_json
+    music_info_json="$(rmpc song 2> /dev/null)"
+    [[ "$music_info_json" == '' ]] && { printf 'false' ; return 1 ; }
+    is_open "$music_card" && \
+        { printf 'true' ; return 0 ; }
+    printf 'false'
+    return 1
+}
+show_music_element(){
+    [[ "$(rmpc song 2> /dev/null)" ]] && { printf true ; return 0 ; }
+    printf false
+    return 1
+}
+fetch_workspaces(){
+    workspaces_data_json="$(niri msg -j workspaces)"
+    jq '.' <<< "$workspaces_data_json" &> /dev/null || return 1
+    printf "%s"  "$workspaces_data_json"
+}
+fetch_window(){
+    window_data_json="$(niri msg -j focused-window)"
+    jq '.' <<< "$window_data_json" &> /dev/null || return 1
+    printf "%s"  "$window_data_json"
+}
+workspaces(){
+    local action="$1"
+    local value="$2"
+    case "$action" in 
+        "switch") 
+            niri msg action focus-workspace "$value"
+            ;;
+    esac
+}
+
+command -v jq &> /dev/null || exit 1
+command -v eww &> /dev/null || exit 1
+
+ case "$1" in
+     "flash") shift ; flash "$1" ; exit 0 ;;
+     "fetch_general") fetch_general ; exit 0 ;;
+     "fetch_music") fetch_music "$1" ; exit 0 ;;
+     "fetch_window") fetch_window ; exit 0 ;;
+     "animate") shift ; animate "$@" ; exit 0 ;;
+     "bt") shift ; bt "$1" "$2" "$3" ; exit 0 ;;
+     "scroll_text") shift ; scroll_text "$1" "$2" ; exit 0 ;;
+     "scroll") shift ; scroll "$1" "$2" ; exit 0 ;;
+     "audio") shift ; audio "$1" "$2" "$3" ; exit 0 ;;
+     "music") shift ; music "$1" "$2" ; exit 0 ;;
+     "is_music") shift ; is_music "$1" "$2" ; exit 0 ;;
+     "show_music_element") show_music_element ; exit 0 ;;
+     "togglevar") shift ; togglevar "$1" "$2" ; exit 0 ;;
+     "fetch_network") fetch_network ; exit 0 ;;
+     "fetch_audio") fetch_audio ; exit 0 ;;
+     "toggle_bt_scan") shift ; toggle_bt_scan "$1" ; exit 0 ;;
+     "fetch_bluetooth") fetch_bluetooth ; exit 0 ;;
+     "fetch_bluetooth_basic") fetch_bluetooth_basic ; exit 0 ;;
+     "fetch_workspaces") fetch_workspaces ; exit 0 ;;
+     "workspaces") shift ; workspaces "$1" "$2" ; exit 0 ;;
+     "setvar") shift ; setvar "$1" "$2" "$3" ; exit 0 ;;
+     "pollvar") shift ; pollvar "$1" "$2" ; exit 0 ;;
+     *) exit 1 ;; 
+ esac

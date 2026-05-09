@@ -1,0 +1,1044 @@
+; Vars {{{
+; Static vars
+(defvar helper "./helper")
+(defvar brightness_child_idx 0)
+(defvar fetch_network false)
+(defvar fetch_bluetooth false)
+(defvar expand_tray false)
+(defvar logo "./logo.png" )
+(defvar quote  "NOT arch btw!")
+; Polling vars
+(defpoll general_info  
+    :interval "24h"
+    "./helper fetch_general"
+)
+(defpoll current_time
+    :interval "1m"
+    :initial  "00:00"
+    "date '+%I:%M'"
+)
+(defpoll current_brightness
+    :interval "1s"
+    :initial  "0"
+    "brightnessctl g"
+)
+(defpoll network_info
+    :interval "1s"
+    :initial  "[]"
+    :run-while fetch_network 
+    "./helper fetch_network"
+)
+(defpoll bluetooth_info_basic
+    :interval "1s"
+    :initial  "0"
+    "./helper fetch_bluetooth_basic"
+)
+(defpoll bluetooth_info
+    :interval "0.2s"
+    :initial  "{}"
+    :run-while fetch_bluetooth 
+    "./helper fetch_bluetooth"
+)
+(defpoll network_animation
+    :interval "0.5s"
+    :initial  "-"
+    :run-while fetch_network
+    "./helper animate '󰈔  ' '-󰈔 ' '--󰈔' ' -󰈔' '  -' "
+)
+(defpoll bluetooth_spinner_animation
+    :interval "0.2s"
+    :initial  "-"
+    :run-while fetch_bluetooth
+    "./helper animate '' '' '' '' '' '' "
+)
+(defpoll music_notes_animation
+    :interval "1s"
+    :initial  "-"
+    "./helper scroll '˖.♬⋆.˚𝄞.⋆˚.♪' 12 "
+)
+(defpoll audio_info
+    :interval "1s"
+    :initial  "{}"
+    "./helper fetch_audio"
+)
+(defpoll fetch_music
+    :interval "1s"
+    :initial false
+    "./helper is_music music_card fetch_music"
+)
+(defpoll music_info
+    :interval "0.2s"
+    :initial  "{}"
+    :run-while fetch_music
+    "./helper fetch_music"
+)
+(defpoll show_music_element
+    :interval "2s"
+    "./helper show_music_element"
+)
+(defpoll workspaces_info
+    :interval "1s"
+    :initial "[]"
+    "./helper fetch_workspaces"
+)
+(defpoll window_info
+    :interval "1s"
+    :initial "{}"
+    "./helper scroll_text \"$(./helper fetch_window | jq -r '.title')\" 70"
+)
+; }}}
+
+; Main Structure {{{
+(defwindow OBTRemAll
+    :monitor 0
+    :geometry (geometry :x "0%"
+                       :y "4px"
+                       :width "99%"
+                       :height "32px"
+                       :anchor "top center"
+                       )
+    :stacking "fg"
+    :exclusive true
+    (box
+        :class "OBTRemAll_outer"
+        (centerbox
+            :class "OBTRemAll_inner"
+            :orientation "h"
+            (left)
+            (center)
+            (right)
+        )
+    )
+)
+(defwidget center []
+    (box 
+       :orientation "h" 
+       :space-evenly false 
+       :spacing 8
+       :halign "end"
+       (music)
+       (clock)
+    )    
+)
+(defwidget right []
+    (box 
+        :orientation "h" 
+        :space-evenly false
+        :spacing 6
+        :halign "end"
+        (cpu)
+        (temp)
+        (memory)
+        (storage)
+        (brightness)
+        (battery)
+        (network)
+        (bluetooth)
+        (audio)
+        (logo)
+    )    
+)
+(defwidget left []
+    (box 
+        :orientation "h" 
+        :space-evenly false
+        :halign "start"
+        (workspaces)
+        (window)
+    )    
+)
+;}}}
+
+; Cards {{{
+(defwindow calendar_card
+    :monitor 0
+    :geometry (geometry
+            :x "0%"
+            :y "-2px"
+            :anchor "top center"
+    )
+    (calendar_card_widget)
+)
+(defwindow cpu_card
+    :monitor 0
+    :geometry (geometry
+            :x "41%"
+            :y "-2px"
+            :anchor "top right"
+    )
+    (cpu_card_widget)
+)
+(defwindow temp_card
+    :monitor 0
+    :geometry (geometry
+            :x "37%"
+            :y "-2px"
+            :anchor "top right"
+    )
+    (temp_card_widget)
+)
+(defwindow memory_card
+    :monitor 0
+    :geometry (geometry
+            :x "32%"
+            :y "-2px"
+            :anchor "top right"
+    )
+    (memory_card_widget)
+)
+(defwindow storage_card
+    :monitor 0
+    :geometry (geometry
+            :x "28%"
+            :y "-2px"
+            :anchor "top right"
+    )
+    (storage_card_widget)
+)
+(defwindow network_card
+    :monitor 0
+    :geometry (geometry
+            :x "13.2%"
+            :y "-2px"
+            :anchor "top right"
+    )
+    (network_card_widget)
+)
+(defwindow bluetooth_card
+    :monitor 0
+    :geometry (geometry
+            :x "9%"
+            :y "-2px"
+            :anchor "top right"
+    )
+    (bluetooth_card_widget)
+)
+(defwindow audio_card
+    :monitor 0
+    :geometry (geometry
+            :x "2.5%"
+            :y "-2px"
+            :anchor "top right"
+    )
+    (audio_card_widget)
+)
+(defwindow logo_card
+    :monitor 0
+    :geometry (geometry
+            :x "1%"
+            :y "-2px"
+            :anchor "top right"
+    )
+    (logo_card_widget)
+)
+(defwindow tray_card
+    :monitor 0
+    :geometry (geometry
+            :x "1%"
+            :y "-2px"
+            :anchor "top right"
+    )
+    (tray_card_widget)
+)
+(defwindow music_card
+    :monitor 0
+    :geometry (geometry
+            :x "0px"
+            :y "-2px"
+            :anchor "top center"
+    )
+    (music_card_widget)
+)
+;}}}
+
+; Elements {{{
+(defwidget workspaces []
+    (box
+        :space-evenly false
+        :spacing 8
+        (for wp in "${jq(workspaces_info,'. | sort_by(.idx) ')}"
+            (eventbox
+                :class "wp_eventbox"
+                (button
+                    :onclick "${helper} workspaces switch ${wp.idx}"
+                    (label
+                        :class "${(wp.is_urgent == 'true')?'urgent':''} ${(wp.active_window_id != 'null')?'active':''} ${(wp.is_focused == 'true')?'focused':''}"
+                        :text "${wp.idx}"
+                    )
+                )
+            )
+        )
+    )
+)
+(defwidget window []
+    (box
+        :class "window"
+        (label
+            :text "${(window_info != 'null')?'${window_info}':''}"
+        )
+    )
+)
+(defwidget clock []
+    (eventbox
+        :class "element_hover_box clock"
+        (button
+            :onclick "${helper} flash calendar_card"
+            (label 
+                :class "element"
+                :text current_time
+            )
+        )
+    )
+)
+(defwidget music []
+    (eventbox
+        :class "music"
+        (button
+            :onclick "${(show_music_element == 'true')?'${helper} flash music_card':''}"
+            :class fetch_music
+            (label
+                :text "${(show_music_element == 'true' )?'${music_notes_animation}':''}"
+            )
+        )
+    )
+)
+(defwidget cpu []
+    (eventbox 
+        :class "element_hover_box cpu"
+        (button 
+            :onclick "${helper} flash cpu_card"
+            (label
+                :class "element"
+                :text "${round(EWW_CPU.avg,1)}% "
+            )
+        )
+    )
+)
+(defwidget temp []
+    (eventbox 
+        :class "element_hover_box temp"
+        (button 
+            :onclick "${helper} flash temp_card"
+            (label
+                :class "element"
+                :text "${EWW_TEMPS.ACPITZ_TEMP1}°C ${(EWW_TEMPS.ACPITZ_TEMP1 > 0 && EWW_TEMPS.ACPITZ_TEMP1 <= 40) ? '' : '' }${(EWW_TEMPS.ACPITZ_TEMP1 > 40 && EWW_TEMPS.ACPITZ_TEMP1 <= 60) ? '' : '' }${(EWW_TEMPS.ACPITZ_TEMP1 > 60 && EWW_TEMPS.ACPITZ_TEMP1 <= 100) ? '' : '' }"
+            )
+        )
+    )
+)
+(defwidget memory []
+    (eventbox 
+        :class "element_hover_box memory"
+        (button 
+            :onclick "${helper} flash memory_card"
+            (label
+                :class "element"
+                :text "${round(EWW_RAM.used_mem_perc,1)}% "
+            )
+        )
+    )
+)
+(defwidget storage []
+    (eventbox 
+        :class "element_hover_box storage"
+        (button 
+            :onclick "${helper} flash storage_card"
+            (label
+                :class "element"
+                :text "${round(EWW_DISK["/"].used_perc,1)}% 󰝰"
+            )
+        )
+    )
+)
+(defwidget brightness []
+    (eventbox
+        :class "brightness"
+        :onhover "${helper} setvar brightness_child_idx 1"
+        :onhoverlost "${helper} setvar brightness_child_idx 0"
+        (stack
+            :selected brightness_child_idx
+            :same-size true
+            :transition  "crossfade"
+            (label 
+                :class "element"
+                :text "${ceil(current_brightness / 1000)}% 󰖨" 
+            ) 
+            (scale 
+                :flipped true
+                :value "${ceil(current_brightness / 1000)}"
+                :min 0
+                :max 100
+                :onchange "brightnessctl s {}%"
+            ) 
+        )
+    )
+)
+(defwidget battery []
+    (eventbox
+        :class "element_hover_box battery"
+        (label
+            :class "element"
+            :text "${EWW_BATTERY.BAT1.capacity}% ${(EWW_BATTERY.BAT1.status == 'Charging') ? '' : ''}${(EWW_BATTERY.BAT1.status == 'Not charging') ? '' : ''}${(EWW_BATTERY.BAT1.status == 'Discharging' && EWW_BATTERY.BAT1.capacity <= 20 && EWW_BATTERY.BAT1.capacity > 0) ? '' : ''}${(EWW_BATTERY.BAT1.status == 'Discharging' && EWW_BATTERY.BAT1.capacity <= 40 && EWW_BATTERY.BAT1.capacity > 20) ? '' : ''}${(EWW_BATTERY.BAT1.status == 'Discharging' && EWW_BATTERY.BAT1.capacity <= 60 && EWW_BATTERY.BAT1.capacity > 40) ? '' : ''}${(EWW_BATTERY.BAT1.status == 'Discharging' && EWW_BATTERY.BAT1.capacity <= 80 && EWW_BATTERY.BAT1.capacity > 60) ? '' : ''}${(EWW_BATTERY.BAT1.status == 'Discharging' && EWW_BATTERY.BAT1.capacity <= 100 && EWW_BATTERY.BAT1.capacity > 80) ? '' : ''}"
+        )
+    )
+)
+(defwidget network []
+    (eventbox
+        :class "element_hover_box network"
+        (button 
+            :onclick "${helper} togglevar fetch_network && ${helper} flash network_card"
+            (label
+                :class "element"
+                :text "${ceil(jq(EWW_NET,'. | to_entries | sort_by(.value.NET_DOWN) | reverse | .[0].value.NET_DOWN') / 1024)} KiB  ${ceil(jq(EWW_NET,'. | to_entries | sort_by(.value.NET_UP) | reverse | .[0].value.NET_UP') / 1024)} KiB "
+            )
+        )
+    )
+)
+(defwidget bluetooth []
+    (eventbox
+        :class "element_hover_box bluetooth"
+        (button
+            :onclick "${helper} togglevar fetch_bluetooth && ${helper} flash bluetooth_card && ${helper} toggle_bt_scan bluetooth_card "
+            (label
+                :class "element"
+                :text "${(bluetooth_info_basic > 0) ? '[${bluetooth_info_basic}] 󰂱 ' : '[${bluetooth_info_basic}] 󰂯'}"
+            )
+        )
+    )
+)
+(defwidget audio []
+    (eventbox
+        :class "element_hover_box audio"
+        (button
+            :onclick "${helper} flash audio_card"
+            (label
+                :class "element"
+                :text "${(audio_info.default_sink.is_mute == 'yes')?'󰝟 ':''}${(audio_info.default_sink.is_mute == 'no' && audio_info.default_sink.volume == 0.00 )?'󰖁 ':''}${(audio_info.default_sink.is_mute == 'no' && audio_info.default_sink.volume > 0 && audio_info.default_sink.volume < 0.30 )?'󰕿 ':''}${(audio_info.default_sink.is_mute == 'no' && audio_info.default_sink.volume >= 0.30 && audio_info.default_sink.volume < 0.60 )?'󰖀 ':''}${(audio_info.default_sink.is_mute == 'no' && audio_info.default_sink.volume >= 0.60 && audio_info.default_sink.volume <= 1.00 )?'󰕾 ':''}${(audio_info.default_sink.is_mute == 'no')?'${ceil(audio_info.default_sink.volume * 100)}%':''} ${(audio_info.default_source.is_mute == 'yes')?'󰍭 ':'󰍬 '}${(audio_info.default_source.is_mute == 'no')?'${ceil(audio_info.default_source.volume * 100)}%':''}"
+            )   
+         )
+    )
+)
+(defwidget logo []
+    (eventbox
+        :class "logo element_hover_box"
+        (box
+            :space-evenly false
+            :orientation "h"
+            (button
+                :onrightclick "${helper} flash logo_card "
+                :onclick "${helper} flash tray_card"
+                (label
+                    :class "element"
+                    :text ""
+                )
+            )
+        )
+    )
+)
+
+;}}}
+
+; Card Widgets {{{
+(defwidget cpu_card_widget []
+    (box 
+        :orientation "h"
+        :class "outer cpu_card_outer"
+        (box 
+            :class "inner cpu_card_inner"
+            (box
+                :class "inner_inner"
+                :space-evenly false
+                :spacing 8
+                (box
+                    :orientation "v"
+                    :space-evenly true
+                    :spacing 2
+                    (for core in "${EWW_CPU.cores}"
+                        (label
+                            :text "${core.core}"
+                        )
+                    )
+                )
+                (box
+                    :orientation "v"
+                    :space-evenly true
+                    :spacing 2
+                    (for core in "${EWW_CPU.cores}"
+                        (progress
+                            :value "${core.usage}"
+                            :orientation "h"
+                            :valign "center"
+                        )
+                    )
+                )
+                (box
+                    :orientation "v"
+                    :space-evenly true
+                    :spacing 2
+                    (for core in "${EWW_CPU.cores}"
+                        (label
+                            :text "${round(core.usage,1)}%"
+                        )
+                    )
+                )
+            )
+        )
+    ) 
+)
+(defwidget temp_card_widget []
+    (box
+        :class "outer temp_card_outer"
+        (box
+            :class "inner temp_card_inner"
+            (box
+                :class "inner_inner"
+                :space-evenly false
+                :spacing 20
+                (box 
+                    :orientation "v"
+                    (for temp in "${jq(EWW_TEMPS,'to_entries')}"
+                        (label
+                            :text "${temp.key}"
+                            :halign "start"
+                        )
+                    )
+                )
+                (box 
+                    :orientation "v"
+                    (for temp in "${jq(EWW_TEMPS,'to_entries')}"
+                        (label
+                            :text "="
+                        )
+                    )
+                )
+                (box 
+                    :orientation "v"
+                    (for temp in "${jq(EWW_TEMPS,'to_entries')}"
+                        (label
+                            :text "${ceil(temp.value)}°C"
+                            :halign "start"
+                        )
+                    )
+                )
+            )
+        )
+    )
+)
+(defwidget memory_card_widget []
+    (box
+        :class "outer memory_card_outer"
+        (box
+            :class "inner memory_card_inner"
+            (box
+                :class "inner_inner"
+                (box
+                    :orientation "v"
+                    :space-evenly true
+                    :spacing 8
+                    (label
+                        :text "[M] ${round(EWW_RAM.used_mem_perc,1)}%"
+                        :halign "start"
+                    )
+                    (label
+                        :text "[S] ${ceil((EWW_RAM.total_swap - EWW_RAM.free_swap)/EWW_RAM.total_swap * 100)}%"
+                        :halign "start"
+                    )
+                )
+                (box
+                    :orientation "v"
+                    :space-evenly true
+                    :spacing 8
+                    (circular-progress
+                        :value "${EWW_RAM.used_mem_perc}"
+                        :thickness 20
+                        :clockwise false
+                        :start-at 50
+                        :halign "end"
+                    )
+                    (circular-progress
+                        :value "${(EWW_RAM.total_swap - EWW_RAM.free_swap)/EWW_RAM.total_swap * 100}"
+                        :thickness 20
+                        :clockwise false
+                        :start-at 50
+                        :halign "end"
+                    )
+                )
+            )
+        )
+    )
+)
+(defwidget storage_card_widget []
+    (box
+        :class "outer storage_card_outer"
+        (box
+            :class "inner storage_card_inner"
+            (box
+                :class "inner_inner"
+                (box
+                    :orientation "v"
+                    :spacing 8
+                    (for disk in "${jq(EWW_DISK,'to_entries')}"
+                        (label
+                            :text "${disk.key}"
+                            :halign "start"
+                        )
+                    )
+                )
+                (box
+                    :orientation "v"
+                    :spacing 8
+                    (for disk in "${jq(EWW_DISK,'to_entries')}"
+                        (label
+                            :text "${round(disk.value.used / (1024 * 1024 * 1024),1)}/${ceil(disk.value.total / (1024 * 1024 * 1024))} GiB"
+                            :halign "end"
+                        )
+                    )
+                )
+            )
+        )
+    )
+)
+(defwidget network_card_widget []
+    (box
+        :orientation "h"
+        :class "outer network_card_outer"
+        (box
+            :orientation "h"
+            :class "inner network_card_inner"
+            :spacing 8
+            (for dev in network_info 
+                (box
+                    :class "inner_inner"
+                    (box 
+                        :orientation "v"
+                        (box
+                            :class "device"
+                            :spacing 8
+                            :space-evenly false
+                            (label
+                                :halign "start"
+                                :text "DEVICE: ${dev.dev}"
+                            )
+                        )
+                        (box
+                            :spacing 8
+                            :space-evenly false
+                            (label
+                                :text "[${dev.state}]"
+                                :class "${(dev.state == 'UP')?'UP':'DOWN'}"
+                            )
+                            (label
+                                :text "[${dev.link_state}]"
+                                :class "${(dev.state == 'UP')?'UP':'DOWN'}"
+                            )
+                        )
+                        (for ip_addr in "${dev.ip_addr}"
+                            (box 
+                                :orientation "h"
+                                :space-evenly false
+                                :class "ip"
+                                :spacing 8
+                                (label
+                                    :text "IP:"
+                                )
+                                (label
+                                    :text "${ip_addr}"
+                                )
+                            )
+                        )
+                        (for gate in "${dev.gate}"
+                            (box 
+                                :orientation "h"
+                                :space-evenly false
+                                :class "gate"
+                                :spacing 8
+                                (label
+                                    :text ""
+                                )
+                                (label
+                                    :text "${gate[0]} ${network_animation} ${gate[1]}"
+                                )
+                            )
+                        )
+                        (box 
+                            :orientation "h"
+                            :space-evenly false
+                            :class "speed"
+                            :spacing 8
+                            (label
+                                :text "󰓅"
+                            )
+                            (label
+                                :text "${ceil(dev.net_down_speed / 1024)} KiB  ${ceil(dev.net_down_speed / 1024)} KiB "
+                            )
+                        )
+                    )
+                )
+            )
+        )
+    )
+)
+(defwidget bluetooth_card_widget []
+    (box 
+        :class "outer bluetooth_card_outer"
+        (box
+            :class "inner bluetooth_card_inner"
+            :orientation "v"
+            :spacing 16
+            (for ctrl in "${bluetooth_info.controllers}"
+                (box
+                    :orientation "v"
+                    :class "controllers"
+                    (box
+                        :orientation "h"
+                        :space-evenly false
+                        :spacing 8
+                        :halign "start"
+                        :class "controllers_header"
+                        (label
+                            :text "${(ctrl.is_default == 'yes')?'[D] CONTROLLER:':''}"
+                        )
+                        (label
+                            :text "${ctrl.alias}"
+                        )
+                        (label
+                            :text "${(ctrl.is_discovering == 'yes')?'${bluetooth_spinner_animation}':''}"
+                        )
+                    )
+                    (box 
+                        :orientation "h"
+                        :spacing 8
+                        :space-evenly false
+                        (eventbox
+                            :class "${(ctrl.is_powered == 'yes')?'on':'off'}" 
+                            (button
+                                :onclick "${helper} bt power ${ctrl.is_powered}"
+                                (label
+                                    :text "Power"
+                                )
+                            )
+                        )
+                        (eventbox
+                            :class "${(ctrl.is_discoverable == 'yes')?'on':'off'}"
+                            (button
+                                :onclick "${helper} bt discoverable ${ctrl.is_discoverable}"
+                                (label
+                                    :text "Discoverable"
+                                )
+                            )
+                        )
+                        (eventbox
+                            :class "${(ctrl.is_pairable == 'yes')?'on':'off'}"
+                            (button
+                                :onclick "${helper} bt pairable ${ctrl.is_pairable}"
+                                (label
+                                    :text "Pairable"
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+            (for dev in "${bluetooth_info.devices}"
+                (box 
+                    :orientation "v"
+                    :class "devices"
+                    (box 
+                        :orientation "h"
+                        :space-evenly false
+                        :class "devices_header"
+                        (label
+                            :hexpand true
+                            :halign "start"
+                            :text "${(dev.is_audio_device == 'yes')? '󰋋 ' : '󰂯 ' }${dev.name}${(dev.battery_perc == 'null' ) ? '' : ' ${dev.battery_perc}% 󰥈 '}"
+                        )
+                        (eventbox 
+                            :class "${(dev.is_paired == 'yes' )?'remove':''}"
+                            (button
+                                :onclick "${helper} bt remove ${dev.is_paired} ${dev.mac_addr}"
+                                (label
+                                    :text "${(dev.is_paired == 'yes' )?'  ':''}"
+                                )
+                            )
+                        )
+                    )
+                    (box 
+                        :orientation "h"
+                        :space-evenly false
+                        :spacing 8
+                        (eventbox 
+                            :class "${(dev.is_paired == 'yes' )?'on':'off'}"
+                            (button
+                                :onclick "${helper} bt pair ${dev.is_paired} ${dev.mac_addr}"
+                                (label
+                                    :text "Pair"
+                                )
+                            )
+                        )
+                        (eventbox 
+                            :class "${(dev.is_trusted == 'yes' )?'on':'off'}"
+                            (button
+                                    :onclick "${helper} bt trust ${dev.is_trusted} ${dev.mac_addr}"
+                                (label
+                                    :text "Trust"
+                                )
+                            )
+                        )
+                        (eventbox 
+                            :class "${(dev.is_blocked == 'yes' )?'on':'off'}"
+                            (button
+                                    :onclick "${helper} bt block ${dev.is_blocked} ${dev.mac_addr}"
+                                (label
+                                    :text "Block"
+                                )
+                            )
+                        )
+                        (eventbox 
+                            :class "${(dev.is_connected == 'yes' )?'on':'off'}"
+                            (button
+                                    :onclick "${helper} bt connect ${dev.is_connected} ${dev.mac_addr}"
+                                (label
+                                    :text "Connect"
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
+    )
+)
+(defwidget audio_card_widget []
+    (box
+        :class "outer audio_card_outer"
+        (box
+            :class "inner audio_card_inner"
+            :orientation "v"
+            :spacing 16
+            (box
+                :orientation "h"
+                :class "sink"
+                :space-evenly false
+                :spacing 8
+                (label
+                    :class "icon"
+                    :text "${(audio_info.default_sink.is_mute == 'yes')?'󰝟 ':''}${(audio_info.default_sink.is_mute == 'no' && audio_info.default_sink.volume == 0.00 )?'󰖁 ':''}${(audio_info.default_sink.is_mute == 'no' && audio_info.default_sink.volume > 0 && audio_info.default_sink.volume < 0.30 )?'󰕿 ':''}${(audio_info.default_sink.is_mute == 'no' && audio_info.default_sink.volume >= 0.30 && audio_info.default_sink.volume < 0.60 )?'󰖀 ':''}${(audio_info.default_sink.is_mute == 'no' && audio_info.default_sink.volume >= 0.60 && audio_info.default_sink.volume <= 1.00 )?'󰕾 ':''}"
+                )
+                (scale
+                    :valign "center"
+                    :value "${ceil(audio_info.default_sink.volume * 100)}"
+                    :min 0
+                    :max 100
+                    :onchange "${helper} audio set_volume sink {}"
+                )
+                (label
+                    :text "${ceil(audio_info.default_sink.volume * 100)}%"
+                )
+            )
+            (box
+                :orientation "h"
+                :class "source"
+                :space-evenly false
+                :spacing 8
+                (label
+                    :class "icon"
+                    :text "${(audio_info.default_source.is_mute == 'yes')?'󰍭 ':'󰍬 '}"
+                )
+                (scale
+                    :valign "center"
+                    :value "${ceil(audio_info.default_source.volume * 100)}"
+                    :min 0
+                    :max 100
+                    :onchange "${helper} audio set_volume source {}"
+                )
+                (label
+                    :text "${ceil(audio_info.default_source.volume * 100)}%"
+                )
+            )
+        )
+    )
+)
+(defwidget logo_card_widget []
+    (box
+        :class "outer logo_card_outer"
+        (box
+            :class "inner logo_card_inner"
+            :orientation "v"
+            :space-evenly false
+            :spacing 8
+            (box 
+                :class "logo"
+                :orientation "v"
+                :space-evenly false
+                :spacing 4
+                (image
+                    :path "./logo.png"
+                    :image-width 64
+                    :image-height 64
+                )
+                (label
+                    :text " ${general_info.user}"
+                )
+                (label
+                    :text " ${general_info.os}"
+                )
+                (label
+                    :text " ${general_info.kernel}"
+                )
+                (label
+                    :text " ${general_info.shell}"
+                )
+                (label
+                    :text "󱂬 ${general_info.wm}"
+                )
+            )
+            (label
+                :class "quote"
+                :text "${quote}"
+            )
+        ) 
+    ) 
+)
+(defwidget tray_card_widget []
+    (box 
+        :class "outer tray_card_outer"
+        (box 
+            :class "inner tray_card_inner"
+            (box 
+                :class "tray"
+                (systray 
+                    :orientation "h"
+                    :icon-size 16
+                )
+            )
+        )
+    )
+)
+(defwidget calendar_card_widget []
+    (box
+        :class "calendar_card_outer outer"
+        (box
+            :class "calendar_card_inner inner"
+            (calendar)
+        )
+    )
+)
+(defwidget music_card_widget []
+    (box
+        :class "music_card_outer outer"
+        (box
+            :class "music_card_inner inner"
+            (box 
+                :class "inner_inner"
+                :orientation "v"
+                :space-evenly false
+                :spacing 8
+                (eventbox
+                    :class "image_outer"
+                    (box
+                        :class "image_inner"
+                        :style "background-image: url('${music_info.albumart}');"
+                    )
+                )
+                (eventbox
+                    :class "title"
+                    (label
+                        :text "${music_info.scroll_title}"     
+                    )
+                )
+                (eventbox
+                    :class "artist"
+                    (label
+                        :text "${music_info.scroll_artist}"     
+                    )
+                )
+                (box 
+                    :class "nav"
+                    :space-evenly false
+                    :spacing 8
+                    :halign "center"
+                    (eventbox
+                        :class "previous"
+                        (button
+                            :onclick "${helper} music prev "
+                            (label 
+                                :text "󰒮"
+                            )
+                        )
+                    )
+                    (eventbox
+                        :class "${(music_info.state == 'Pause')?'play':'pause'}"
+                        (button
+                            :onclick "${helper} music togglepause"
+                            (label 
+                                :text "${(music_info.state == 'Pause')?'':''}"
+                            )
+                        )
+                    )
+                    (eventbox
+                        :class "next"
+                        (button
+                            :onclick "${helper} music next"
+                            (label 
+                                :text "󰒭"
+                            )
+                        )
+                    )
+                    (box
+                        :orientation "h"
+                        (box
+                            :orientation "v"
+                            (eventbox
+                                :class "${(music_info.repeat == 'true')?'repeat':'norepeat'}"
+                                (button
+                                    :onclick "${helper} music togglerepeat"
+                                    (label 
+                                        :text ""
+                                    )
+                                )
+                            )
+                            (eventbox
+                                :class "${(music_info.random == 'true')?'random':'norandom'}"
+                                (button
+                                    :onclick "${helper} music togglerandom"
+                                    (label 
+                                        :text ""
+                                    )
+                                )
+                            )
+                        )
+                        (box
+                            :orientation "v"
+                            (eventbox
+                                :class "${(music_info.single == 'On')?'single':''}${(music_info.single == 'Oneshot')?'oneshot':''}${(music_info.single == 'Off')?'nosingle':''}"
+                                (button
+                                    :onclick "${helper} music togglesingle"
+                                    (label 
+                                        :text "󰑊"
+                                    )
+                                )
+                            )
+                            (eventbox
+                                :class "${(music_info.consume == 'On')?'single':''}${(music_info.consume == 'Oneshot')?'oneshot':''}${(music_info.consume == 'Off')?'nosingle':''}"
+                                (button
+                                    :onclick "${helper} music toggleconsume"
+                                    (label 
+                                        :text "󰆴"
+                                    )
+                                )
+                            )
+                        )
+                    )
+                )
+                (scale
+                    :valign "center"
+                    :value "${music_info.elapsed.secs}"
+                    :min 0
+                    :max "${music_info.duration.secs}"
+                    :onchange "${helper} music seek {}"
+                )
+            )
+        )
+    )
+)
+;}}}

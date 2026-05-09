@@ -14,7 +14,7 @@ readonly SWITCHER_LOG="${ThemePath}/.cache"
 readonly DISPLAY='eDP-1'
 
 WALLPAPER=''
-WALLPAPER_BACKEND='swww'
+WALLPAPER_BACKEND='awww'
 
 if jq -r '."current_wallpaper"' "$SWITCHER_LOG" ; then
     WALLPAPER="$(jq -r '."current_wallpaper"' "$SWITCHER_LOG" )"
@@ -26,16 +26,15 @@ fi
 if [[ "$WALLPAPER_BACKEND" == "mpvpaper" ]] ; then
     mpvpaper "$DISPLAY" -o "no-audio --loop-playlist" "$WALLPAPER" &
 else
-    swww-daemon &
-    swww restore
+    awww-daemon &
+    awww restore
 fi
 # ----------------------------------------------
 
 # Daemons --------------------------------------
-GTK_THEME=Adwaita waybar -c "${ThemePath}/Theme/waybar/config-niri.jsonc" \
--s "${ThemePath}/Theme/waybar/style-niri.css" &
+"${ThemePath}/switcheroo.sh" -r # reload bar
 mpd "${ThemePath}/Theme/mpd/mpd.conf" &
-swayidle -w before-sleep "bash ${ThemePath}/Theme/niri/swaylock.sh" &
+swayidle -w before-sleep "zsh -c lock" &
 swaybg -i "${ThemePath}/Theme/assets/blured_wall.png" &
 clipcatd -c "${ThemePath}/Theme/clipcat/clipcatd.toml" &
 dunst -conf "${ThemePath}/Theme/dunstrc" &

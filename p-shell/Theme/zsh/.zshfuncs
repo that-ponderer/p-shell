@@ -2,18 +2,18 @@
 # Global Function (used in niri bindings)
 #----------------------------------------
 lock() {
-    InsideCol=cba6f7ff
-    InsideClearCol=a6e3a1ff
-    InsideVerifyCol=89b4faff
-    InsideWrongCol=f38ba8ff
+    local InsideCol=${COL5}ff
+    local InsideClearCol=${COL2}ff
+    local InsideVerifyCol=${COL4}ff
+    local InsideWrongCol=${COL3}ff
 
-    RingCol=cba6f7ff
-    RingClearCol=a6e3a1ff
-    RingVerifyCol=89b4faff
-    RingWrongCol=f38ba8ff
+    local RingCol=${COL5}ff
+    local RingClearCol=${COL2}ff
+    local RingVerifyCol=${COL4}ff
+    local RingWrongCol=${COL3}ff
 
-    KeyHighLightCol=fab387ff
-    BackSpaceHighLightSegCol=f38ba8ff
+    local KeyHighLightCol=${COL3}ff
+    local BackSpaceHighLightSegCol=${COL1}ff
 
     swaylock -i ${ThemePath}/Theme/assets/blured_wall.png \
             --font "JetBrainsMono Nerd Font Propo" --indicator-radius 70 \
@@ -37,10 +37,6 @@ drun() {
         -config "${ThemePath}/Theme/rofi/config.rasi" \
         -theme-str 'window { width: 500px; } listview {lines: 8;}'
 }
-qute() {
-    qutebrowser -B "${ThemePath}/Theme/qutebrowser/" \
-        -C "${ThemePath}/Theme/qutebrowser/config.py" "$@"
-}
 bar() {
     GTK_THEME=Adwaita \
     waybar -c "${ThemePath}/Theme/waybar/config-niri.jsonc" -s \
@@ -59,7 +55,7 @@ emoji() {
     # Auto pasting does not work
     rofimoji \
     --selector-args="-config ${ThemePath}/Theme/rofi/config.rasi" \
-    --max-recent 9 \
+    --max-recent 8 \
     -a copy
 }
 
@@ -127,6 +123,10 @@ grab_text() {
     grim -l 0 -g "$(slurp -o)" "$image_cache" || return
 
     local text="$(tesseract "$image_cache" - -l eng quiet --psm 3)"
+    if [[ "$1" == "p" ]] ; then 
+        text="$(tesseract "$image_cache" - -l eng quiet --psm 6 \
+            -c preserve_interword_spaces=1 )"
+    fi
     if [[ -n "$text" ]]  ; then
         wl-copy < <( printf "%s" "$text" )
         notify-send  -i "$image_cache" 'Text Grabbed'
@@ -140,20 +140,169 @@ calc(){
 colorpicker() {
     hyprpicker -a "$@"
 }
-
-
 screen_record_stop() {
     pkill -SIGINT -f gpu-screen-recorder "$@"
+}
+# ---------------------------------------
+# Speech to text
+# ---------------------------------------
+stt_toggle(){
+    # Vars
+    # ====
+    # Static:
+    # -------
+    declare WHISPER_CPP_DIR="${HOME}/whisper.cpp"
+    declare WHISPER_CPP_MODEL_NAME="ggml-medium.bin"
+    declare TERMINALS=("kitty")
+    # Dynamic:
+    # --------
+    declare -a GARBAGE
+    declare -a DAEMONS
+    declare AUDIO_FILE
+    declare CACHE_DIR
+    # Funcs
+    # =====
+    stt_hud(){
+    kitty --title stt_hud -o font_size=36  sh -c '
+    printf "%b" "\e[?25l"
+
+    FRAMES_VOICE=("." ".." "...")
+    FRAMES_PROCESSING=(" 󰚩 " " 󰚩 " " 󱜙 ")
+    TIME=0
+
+    while true; do
+        printf "%b" "\e[H"
+        printf "%b" "\e[2J"
+        if pgrep pw-record ; then
+            printf "%b" "\e[35m${FRAMES_VOICE[$(( TIME % ${#FRAMES_VOICE[@]} ))]}"
+            (( TIME % ${#FRAMES_VOICE[@]}  == ${#FRAMES_VOICE[@]} - 1 )) \
+                && sleep 0.8 || sleep 0.4
+        else
+            printf "%b" \
+                "\e[35m${FRAMES_PROCESSING[$(( TIME % ${#FRAMES_PROCESSING[@]} ))]}"
+            (( TIME % ${#FRAMES_PROCESSING[@]}  == ${#FRAMES_PROCESSING[@]} - 1 )) \
+                && sleep 0.8 || sleep 0.4
+        fi
+        TIME=$((TIME+1))
+    done
+'
+    }
+    deinit(){
+        # remove cache
+        for file in "${GARBAGE[@]}" ; do
+            [[ -f "$file" ]] && rm -f "$file"
+        done
+    }
+    init(){
+        # Initialize cache
+        if [[ -d "$XDG_CACHE_HOME" ]] ; then
+            CACHE_DIR="${XDG_CACHE_HOME}"
+        else
+            CACHE_DIR="${HOME}/.cache"
+            mkdir -p "${CACHE_DIR}"
+        fi
+
+        AUDIO_FILE="${CACHE_DIR}/stt.wav" && GARBAGE+=("$AUDIO_FILE")
+    }
+    trim() {
+        local s="$*"
+        # remove leading whitespace
+        s="${s#"${s%%[![:space:]]*}"}"
+        # remove trailing whitespace
+        s="${s%"${s##*[![:space:]]}"}"
+        printf '%s' "$s"
+    }
+    clipboard(){
+        local FILE="$1"
+        local WINDOW_TYPE="generic"
+        local WINDOW_INFO="$(niri msg focused-window)"
+
+        local TEXT="$(trim $(< "$FILE"))"
+        # copy
+        wl-copy "$TEXT"
+        # check for terminals
+        for term in "${TERMINALS[@]}" ; do 
+            if [[ "$WINDOW_INFO" == *"App ID: \"${term}\""* ]] ; then
+                WINDOW_TYPE="terminal"
+            fi
+        done
+        # type it out
+        if [[ "$WINDOW_TYPE" == "terminal" ]] ; then 
+            wtype -M ctrl -M shift -k v -m shift -m ctrl
+        else 
+            wtype -M ctrl -k v -m ctrl
+        fi
+    }
+    whisper_cpp(){
+        init
+        local OUT_FILE="${CACHE_DIR}/stt" && GARBAGE+=("$OUT_FILE.txt")
+
+        stt_hud &
+        pw-record "${AUDIO_FILE}"
+        [[ -f "${AUDIO_FILE}" ]] || return 1
+
+        ${WHISPER_CPP_DIR}/build/bin/whisper-cli -t 10 \
+            -f "${AUDIO_FILE}" \
+            -l en \
+            -m "${WHISPER_CPP_DIR}/models/${WHISPER_CPP_MODEL_NAME}" \
+            -otxt -of "${OUT_FILE}" || return 1
+        # kill the hud
+        pkill -f ".*--title stt_hud.*"
+        sleep 0.2
+
+        clipboard "${OUT_FILE}.txt"
+        deinit
+        return 0
+    }
+    whisper_py(){
+        init
+        local OUT_FILE="${CACHE_DIR}/stt.txt" && GARBAGE+=("$OUT_FILE")
+
+        stt_hud &
+        pw-record "${AUDIO_FILE}"
+        [[ -f "${AUDIO_FILE}" ]] || return 1
+
+        whisper "${AUDIO_FILE}" --model tiny \
+            -f txt \
+            -o "${CACHE_DIR}"|| return 1
+
+        pkill -f ".*--title stt_hud.*"
+        sleep 0.2
+
+        clipboard "${OUT_FILE}"
+        deinit
+        return 0
+    }
+    # Logic
+    # ======
+    command -v pw-record || return 1
+    # Interupt pw-record and leave to let the previous process continue
+    pgrep pw-record && { killall -INT pw-record ; return 1 ; }
+    pgrep whisper && return 1
+    pgrep -f ${WHISPER_CPP_DIR}/build/bin/whisper-cli && return 1 
+
+    if [[ -x "${WHISPER_CPP_DIR}/build/bin/whisper-cli" ]] ; then 
+        if ! whisper_cpp ;  then
+            command -v whisper && whisper_py || return 1
+            return 1
+        fi
+        return 0
+    else 
+        return 1
+    fi
 }
 # --------------------------------
 # Vim integration with kitty
 # --------------------------------
-kitvim() {
-    KITTY_PADDING=20
-    KITTY_BG_OP="0.7"
+declare KITTY_PADDING=20
+declare KITTY_BG_OP="0.7"
+kitnvim() {
     kitten @ set-spacing padding=10
     kitten @ set-background-opacity 1
-    /usr/bin/env vim "$@"
+    VIMINIT='' NVIM_THEME="$THEME" \
+        command nvim \
+        --cmd "lua vim.opt.rtp:prepend(\"${ThemePath}/nvim\")" \
+        -u "${ThemePath}/nvim/init.lua" "$@"
     kitten @ set-spacing padding="$KITTY_PADDING"
     kitten @ set-background-opacity "$KITTY_BG_OP"
 }

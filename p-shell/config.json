@@ -5,12 +5,16 @@
     "kitty":["kitty.conf","hex",true],
     "rmpc":["themes.ron","hex",true],
     "waybar-niri":["waybar/style-niri.css","hex",true],
-    "zsh":["zsh/.zshcols","hex",true],
+    "zsh":["zsh/.zshvars","hex",true],
     "rofi":["rofi/themes/theme.rasi","hex",true],
     "rofi_theme_switcher":["rofi/themes/theme_switcher.rasi","hex",true],
     "rofi_wallpaper_switcher":["rofi/themes/wallpaper_switcher.rasi","hex",true],
-    "qutebrowser":["qutebrowser/colors.py","hex",true],
-    "start_page_cols":["qutebrowser/start_page_cols.css","hex",true],
     "gowall":["gowall/colors.json","hex",true],
-    "niri":["niri/config.kdl","hex",true]
+    "niri":["niri/config.kdl","hex",true],
+    "eww":["eww/eww.css","hex",true],
+    "colloid_gtk":[
+        "../Gtk/Colloid-gtk-theme/src/sass/_color-palette-dynamic.scss",
+        "hex",
+        true],
+    "colloid_icon":["../Gtk/Colloid-icon-theme/colors.sh","hex",true]
 }

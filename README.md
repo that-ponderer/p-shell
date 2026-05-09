@@ -3,15 +3,18 @@
 
 <p align="center">A Ponderer's Shell</p>
 
-[groovy.webm](https://github.com/user-attachments/assets/739f8c46-8c41-465c-b829-a993c32666bd)
+<div style="display: flex; justify-content: center; gap: 10px;">
+<img width=48% height=auto alt="2026-05-09_23-23-42_grim" src="https://github.com/user-attachments/assets/9455d04a-7aeb-4698-850d-5aad3c8e4518" />
+<img width=48% height=auto alt="2026-05-09_23-28-13_grim" src="https://github.com/user-attachments/assets/4971f2cb-c7f4-47be-97b0-a8b01fafc240" />
+</div>
 
 # About:
 
 🥪 These Are My Personal Suckless Dotfiles Intended To Be As Minimal As Possible While Also Looking Edible. 
 - 🐧 **Arch/Artix** based btw :)
 - 🎨 **Switchable themes** with keyboard shortcuts.  
-- 🩷 **Dynamic color integration** using Pywal.
-- 💜 **GTK theme gen** using wpgtk.  
+- 🩷 **Dynamic color integration** using Pywal16.
+- 💜 **GTK theme gen** using colloid gtk themes.  
 - 🪟 Built on **Niri** for maximum minimalism.
 
 > [!IMPORTANT]
@@ -20,16 +23,14 @@
 
 # TODO:
 
-- 🔔 Replace **dunst** with swaync. 🚧
-- 🥭 Add **mangowc** support.
 - 📝 Include my **vim** config. ✅
 - 🗣️ Add OSD with **swayosd** 
-- 📚 Add Global Dictionary 
+- 📚 Add Dictionary Lookup
 - 🔎 Add OCR/Text Extractor ✅ 
 
 # Features:
 - Wayland Compositor `niri`
-- Bar `waybar`
+- Bar `eww` and `waybar`
 - Lockscreen `swaylock`
 - Browser `qutebrowser`
 - Fetcher `fastfetch` + `gowall`
@@ -41,13 +42,13 @@
 - Music Player `rmpc` ( <= v0.10.0 )
 - Audio Visualizer `cava`
 - Terminal `kitty`
-- Prompt `oh-my-posh`
 - Drun `rofi`
 - Emoji Picker `rofimoji` + `rofi`
 - Clipboard Manager `clipcat` + `rofi`
 - Notification Manager `dunst`
 - OCR `tesserect`
-- Editor `vim` *Not the 'neo' kind*
+- Editor `neovim`
+- support for `whisper.cpp`
 # Installation:
 ```
 # Clone the repo

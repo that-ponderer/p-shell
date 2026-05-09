@@ -34,7 +34,7 @@
 - Lockscreen `swaylock`
 - Browser `qutebrowser`
 - Fetcher `fastfetch` + `gowall`
-- File Browser `yazi` with plugins
+- File Browser `yazi` (tested on v26.1.22)
 - Background `swww` & `swaybg` + `gowall`
 - Background Picker `waypaper`
 - Screenshot `grim` + `slurp`
